@@ -19,6 +19,8 @@ const CONSTRUCTOR = 'constructor';
 const CONST = 'const ';
 const IMPORT = 'import ';
 
+import './source-code.css';
+
 export class SourceCode extends React.PureComponent {
   constructor(props) {
     super(props);

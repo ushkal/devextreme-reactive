@@ -1,23 +1,8 @@
-/* eslint-disable max-classes-per-file */
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import Frame from 'react-frame-component';
-import {
-  FormGroup, ControlLabel, FormControl, InputGroup, Button,
-} from 'react-bootstrap';
+import { Form, Button, FormGroup, InputGroup, InputGroupAddon, Input, Label } from 'reactstrap';
 import { DemoRenderer } from './demo-renderer';
-import { EmbeddedDemoContext } from '../context';
-
-const Link = ({ link }) => (
-  <link rel="stylesheet" href={link} />
-);
-
-Link.propTypes = {
-  link: PropTypes.string,
-};
-Link.defaultProps = {
-  link: '',
-};
 
 class DemoFrameRenderer extends React.PureComponent {
   constructor(props, context) {
@@ -28,19 +13,8 @@ class DemoFrameRenderer extends React.PureComponent {
       demoName,
       themeName,
       variantName,
-      perfSamplesCount,
     } = props;
-    const {
-      scriptPath, themeSources, firstPart, lastPart, demoSources,
-    } = this.context;
-
-    let demoScript = scriptPath;
-    if (firstPart !== undefined) {
-      // eslint-disable-next-line prefer-destructuring
-      const productName = demoSources[sectionName][demoName][themeName].productName;
-      demoScript = `${firstPart}${productName}${lastPart}`;
-    }
-
+    const { embeddedDemoOptions: { scriptPath, themeSources } } = this.context;
     const themeVariantOptions = themeSources
       .find(theme => theme.name === themeName).variants
       .find(variant => variant.name === variantName);
@@ -48,12 +22,12 @@ class DemoFrameRenderer extends React.PureComponent {
     const themeLinks = themeVariantOptions.links
       ? themeVariantOptions.links.map(link => `<link rel="stylesheet" href="${link}">`).join('\n')
       : '';
-    const mode = perfSamplesCount > 0 ? `/perf/${perfSamplesCount}` : '/clean';
-    this.markup = `
+    this.markup = link => `
       <!DOCTYPE html>
       <html>
       <head>
         ${themeLinks}
+        ${link !== undefined ? `<link rel="stylesheet" href="${link}">` : ''}
         <style>
           body { margin: 8px; overflow: hidden; }
           .panel { margin: 0; }
@@ -61,73 +35,87 @@ class DemoFrameRenderer extends React.PureComponent {
       </head>
       <body>
         <div id="mountPoint"></div>
-        <div class="embedded-demo" data-options='{ "path": "${frameUrl}${mode}", "frame": true }'>
+        <div class="embedded-demo" data-options='{ "path": "${frameUrl}/clean", "frame": true }'>
           <div style="min-height: 500px;">Loading...</div>
         </div>
-        <script src="${demoScript}"></script>
+        <script src="${scriptPath}"></script>
       </body>
       </html>`;
     this.state = {
       editableLink: themeVariantOptions.editableLink,
       frameHeight: 600,
     };
-    this.nodeRef = React.createRef();
   }
 
   componentDidMount() {
     this.updateFrameHeight();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { editableLink } = this.state;
+    if (editableLink !== prevState.editableLink) {
+      if (this.node) this.node.ownerDocument.location.reload();
+    }
+  }
+
   updateFrameHeight() {
     const { frameHeight } = this.state;
-    const node = this.nodeRef.current;
     setTimeout(this.updateFrameHeight.bind(this));
-
-    if (!node) return;
-
-    const height = node.ownerDocument.documentElement.offsetHeight;
+    if (!this.node) return;
+    const height = this.node.ownerDocument.documentElement.offsetHeight;
     if (height !== frameHeight) {
       this.setState({ frameHeight: height });
     }
   }
 
   render() {
-    const { frame } = this.context;
+    const {
+      sectionName,
+      demoName,
+      themeName,
+      variantName,
+    } = this.props;
+    const { embeddedDemoOptions: { frame } } = this.context;
     const { editableLink, frameHeight } = this.state;
 
     return (
       <div>
         {!frame && !!editableLink ? (
-          <form
+          <Form
             style={{ marginBottom: '20px' }}
           >
-            <FormGroup controlId="customThemeLink">
-              <ControlLabel>
-                Custom theme link
-              </ControlLabel>
+            <FormGroup>
+              <Label for="customLink">Custom theme link</Label>
               <InputGroup>
-                <FormControl
+                <Input
                   type="text"
-                  inputRef={(node) => { this.customThemeLinkNode = node; }}
+                  id="customLink"
+                  innerRef={(node) => { this.customThemeLinkNode = node; }}
                   defaultValue={editableLink}
                 />
-                <InputGroup.Button>
+                <InputGroupAddon addonType="append">
                   <Button
-                    onClick={() => {
+                    color="secondary"
+                    onClick={(e) => {
                       this.setState({ editableLink: this.customThemeLinkNode.value });
                     }}
                   >
                     Apply
                   </Button>
-                </InputGroup.Button>
+                </InputGroupAddon>
               </InputGroup>
             </FormGroup>
-          </form>
+          </Form>
         ) : null}
 
         {frame
           ? (
-            <DemoRenderer {...this.props} />
+            <DemoRenderer
+              sectionName={sectionName}
+              demoName={demoName}
+              themeName={themeName}
+              variantName={variantName}
+            />
           )
           : (
             <div
@@ -143,12 +131,11 @@ class DemoFrameRenderer extends React.PureComponent {
                   height: `${frameHeight}px`,
                   marginBottom: '20px',
                 }}
-                head={<Link link={editableLink} />}
-                initialContent={this.markup}
+                initialContent={this.markup(editableLink)}
                 mountTarget="#mountPoint"
                 scrolling="no"
               >
-                <div ref={this.nodeRef} />
+                <div ref={(node) => { this.node = node; }} />
               </Frame>
             </div>
           )}
@@ -162,14 +149,11 @@ DemoFrameRenderer.propTypes = {
   demoName: PropTypes.string.isRequired,
   themeName: PropTypes.string.isRequired,
   variantName: PropTypes.string.isRequired,
-  perfSamplesCount: PropTypes.number,
 };
 
-DemoFrameRenderer.defaultProps = {
-  perfSamplesCount: undefined,
+DemoFrameRenderer.contextTypes = {
+  embeddedDemoOptions: PropTypes.object.isRequired,
 };
-
-DemoFrameRenderer.contextType = EmbeddedDemoContext;
 
 // eslint-disable-next-line react/no-multi-comp
 export class DemoFrame extends React.PureComponent {

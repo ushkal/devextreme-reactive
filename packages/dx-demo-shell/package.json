@@ -18,6 +18,7 @@
     "lint:fix": "yarn lint -- --fix"
   },
   "peerDependencies": {
+    "prismjs": "^1.14.0",
     "codemirror": "^5.48.4",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
