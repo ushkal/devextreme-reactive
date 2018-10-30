@@ -63,6 +63,15 @@ export const getSpanBoundary = (items, visibleBoundaries, getItemSpan) => visibl
     return [start, end];
   });
 
+export const getColumnsVisibleBoundary = (
+  columns, left, width, getColumnWidth,
+) => (
+  getVisibleBoundaryWithFixed(
+    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
+    columns,
+  )
+);
+
 export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries) => {
   const boundaries = [];
 
@@ -223,9 +232,8 @@ export const getCollapsedGrid = ({
     };
   }
   const rowsVisibleBoundary = getVisibleBoundary(rows, top, height, getRowHeight, 3);
-  const columnsVisibleBoundary = getVisibleBoundaryWithFixed(
-    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
-    columns,
+  const columnsVisibleBoundary = getColumnsVisibleBoundary(
+    columns, left, width, getColumnWidth,
   );
 
   const rowSpanBoundaries = rows

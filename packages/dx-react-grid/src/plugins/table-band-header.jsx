@@ -5,12 +5,12 @@ import {
   TemplateConnector, TemplatePlaceholder,
 } from '@devexpress/dx-react-core';
 import {
-  getBandComponent,
+  getBandComponent, getBandedHeaderRowCells,
   isBandedTableRow, isBandedOrHeaderRow,
   tableRowsWithBands, isHeadingTableCell,
   BAND_GROUP_CELL, BAND_HEADER_CELL,
   BAND_EMPTY_CELL, BAND_DUPLICATE_RENDER,
-  TABLE_BAND_TYPE,
+  TABLE_BAND_TYPE, TABLE_HEADING_TYPE,
 } from '@devexpress/dx-grid-core';
 
 const CellPlaceholder = props => <TemplatePlaceholder params={props} />;
@@ -28,6 +28,35 @@ export class TableBandHeader extends React.PureComponent {
     const tableHeaderRowsComputed = ({ tableHeaderRows, tableColumns }) => tableRowsWithBands(
       tableHeaderRows, columnBands, tableColumns,
     );
+
+    const bandCellModelToComponent = (params) => {
+      const { bandInfo } = params.props;
+      switch (bandInfo.type) {
+        case BAND_DUPLICATE_RENDER:
+          return <TemplatePlaceholder />;
+
+        case BAND_EMPTY_CELL:
+          return <InvisibleCell />;
+
+        case BAND_GROUP_CELL: {
+          const { value, ...payload } = bandInfo.payload;
+          return (
+            <Cell {...params} {...payload}>
+              {value}
+            </Cell>
+          );
+        }
+        case BAND_HEADER_CELL:
+          return (
+            <TemplatePlaceholder
+              name="tableCell"
+              params={{ ...params, ...bandInfo.payload }}
+            />
+          );
+        default:
+          return null;
+      }
+    };
 
     return (
       <Plugin
@@ -50,12 +79,16 @@ export class TableBandHeader extends React.PureComponent {
               {({
                 tableColumns,
                 tableHeaderRows,
+                headerColumnsVisibleBoundary,
               }) => {
+                console.log('boundary', headerColumnsVisibleBoundary)
                 const bandComponent = getBandComponent(
                   params,
                   tableHeaderRows, tableColumns,
                   columnBands,
+                  headerColumnsVisibleBoundary || [0, 10],
                 );
+                // const bandComponent = params;
                 switch (bandComponent.type) {
                   case BAND_DUPLICATE_RENDER:
                     return <TemplatePlaceholder />;
@@ -70,6 +103,7 @@ export class TableBandHeader extends React.PureComponent {
                     );
                   }
                   case BAND_HEADER_CELL:
+                    // console.log(bandComponent.payload)
                     return (
                       <TemplatePlaceholder
                         name="tableCell"
@@ -85,15 +119,49 @@ export class TableBandHeader extends React.PureComponent {
         </Template>
         <Template
           name="tableCell"
+          // predicate={(cell) => isHeadingTableCell(cell.props.tableRow, cell.props.tableColumn)}
+          // predicate={({ props }) => isHeadingTableCell(props.tableRow, props.tableColumn)}
           predicate={({ tableRow, tableColumn }) => isHeadingTableCell(tableRow, tableColumn)}
         >
           {params => <HeaderCell component={CellPlaceholder} {...params} />}
         </Template>
         <Template
           name="tableRow"
-          predicate={({ tableRow }) => isBandedTableRow(tableRow)}
+          predicate={({ tableRow }) => isBandedOrHeaderRow(!tableRow)}
+          // predicate={({ tableRow }) => isBandedTableRow(tableRow)}
         >
-          {params => <Row {...params} />}
+          {(params) => (
+            <TemplateConnector>
+              {({ tableColumns, tableHeaderRows }) => {
+                // (params) => {
+                //   console.log(params)
+                //   return (
+                const cells = getBandedHeaderRowCells(
+                  React.Children.toArray(params.children),
+                  tableHeaderRows, tableColumns,
+                  columnBands,
+                ).map(c => bandCellModelToComponent(c));
+                // console.log(cells)
+
+                // console.log(params)
+                if(/*params && params.tableRow && */params.tableRow.type === TABLE_HEADING_TYPE) {
+                  return (
+                    <TemplatePlaceholder params={{ ...params, children: cells }} />
+                  );
+                }
+
+                return (<Row {...params}>
+                  {
+                    // params.children
+                    cells
+                  }
+                </Row>)
+                  // );
+                // }
+              }}
+            </TemplateConnector>
+          )}
+
         </Template>
       </Plugin>
     );

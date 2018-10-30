@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { createRenderComponent } from '@devexpress/dx-react-core';
+import {createRenderComponent, Getter, Plugin, PluginHost} from '@devexpress/dx-react-core';
+import {VirtualTableState} from "../plugins/virtual-table-state";
 
 export const makeVirtualTable = (Table, {
   VirtualLayout,
@@ -51,7 +52,10 @@ export const makeVirtualTable = (Table, {
       } = this.props;
 
       return (
-        <Table layoutComponent={this.layoutRenderComponent.component} {...restProps} />
+        <React.Fragment>
+          <VirtualTableState/>
+          <Table layoutComponent={this.layoutRenderComponent.component} {...restProps} />
+        </React.Fragment>
       );
     }
   }

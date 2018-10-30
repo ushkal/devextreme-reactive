@@ -115,10 +115,13 @@ export const getColSpan = (
     currentColumnIndex, currentRowLevel, currentColumnBand, isCurrentColumnFixed,
   },
   { tableColumns, columnBands },
+  lastCellIndex,
 ) => {
+  console.log(currentColumnIndex + 1, lastCellIndex)
+  const start = currentColumnIndex + 1;
   let isOneChain = true;
   return tableColumns
-    .slice(currentColumnIndex + 1)
+    .slice(start, lastCellIndex)
     .reduce((acc, tableColumn) => {
       if (tableColumn.type !== TABLE_DATA_TYPE) return acc;
 
@@ -145,7 +148,7 @@ const createBandHeaderCell = ({ currentRowLevel, beforeBorder }, { tableHeaderRo
   }
 );
 
-const createBandGroupCell = (currentColumnInfo, tableHeaderInfo) => {
+const createBandGroupCell = (currentColumnInfo, tableHeaderInfo, lastCellIndex) => {
   const { beforeBorder } = currentColumnInfo;
   return {
     type: BAND_GROUP_CELL,
@@ -153,6 +156,7 @@ const createBandGroupCell = (currentColumnInfo, tableHeaderInfo) => {
       colSpan: getColSpan(
         currentColumnInfo,
         tableHeaderInfo,
+        lastCellIndex,
       ),
       value: currentColumnInfo.currentColumnBand.title,
       column: currentColumnInfo.currentColumnBand,
@@ -162,10 +166,18 @@ const createBandGroupCell = (currentColumnInfo, tableHeaderInfo) => {
 };
 
 export const getBandComponent = (
+  // cell,
   { tableColumn: currentTableColumn, tableRow, rowSpan },
-  tableHeaderRows, tableColumns, columnBands,
+  tableHeaderRows, tableColumns, columnBands, headerColumnsVisibleBoundary,
 ) => {
+  // const { props } = cell;
+  // console.log(cell)
+  // const props = null;
+  // const { tableColumn: currentTableColumn, tableRow, rowSpan } = props;
+  // console.log(tableRow)
+  const lastCellIndex = headerColumnsVisibleBoundary[1];
   if (rowSpan) {
+    console.log('rowspan', rowSpan)
     return { type: BAND_DUPLICATE_RENDER, payload: null };
   }
 
@@ -185,5 +197,29 @@ export const getBandComponent = (
     return { type: null, payload: null };
   }
 
-  return createBandGroupCell(currentColumnInfo, tableHeaderInfo);
+  return createBandGroupCell(currentColumnInfo, tableHeaderInfo, lastCellIndex);
 };
+
+export const getBandedHeaderRowCells = (
+  cells, tableHeaderRows, tableColumns, columnBands,
+) => {
+  if (cells === null) return cells;
+
+  const lastCellIndex = getColumnIndex(cells[0].props.tableColumn, tableColumns) + cells.length - 1;
+
+  const headerCells = cells
+    .map(cell => ({
+      ...cell,
+      props: {
+        ...cell.props,
+        bandInfo: getBandComponent(cell, tableHeaderRows, tableColumns, columnBands, lastCellIndex),
+      },
+    }));
+
+  console.log(cells, headerCells)
+
+  return headerCells;
+};
+
+
+

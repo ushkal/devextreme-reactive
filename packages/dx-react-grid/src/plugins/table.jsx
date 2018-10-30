@@ -75,6 +75,7 @@ export class Table extends React.PureComponent {
         <Getter name="tableColumns" computed={tableColumnsComputed} />
         <Getter name="getTableCellColSpan" value={tableCellColSpanGetter} />
 
+
         <Template name="body">
           <TemplatePlaceholder name="table" />
         </Template>

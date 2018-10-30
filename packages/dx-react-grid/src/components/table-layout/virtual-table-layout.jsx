@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import * as PropTypes from 'prop-types';
-import { Sizer, RefHolder } from '@devexpress/dx-react-core';
+import {Sizer, RefHolder, Plugin, TemplateConnector, PluginHost} from '@devexpress/dx-react-core';
 import {
   getCollapsedGrid,
+  getColumnsVisibleBoundary,
   TABLE_FLEX_TYPE,
   TABLE_STUB_TYPE,
 } from '@devexpress/dx-grid-core';
 import { ColumnGroup } from './column-group';
+import { VirtualTableState } from '../../plugins/virtual-table-state';
 
 const AUTO_HEIGHT = 'auto';
 
@@ -17,10 +19,10 @@ export class VirtualTableLayout extends React.PureComponent {
 
     this.state = {
       rowHeights: new Map(),
-      viewportTop: 0,
-      viewportLeft: 0,
-      width: 800,
-      height: 600,
+      // viewportTop: 0,
+      // viewportLeft: 0,
+      // width: 800,
+      // height: 600,
     };
     this.state.headerHeight = props.headerRows
       .reduce((acc, row) => acc + this.getRowHeight(row), 0);
@@ -33,7 +35,7 @@ export class VirtualTableLayout extends React.PureComponent {
     this.registerRowRef = this.registerRowRef.bind(this);
     this.getRowHeight = this.getRowHeight.bind(this);
     this.updateViewport = this.updateViewport.bind(this);
-    this.handleContainerSizeChange = this.handleContainerSizeChange.bind(this);
+    // this.handleContainerSizeChange = this.handleContainerSizeChange.bind(this);
   }
 
   componentDidMount() {
@@ -188,6 +190,7 @@ export class VirtualTableLayout extends React.PureComponent {
           <Body>
             {collapsedGrid.rows.map((visibleRow) => {
               const { row, cells = [] } = visibleRow;
+              // console.log(visibleRow)
               return (
                 <RefHolder
                   key={row.key}
@@ -255,6 +258,11 @@ export class VirtualTableLayout extends React.PureComponent {
     const getColSpan = (
       tableRow, tableColumn,
     ) => getCellColSpan({ tableRow, tableColumn, tableColumns: columns });
+
+    const headerColumnsVisibleBoundaryComputed = () => (
+      getColumnsVisibleBoundary(columns, viewportLeft, width, getColumnWidth)
+    );
+
     const collapsedHeaderGrid = getCollapsedGrid({
       rows: headerRows,
       columns,
@@ -290,18 +298,25 @@ export class VirtualTableLayout extends React.PureComponent {
     });
 
     return (
-      <Sizer
-        onSizeChange={this.handleContainerSizeChange}
-        containerComponent={Container}
-        style={{
-          ...(propHeight === AUTO_HEIGHT ? null : { height: `${propHeight}px` }),
-        }}
-        onScroll={this.updateViewport}
-      >
-        {!!headerRows.length && this.renderRowsBlock('header', collapsedHeaderGrid, HeadTable, Head)}
-        {this.renderRowsBlock('body', collapsedBodyGrid, Table, Body, Math.max(0, height - headerHeight - bodyHeight - footerHeight))}
-        {!!footerRows.length && this.renderRowsBlock('footer', collapsedFooterGrid, FootTable, Footer)}
-      </Sizer>
+        <TemplateConnector>
+          {({ headerColumnsVisibleBoundary, tableColumns }, { setContainerSize }) => (
+            <Sizer
+              onSizeChange={() => {}}
+              containerComponent={Container}
+              style={{
+                ...(propHeight === AUTO_HEIGHT ? null : { height: `${propHeight}px` }),
+              }}
+              onScroll={this.updateViewport}
+            >
+              {console.log(tableColumns)}
+              {!!headerRows.length && this.renderRowsBlock('header', collapsedHeaderGrid, HeadTable, Head)}
+              {this.renderRowsBlock('body', collapsedBodyGrid, Table, Body, Math.max(0, height - headerHeight - bodyHeight - footerHeight))}
+              {!!footerRows.length && this.renderRowsBlock('footer', collapsedFooterGrid, FootTable, Footer)}
+            </Sizer>
+          )}
+
+        </TemplateConnector>
+
     );
   }
 }

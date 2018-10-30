@@ -3,6 +3,7 @@ import {
   Grid,
   VirtualTable,
   TableHeaderRow,
+  TableBandHeader,
 } from '@devexpress/dx-react-grid-<%&themeName%>';
 
 const getRowId = row => row.id;
@@ -16,11 +17,35 @@ export default class Demo extends React.PureComponent {
         .map((item, index) => ({ name: `${index}`, title: `Column ${index}`, getCellValue: row => `[${row.id};${index}]` })),
       rows: Array.from({ length: 10000 })
         .map((item, index) => ({ id: index })),
+      columnBands: [
+      {
+        title: 'Band 1',
+        children: [
+      { columnName: '0' },
+      { columnName: '1' },
+      { columnName: '2' },
+      { columnName: '3' },
+      { columnName: '4' },
+      { columnName: '5' },
+        ],
+      },
+      {
+        title: 'Band 2',
+        children: [
+      { columnName: '20' },
+      { columnName: '21' },
+      { columnName: '22' },
+      { columnName: '23' },
+      { columnName: '24' },
+      { columnName: '25' },
+        ],
+      },
+        ],
     };
   }
 
   render() {
-    const { rows, columns } = this.state;
+    const { rows, columns, columnBands } = this.state;
 
     return (
       <<%&wrapperTag%>>
@@ -31,6 +56,9 @@ export default class Demo extends React.PureComponent {
         >
           <VirtualTable />
           <TableHeaderRow />
+          <TableBandHeader
+            columnBands={columnBands}
+          />
         </Grid>
       </<%&wrapperTag%>>
     );
