@@ -1,4 +1,5 @@
 export const TABLE_STUB_TYPE = Symbol('stub');
+import { rowsWithAvailableToSelect } from './../plugins/integrated-selection/computeds';
 
 export const getVisibleBoundaryWithFixed = (
   visibleBoundary, items,
@@ -46,6 +47,16 @@ export const getVisibleBoundary = (items, viewportStart, viewportSize, getItemSi
 
   return [start, end];
 };
+
+export const getColumnsVisibleBoundary = (columns, left, width, getColumnWidth) => (
+  getVisibleBoundaryWithFixed(
+    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
+    columns,
+  )
+);
+export const getRowsVisibleBoundary = (rows, top, height, getRowHeight) => (
+  getVisibleBoundary(rows, top, height, getRowHeight, 3)
+);
 
 export const getSpanBoundary = (items, visibleBoundaries, getItemSpan) => visibleBoundaries
   .map((visibleBoundary) => {
@@ -207,10 +218,8 @@ export const getCollapsedCells = (columns, spanBoundaries, boundaries, getColSpa
 export const getCollapsedGrid = ({
   rows,
   columns,
-  top,
-  height,
-  left,
-  width,
+  rowsVisibleBoundary: rwb,
+  columnsVisibleBoundary,
   getColumnWidth = column => column.width,
   getRowHeight = row => row.height,
   getColSpan = () => 1,
@@ -221,12 +230,8 @@ export const getCollapsedGrid = ({
       rows: [],
     };
   }
-  const rowsVisibleBoundary = getVisibleBoundary(rows, top, height, getRowHeight, 3);
-  const columnsVisibleBoundary = getVisibleBoundaryWithFixed(
-    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
-    columns,
-  );
-
+  const rowsVisibleBoundary = [0, 1];
+console.log(columnsVisibleBoundary, rowsVisibleBoundary)
   const rowSpanBoundaries = rows
     .slice(rowsVisibleBoundary[0], rowsVisibleBoundary[1])
     .map(row => getSpanBoundary(
