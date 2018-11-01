@@ -21,6 +21,15 @@ export class StaticTableLayout extends React.PureComponent {
       getCellColSpan,
     } = this.props;
 
+    const commonProps = {
+      columns,
+      rowComponent,
+      cellComponent,
+      getCellColSpan,
+    };
+
+    console.log('render static')
+
     return (
       <Container>
         <Table
@@ -30,29 +39,20 @@ export class StaticTableLayout extends React.PureComponent {
           {!!headerRows.length && (
             <RowsBlockLayout
               rows={headerRows}
-              columns={columns}
               blockComponent={headComponent}
-              rowComponent={rowComponent}
-              cellComponent={cellComponent}
-              getCellColSpan={getCellColSpan}
+              {...commonProps}
             />
           )}
           <RowsBlockLayout
             rows={bodyRows}
-            columns={columns}
             blockComponent={bodyComponent}
-            rowComponent={rowComponent}
-            cellComponent={cellComponent}
-            getCellColSpan={getCellColSpan}
+            {...commonProps}
           />
           {!!footerRows.length && (
             <RowsBlockLayout
               rows={footerRows}
-              columns={columns}
               blockComponent={footerComponent}
-              rowComponent={rowComponent}
-              cellComponent={cellComponent}
-              getCellColSpan={getCellColSpan}
+              {...commonProps}
             />
           )}
         </Table>

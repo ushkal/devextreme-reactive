@@ -60,6 +60,7 @@ export class Table extends React.PureComponent {
       headComponent,
       bodyComponent,
       footerComponent,
+      minColumnWidth,
     } = this.props;
 
     const getMessage = getMessagesFormatter({ ...defaultMessages, ...messages });
@@ -87,22 +88,31 @@ export class Table extends React.PureComponent {
               tableColumns: columns,
               getTableCellColSpan,
             }) => (
-              <Layout
-                tableComponent={tableComponent}
-                headComponent={headComponent}
-                bodyComponent={bodyComponent}
-                footerComponent={footerComponent}
-                containerComponent={containerComponent}
-                headerRows={headerRows}
-                bodyRows={bodyRows}
-                footerRows={footerRows}
-                columns={columns}
-                rowComponent={RowPlaceholder}
-                cellComponent={CellPlaceholder}
-                getCellColSpan={getTableCellColSpan}
+              <TemplatePlaceholder
+                name="tableLayout"
+                params={{
+                  tableComponent,
+                  headComponent,
+                  bodyComponent,
+                  footerComponent,
+                  containerComponent,
+                  headerRows,
+                  bodyRows,
+                  footerRows,
+                  columns,
+                  minColumnWidth,
+                  rowComponent: RowPlaceholder,
+                  cellComponent: CellPlaceholder,
+                  getCellColSpan: getTableCellColSpan,
+                }}
               />
             )}
           </TemplateConnector>
+        </Template>
+        <Template name="tableLayout">
+          {params => (
+            <Layout {...params} />
+          )}
         </Template>
         <Template name="tableCell">
           {params => (
