@@ -51,12 +51,17 @@ export class Table extends React.Component {
 
   render() {
     const {
-      children, use, style, className, ...restProps
+      children, use, style, className, innerRef, ...restProps
     } = this.props;
     const { stickyProp, backgroundColor } = this.state;
+    const tableRefHandler = (ref) => {
+      this.tableRef.current = ref;
+      innerRef(ref);
+    };
+
     return (
       <table
-        ref={this.tableRef}
+        ref={tableRefHandler}
         className={classNames('table', className)}
         style={{
           tableLayout: 'fixed',

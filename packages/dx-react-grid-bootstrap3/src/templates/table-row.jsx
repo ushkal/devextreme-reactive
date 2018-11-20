@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 export const TableRow = ({
-  children, row, tableRow,
+  children, row, tableRow, innerRef,
   ...restProps
 }) => (
   <tr
+    ref={innerRef}
     {...restProps}
   >
     {children}

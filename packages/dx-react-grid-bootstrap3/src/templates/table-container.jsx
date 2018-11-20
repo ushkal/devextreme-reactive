@@ -6,9 +6,11 @@ export const TableContainer = ({
   children,
   style,
   className,
+  innerRef,
   ...restProps
 }) => (
   <div
+    ref={innerRef}
     className={classNames('table-responsive', className)}
     style={{
       overflow: 'auto',

@@ -5,9 +5,11 @@ export const TableStubCell = ({
   style,
   tableRow,
   tableColumn,
+  innerRef,
   ...restProps
 }) => (
   <td
+    ref={innerRef}
     style={{
       padding: 0,
       ...style,

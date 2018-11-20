@@ -77,7 +77,6 @@ export class VirtualTableLayout extends React.PureComponent {
   storeRowHeights() {
     const rowsWithChangedHeights = Array.from(this.rowRefs.entries())
       // eslint-disable-next-line react/no-find-dom-node
-      .map(([row, ref]) => [row, findDOMNode(ref)])
       .filter(([, node]) => !!node)
       .map(([row, node]) => [row, node.getBoundingClientRect().height])
       .filter(([row]) => row.type !== TABLE_STUB_TYPE)
@@ -95,20 +94,14 @@ export class VirtualTableLayout extends React.PureComponent {
   }
 
   storeBloksHeights() {
-    const headerHeight = this.blockRefs.get('header')
-      // eslint-disable-next-line react/no-find-dom-node
-      ? findDOMNode(this.blockRefs.get('header')).getBoundingClientRect().height
-      : 0;
-
-    const bodyHeight = this.blockRefs.get('body')
-      // eslint-disable-next-line react/no-find-dom-node
-      ? findDOMNode(this.blockRefs.get('body')).getBoundingClientRect().height
-      : 0;
-
-    const footerHeight = this.blockRefs.get('footer')
-      // eslint-disable-next-line react/no-find-dom-node
-      ? findDOMNode(this.blockRefs.get('footer')).getBoundingClientRect().height
-      : 0;
+    const getBlockHeight = name => (
+      this.blockRefs.get(name)
+        ? (this.blockRefs.get(name)).getBoundingClientRect().height
+        : 0
+    );
+    const headerHeight = getBlockHeight('header');
+    const bodyHeight = getBlockHeight('body');
+    const footerHeight = getBlockHeight('footer');
 
     const {
       headerHeight: prevHeaderHeight,
@@ -189,48 +182,42 @@ export class VirtualTableLayout extends React.PureComponent {
     } = this.props;
 
     return (
-      <RefHolder
-        ref={ref => this.registerBlockRef(name, ref)}
+      <Table
+        innerRef={ref => this.registerBlockRef(name, ref)}
+        style={{ minWidth: `${minWidth}px`, ...marginBottom ? { marginBottom: `${marginBottom}px` } : null }}
       >
-        <Table
-          style={{ minWidth: `${minWidth}px`, ...marginBottom ? { marginBottom: `${marginBottom}px` } : null }}
-        >
-          <ColumnGroup
-            columns={collapsedGrid.columns}
-          />
-          <Body>
-            {collapsedGrid.rows.map((visibleRow) => {
-              const { row, cells = [] } = visibleRow;
-              return (
-                <RefHolder
-                  key={row.key}
-                  ref={ref => this.registerRowRef(row, ref)}
-                >
-                  <Row
-                    tableRow={row}
-                    style={row.height !== undefined
-                      ? { height: `${row.height}px` }
-                      : undefined}
-                  >
-                    {cells.map((cell) => {
-                      const { column } = cell;
-                      return (
-                        <Cell
-                          key={column.key}
-                          tableRow={row}
-                          tableColumn={column}
-                          style={column.animationState}
-                          colSpan={cell.colSpan}
-                        />
-                      );
-                    })}
-                  </Row>
-                </RefHolder>
-              );
-            })}
-          </Body>
-        </Table>
-      </RefHolder>
+        <ColumnGroup
+          columns={collapsedGrid.columns}
+        />
+        <Body>
+          {collapsedGrid.rows.map((visibleRow) => {
+            const { row, cells = [] } = visibleRow;
+            return (
+              <Row
+                key={row.key}
+                innerRef={ref => this.registerRowRef(row, ref)}
+                tableRow={row}
+                style={row.height !== undefined
+                  ? { height: `${row.height}px` }
+                  : undefined}
+              >
+                {cells.map((cell) => {
+                  const { column } = cell;
+                  return (
+                    <Cell
+                      key={column.key}
+                      tableRow={row}
+                      tableColumn={column}
+                      style={column.animationState}
+                      colSpan={cell.colSpan}
+                    />
+                  );
+                })}
+              </Row>
+            );
+          })}
+        </Body>
+      </Table>
     );
   }
 

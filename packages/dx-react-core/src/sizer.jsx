@@ -2,8 +2,6 @@
 
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
-import { RefHolder } from './ref-holder';
 
 const styles = {
   triggersRoot: {
@@ -48,6 +46,7 @@ export class Sizer extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    this.rootRef = React.createRef();
     this.setupListeners = this.setupListeners.bind(this);
   }
 
@@ -58,7 +57,7 @@ export class Sizer extends React.PureComponent {
 
   setupListeners() {
     // eslint-disable-next-line react/no-find-dom-node
-    const rootNode = findDOMNode(this.root);
+    const rootNode = this.rootRef.current;
     const size = { height: rootNode.clientHeight, width: rootNode.clientWidth };
 
     this.contractTrigger.scrollTop = size.height;
@@ -75,7 +74,7 @@ export class Sizer extends React.PureComponent {
 
   createListeners() {
     // eslint-disable-next-line react/no-find-dom-node
-    const rootNode = findDOMNode(this.root);
+    const rootNode = this.rootRef.current;
 
     this.triggersRoot = document.createElement('div');
     Object.assign(this.triggersRoot.style, styles.triggersRoot);
@@ -107,13 +106,10 @@ export class Sizer extends React.PureComponent {
     } = this.props;
 
     return (
-      <RefHolder
-        ref={(ref) => { this.root = ref; }}
-      >
-        <Container // NOTE: should has `position: relative`
-          {...restProps}
-        />
-      </RefHolder>
+      <Container // NOTE: should have `position: relative`
+        innerRef={this.rootRef}
+        {...restProps}
+      />
     );
   }
 }
