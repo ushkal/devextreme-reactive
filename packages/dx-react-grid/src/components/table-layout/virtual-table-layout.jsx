@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import * as PropTypes from 'prop-types';
 import { isEdgeBrowser } from '@devexpress/dx-core';
-import { Sizer, RefHolder } from '@devexpress/dx-react-core';
+import { Sizer } from '@devexpress/dx-react-core';
 import {
   getCollapsedGrid,
   TABLE_FLEX_TYPE,
@@ -102,6 +101,7 @@ export class VirtualTableLayout extends React.PureComponent {
     const headerHeight = getBlockHeight('header');
     const bodyHeight = getBlockHeight('body');
     const footerHeight = getBlockHeight('footer');
+    console.log(headerHeight, bodyHeight, footerHeight)
 
     const {
       headerHeight: prevHeaderHeight,

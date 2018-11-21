@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import TableMUI from '@material-ui/core/Table';
 import { withStyles } from '@material-ui/core/styles';
 import { getBorder } from './utils';
+import { withRef } from '../utils/with-ref';
 
 const styles = theme => ({
   table: {
@@ -57,4 +58,6 @@ TableBase.defaultProps = {
   className: undefined,
 };
 
-export const Table = withStyles(styles, { name: 'Table' })(TableBase);
+export const Table = withRef(
+  withStyles(styles, { name: 'Table' })(TableBase),
+);

@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
+import { withRef } from '../utils/with-ref';
 
 const styles = {
   root: {
@@ -12,16 +13,22 @@ const styles = {
   },
 };
 
-const TableContainerBase = ({
-  children, classes, className, ...restProps
-}) => (
-  <div
-    className={classNames(classes.root, className)}
-    {...restProps}
-  >
-    {children}
-  </div>
-);
+class TableContainerBase extends React.PureComponent {
+  render() {
+    const {
+      children, classes, className, ...restProps
+    } = this.props;
+
+    return (
+      <div
+        className={classNames(classes.root, className)}
+        {...restProps}
+      >
+        {children}
+      </div>
+    );
+  }
+}
 
 TableContainerBase.propTypes = {
   children: PropTypes.node.isRequired,
@@ -33,4 +40,6 @@ TableContainerBase.defaultProps = {
   className: undefined,
 };
 
-export const TableContainer = withStyles(styles, { name: 'TableContainer' })(TableContainerBase);
+export const TableContainer = withRef(
+  withStyles(styles, { name: 'TableContainer' })(TableContainerBase),
+);

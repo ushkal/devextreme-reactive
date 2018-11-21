@@ -1,8 +1,9 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import TableRowMUI from '@material-ui/core/TableRow';
+import { withRef } from '../utils/with-ref';
 
-export const TableStubRow = ({
+const TableStubRowBase = ({
   children,
   tableRow,
   ...restProps
@@ -14,12 +15,14 @@ export const TableStubRow = ({
   </TableRowMUI>
 );
 
-TableStubRow.propTypes = {
+TableStubRowBase.propTypes = {
   children: PropTypes.node,
   tableRow: PropTypes.object,
 };
 
-TableStubRow.defaultProps = {
+TableStubRowBase.defaultProps = {
   children: undefined,
   tableRow: undefined,
 };
+
+export const TableStubRow = withRef(TableStubRowBase);
