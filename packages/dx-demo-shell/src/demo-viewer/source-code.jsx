@@ -12,14 +12,13 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/search/searchcursor';
+import './source-code.css';
 
 const FOLD_BLOCK = '// #FOLD_BLOCK';
 const IMPORTANT_LINE = '// #IMPORTANT_LINE';
 const CONSTRUCTOR = 'constructor';
 const CONST = 'const ';
 const IMPORT = 'import ';
-
-import './source-code.css';
 
 export class SourceCode extends React.PureComponent {
   constructor(props) {
