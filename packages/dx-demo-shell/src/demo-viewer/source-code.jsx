@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import CodeMirror from 'codemirror';
 import { EmbeddedDemoContext } from '../context';
-import { isOccurrenceInSource } from '../utils';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/jsx/jsx';
 import 'codemirror/addon/fold/foldcode';
@@ -15,18 +14,17 @@ import 'codemirror/addon/search/searchcursor';
 
 const FOLD_BLOCK = '// #FOLD_BLOCK';
 const IMPORTANT_LINE = '// #IMPORTANT_LINE';
-const CONSTRUCTOR = 'constructor';
-const CONST = 'const ';
-const IMPORT = 'import ';
 
 export class SourceCode extends React.PureComponent {
   constructor(props) {
     super(props);
     this.textarea = React.createRef();
+    this.foldBlockStartLines = [];
+    this.importantLines = [];
   }
 
   componentDidMount() {
-    this.codeMirror = CodeMirror.fromTextArea(this.textarea.current, {
+    const editor = CodeMirror.fromTextArea(this.textarea.current, {
       lineNumbers: true,
       lineWrapping: true,
       readOnly: true,
@@ -36,64 +34,45 @@ export class SourceCode extends React.PureComponent {
       height: 'auto',
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     });
-    this.updateCodeMirror();
-  }
-
-  componentDidUpdate() {
-    this.updateCodeMirror();
-  }
-
-  updateCodeMirror() {
-    const { source, foldBlockStartLines, importantLines } = this.prepareSourceCode();
-    this.codeMirror.setValue(source);
-    this.applySpecialCodeOptions(foldBlockStartLines, importantLines);
+    const { getEditorInstance } = this.props;
+    this.foldBlockStartLines.forEach((lineNumber) => {
+      editor.foldCode(CodeMirror.Pos(lineNumber, 0));
+    });
+    this.importantLines.forEach((lineNumber) => {
+      editor.addLineClass(lineNumber, 'background', 'CodeMirror-important-line');
+    });
+    getEditorInstance(editor);
   }
 
   prepareSourceCode() {
     const { themeName, sectionName, demoName } = this.props;
     const { demoSources } = this.context;
     const source = demoSources[sectionName][demoName][themeName].source || '';
-    const foldBlockStartLines = [];
-    const importantLines = [];
     let occurrenceIndex = 0;
 
-    const nextSource = source.split('\n')
+    return source.split('\n')
       .filter((line, index) => {
         if (line.indexOf(FOLD_BLOCK) > -1) {
-          foldBlockStartLines.push(index - occurrenceIndex);
+          this.foldBlockStartLines.push(index - occurrenceIndex);
           occurrenceIndex += 1;
           return false;
-        } if (isOccurrenceInSource(line, [CONSTRUCTOR, CONST, IMPORT])) {
-          foldBlockStartLines.push(index);
-        } return true;
+        }
+        return true;
       }).map((line, index) => {
         if (line.indexOf(IMPORTANT_LINE) > -1) {
-          importantLines.push(index);
+          this.importantLines.push(index);
         }
         return line.replace(IMPORTANT_LINE, '');
       }).join('\n');
-
-    return ({
-      source: nextSource,
-      foldBlockStartLines,
-      importantLines,
-    });
-  }
-
-  applySpecialCodeOptions(foldBlockStartLines, importantLines) {
-    foldBlockStartLines.forEach((lineNumber) => {
-      this.codeMirror.foldCode(CodeMirror.Pos(lineNumber, 0));
-    });
-    importantLines.forEach((lineNumber) => {
-      this.codeMirror.addLineClass(lineNumber, 'background', 'CodeMirror-important-line');
-    });
   }
 
   render() {
+    const sourceCode = this.prepareSourceCode();
     return (
       <textarea
         ref={this.textarea}
-        defaultValue=""
+        value={sourceCode}
+        onChange={() => {}}
       />
     );
   }
@@ -103,6 +82,11 @@ SourceCode.propTypes = {
   sectionName: PropTypes.string.isRequired,
   demoName: PropTypes.string.isRequired,
   themeName: PropTypes.string.isRequired,
+  getEditorInstance: PropTypes.func,
+};
+
+SourceCode.defaultProps = {
+  getEditorInstance: () => {},
 };
 
 SourceCode.contextType = EmbeddedDemoContext;
