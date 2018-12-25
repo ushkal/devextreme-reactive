@@ -19,10 +19,14 @@ export interface GetterProps {
    * Applies only if `value` is not defined.
    */
   computed?: (
-    getters: { [getterName: string]: any },
-    actions?: { [actionName: string]: any },
+    getters: Getters,
+    actions?: Actions,
   ) => any;
 }
+
+export type Getters = { [getterName: string]: any };
+export type Actions = { [actionName: string]: any };
+
 class GetterBase extends React.PureComponent<GetterProps & PluginContextProps> {
   plugin: InnerPlugin;
 

@@ -1,4 +1,4 @@
-const unique = arr => [...new Set(arr)];
+const unique = arr => [...Array.from(new Set(arr))];
 
 export const getColumnSortingDirection = (sorting, columnName) => {
   const columnSorting = sorting.filter(s => s.columnName === columnName)[0];

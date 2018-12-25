@@ -10,8 +10,8 @@ export const getVisibleBoundaryWithFixed = (
 }, [visibleBoundary]);
 
 export const getVisibleBoundary = (items, viewportStart, viewportSize, getItemSize, overscan) => {
-  let start = null;
-  let end = null;
+  let start: any = null;
+  let end: any = null;
 
   const viewportEnd = viewportStart + viewportSize;
   let index = 0;
@@ -64,7 +64,7 @@ export const getSpanBoundary = (items, visibleBoundaries, getItemSpan) => visibl
   });
 
 export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries) => {
-  const boundaries = [];
+  const boundaries: any[] = [];
 
   const visiblePoints = visibleBoundaries.reduce((acc, boundary) => {
     for (let point = boundary[0]; point <= boundary[1]; point += 1) {
@@ -81,7 +81,7 @@ export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries
       spanEndPoints.add(boundary[1]);
     }));
 
-  let lastPoint;
+  let lastPoint: any;
   for (let index = 0; index < itemsCount; index += 1) {
     if (visiblePoints.indexOf(index) !== -1) {
       if (lastPoint !== undefined) {
@@ -126,7 +126,7 @@ const getColumnsSize = (columns, startIndex, endIndex, getColumnSize) => {
 };
 
 export const getCollapsedColumns = (columns, visibleBoundaries, boundaries, getColumnWidth) => {
-  const collapsedColumns = [];
+  const collapsedColumns: any[] = [];
   boundaries.forEach((boundary) => {
     const isVisible = visibleBoundaries.reduce((acc, visibleBoundary) => (
       acc || (visibleBoundary[0] <= boundary[0] && boundary[1] <= visibleBoundary[1])
@@ -150,7 +150,7 @@ export const getCollapsedColumns = (columns, visibleBoundaries, boundaries, getC
 };
 
 export const getCollapsedRows = (rows, visibleBoundary, boundaries, getRowHeight, getCells) => {
-  const collapsedColumns = [];
+  const collapsedColumns: any[] = [];
   boundaries.forEach((boundary) => {
     const isVisible = visibleBoundary[0] <= boundary[0] && boundary[1] <= visibleBoundary[1];
     if (isVisible) {
@@ -173,7 +173,7 @@ export const getCollapsedRows = (rows, visibleBoundary, boundaries, getRowHeight
 };
 
 export const getCollapsedCells = (columns, spanBoundaries, boundaries, getColSpan) => {
-  const collapsedColumns = [];
+  const collapsedColumns: any[] = [];
   let index = 0;
   while (index < boundaries.length) {
     const boundary = boundaries[index];
@@ -216,7 +216,7 @@ export const getCollapsedGrid = ({
   width,
   getColumnWidth = column => column.width,
   getRowHeight = row => row.height,
-  getColSpan = () => 1,
+  getColSpan = (...args) => 1,
 }) => {
   if (!rows.length || !columns.length) {
     return {

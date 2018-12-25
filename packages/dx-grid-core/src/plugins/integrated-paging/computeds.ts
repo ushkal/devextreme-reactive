@@ -1,5 +1,6 @@
 import { clamp } from './helpers';
 
+// tslint:disable-next-line:max-line-length
 const PAGE_HEADERS_OVERFLOW_ERROR = 'Max row level exceeds the page size. Consider increasing the page size.';
 
 export const paginatedRows = (rows, pageSize, page) => (
@@ -13,7 +14,7 @@ export const rowsWithPageHeaders = (rows, pageSize, getRowLevelKey) => {
 
   let result = rows.slice();
 
-  let headerRows = [];
+  let headerRows: any[] = [];
   let currentIndex = 0;
   while (result.length > currentIndex) {
     const row = result[currentIndex];

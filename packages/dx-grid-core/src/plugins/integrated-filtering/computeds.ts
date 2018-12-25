@@ -55,7 +55,7 @@ const filterTree = (tree, predicate) => tree.reduce(
 
 const filterHierarchicalRows = (rows, predicate, getRowLevelKey, getCollapsedRows) => {
   const tree = rowsToTree(rows, getRowLevelKey);
-  const collapsedRowsMeta = [];
+  const collapsedRowsMeta: any[] = [];
 
   const filteredTree = filterTree(tree, (row, isNode) => {
     if (isNode) {

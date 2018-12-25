@@ -8,7 +8,7 @@ export const changedRowsByIds = (changes, rowIds) => {
 
 export const addedRowsByIds = (addedRows, rowIds) => {
   const rowIdSet = new Set(rowIds);
-  const result = [];
+  const result: any = [];
   addedRows.forEach((row, index) => {
     if (rowIdSet.has(index)) {
       result.push(row);
@@ -20,7 +20,7 @@ export const addedRowsByIds = (addedRows, rowIds) => {
 const defaultCreateRowChange = (row, value, columnName) => ({ [columnName]: value });
 export const createRowChangeGetter = (
   createRowChange = defaultCreateRowChange,
-  columnExtensions = [],
+  columnExtensions: any[] = [],
 ) => {
   const map = columnExtensions.reduce((acc, columnExtension) => {
     if (columnExtension.createRowChange) {

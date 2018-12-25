@@ -1,4 +1,8 @@
-import { TABLE_TOTAL_SUMMARY_TYPE, TABLE_GROUP_SUMMARY_TYPE, TABLE_TREE_SUMMARY_TYPE } from './constants';
+import {
+  TABLE_TOTAL_SUMMARY_TYPE,
+  TABLE_GROUP_SUMMARY_TYPE,
+  TABLE_TREE_SUMMARY_TYPE,
+} from './constants';
 
 export const tableRowsWithTotalSummaries = footerRows => [
   { key: TABLE_TOTAL_SUMMARY_TYPE.toString(), type: TABLE_TOTAL_SUMMARY_TYPE },
@@ -8,7 +12,7 @@ export const tableRowsWithTotalSummaries = footerRows => [
 export const tableRowsWithSummaries = (tableRows, getRowLevelKey, isGroupRow, getRowId) => {
   if (!getRowLevelKey) return tableRows;
 
-  const result = [];
+  const result: any[] = [];
   const closeLevel = (level) => {
     if (!level.opened) return;
     if (isGroupRow && isGroupRow(level.row)) {
@@ -28,7 +32,7 @@ export const tableRowsWithSummaries = (tableRows, getRowLevelKey, isGroupRow, ge
     }
   };
 
-  let levels = [];
+  let levels: any[] = [];
   tableRows.forEach((tableRow) => {
     const { row } = tableRow;
     const levelKey = getRowLevelKey(row);

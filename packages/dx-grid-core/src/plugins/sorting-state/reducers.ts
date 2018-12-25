@@ -3,13 +3,14 @@ export const changeColumnSorting = (state, {
 }) => {
   const { sorting } = state;
 
-  let nextSorting = [];
+  let nextSorting: any[] = [];
   if (keepOther === true) {
     nextSorting = sorting.slice();
   }
   if (Array.isArray(keepOther)) {
     nextSorting = sorting.slice()
-      .filter(columnSorting => keepOther.indexOf(columnSorting.columnName) > -1);
+      .filter((columnSorting: { columnName: string; }) =>
+        keepOther.indexOf(columnSorting.columnName) > -1);
   }
 
   const columnSortingIndex = sorting

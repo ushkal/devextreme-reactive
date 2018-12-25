@@ -3,7 +3,7 @@ export const NODE_CHECK = Symbol('node');
 export const rowsToTree = (rows, getRowLevelKey) => {
   if (!rows.length) return rows;
 
-  const levels = [{ children: [] }];
+  const levels: any[] = [{ children: [] }];
 
   rows.forEach((row) => {
     const levelKey = getRowLevelKey(row);

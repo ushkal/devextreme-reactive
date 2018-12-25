@@ -14,7 +14,7 @@ export const changeAddedRow = (addedRows, { rowId, change }) => {
 };
 
 export const cancelAddedRows = (addedRows, { rowIds }) => {
-  const result = [];
+  const result: any[] = [];
   const indexSet = new Set(rowIds);
   addedRows.forEach((row, index) => {
     if (!indexSet.has(index)) {

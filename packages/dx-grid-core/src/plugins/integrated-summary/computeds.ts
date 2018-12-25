@@ -61,7 +61,7 @@ export const groupSummaryValues = (
   isGroupRow,
   calculator = defaultSummaryCalculator,
 ) => {
-  let levels = [];
+  let levels: any[] = [];
   const summaries = {};
   rows.forEach((row) => {
     const levelKey = getRowLevelKey(row);
@@ -104,7 +104,7 @@ export const treeSummaryValues = (
   getRowId,
   calculator = defaultSummaryCalculator,
 ) => {
-  let levels = [];
+  let levels: any[] = [];
   const summaries = {};
   rows.forEach((row) => {
     const levelKey = getRowLevelKey(row);

@@ -1,16 +1,47 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import { getMessagesFormatter } from '@devexpress/dx-core';
 import {
-  Template, TemplatePlaceholder, Plugin, TemplateConnector,
+  Template, TemplatePlaceholder, Plugin, TemplateConnector, PluginComponents,
 } from '@devexpress/dx-react-core';
 import { columnChooserItems } from '@devexpress/dx-grid-core';
+import { Column } from '../column';
+import { ColumnChooser as ColumnChooserComponents } from './column-chooser-components';
 
 const pluginDependencies = [
   { name: 'TableColumnVisibility' },
   { name: 'Toolbar' },
 ];
-export class ColumnChooser extends React.PureComponent {
+
+export interface ColumnChooserItem {
+  /** The grid column associated with the item. */
+  column: Column;
+  /** Specifies whether the associated column is hidden. */
+  hidden: boolean;
+}
+
+export interface ColumnChooserProps {
+  /** A component that renders the column chooser overlay. */
+  overlayComponent: React.ComponentType<ColumnChooserComponents.OverlayProps>;
+  /** A component that renders a button that invokes the column chooser. */
+  toggleButtonComponent: React.ComponentType<ColumnChooserComponents.ToggleButtonProps>;
+  /** A component that renders the column chooser container. */
+  containerComponent: React.ComponentType<ColumnChooserComponents.ContainerProps>;
+  /** A component that renders a column chooser item. */
+  itemComponent: React.ComponentType<ColumnChooserComponents.ItemProps>;
+  /** An object that specifies localization messages. */
+  messages?: ColumnChooserComponents.LocalizationMessages;
+}
+
+interface ColumnChooserState {
+  visible: boolean;
+}
+
+export class ColumnChooser extends React.PureComponent<
+  ColumnChooserProps, ColumnChooserState
+> {
+  static components: PluginComponents;
+  button!: React.ReactInstance;
+
   constructor(props) {
     super(props);
 
@@ -95,18 +126,6 @@ export class ColumnChooser extends React.PureComponent {
     );
   }
 }
-
-ColumnChooser.propTypes = {
-  overlayComponent: PropTypes.func.isRequired,
-  containerComponent: PropTypes.func.isRequired,
-  itemComponent: PropTypes.func.isRequired,
-  toggleButtonComponent: PropTypes.func.isRequired,
-  messages: PropTypes.object,
-};
-
-ColumnChooser.defaultProps = {
-  messages: {},
-};
 
 ColumnChooser.components = {
   overlayComponent: 'Overlay',

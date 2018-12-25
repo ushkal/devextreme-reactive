@@ -1,4 +1,5 @@
 /* eslint-disable no-plusplus, no-param-reassign, no-use-before-define, no-constant-condition */
+/* tslint:disable no-increment-decrement */
 
 const merge = (array, auxiliary, lo, mid, hi, compare) => {
   let i = lo;
@@ -48,7 +49,7 @@ const sortAuxiliaryToArray = (array, auxiliary, lo, hi, compare) => {
 
 export default (
   array,
-  compare = (a, b) => {
+  compare = (a, b): number => {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;

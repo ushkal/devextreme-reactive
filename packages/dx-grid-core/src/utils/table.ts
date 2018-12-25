@@ -29,7 +29,6 @@ export const getTableTargetColumnIndex = (
 ) => getTargetColumnGeometries(columnGeometries, sourceIndex)
   .findIndex(({ left, right }) => offset > left && offset < right);
 
-
 const ANIMATION_DURATION = 200;
 
 const getAnimationProgress = animation => (
@@ -61,25 +60,25 @@ export const getAnimations = (
     .map((geometry, index) => [nextColumns[index].key, geometry]));
 
   return new Map([...nextColumnGeometries.keys()]
-    .map((key) => {
-      const prev = prevColumnGeometries.get(key);
-      const next = nextColumnGeometries.get(key);
+    .map((key): [any, object] => {
+      const prev: any = prevColumnGeometries.get(key);
+      const next: any = nextColumnGeometries.get(key);
 
-      const result = { startTime: new Date().getTime(), style: {} };
+      const result: any = { startTime: new Date().getTime(), style: {} };
       const takePrevColumnIntoAccount = !!prevAnimations.get(key) || (prev && !resizing);
-      if (Math.abs((takePrevColumnIntoAccount ? prev.left : next.left) - next.left) > 1) {
+      if (Math.abs((takePrevColumnIntoAccount ? prev!.left : next!.left) - next!.left) > 1) {
         result.left = { from: prev.left, to: next.left };
       }
       return [key, result];
     })
-    .filter(animation => animation[1].left));
+    .filter((animation: any[]) => animation[1].left));
 };
 
 export const filterActiveAnimations = animations => new Map([...animations.entries()]
   .filter(([, animation]) => getAnimationProgress(animation) < 1));
 
 export const evalAnimations = animations => new Map([...animations.entries()]
-  .map(([key, animation]) => {
+  .map(([key, animation]): [any, object] => {
     const progress = easeOutCubic(getAnimationProgress(animation));
     const result = { ...animation.style };
     if (animation.left) {

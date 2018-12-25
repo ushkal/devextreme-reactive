@@ -18,7 +18,7 @@ export const splitHeaderColumnChains = (
 ) => (
   tableColumnChains.map((row, rowIndex) => row
     .reduce((acc, chain) => {
-      let currentChain = null;
+      let currentChain: any = null;
       chain.columns.forEach((col) => {
         const column = tableColumns.find(c => c.key === col.key);
         const isNewGroup = shouldSplitChain(currentChain, column, rowIndex);

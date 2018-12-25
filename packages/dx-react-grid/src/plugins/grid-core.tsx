@@ -1,11 +1,11 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import {
   Plugin, Getter, Template, TemplatePlaceholder,
 } from '@devexpress/dx-react-core';
 import { rowIdGetter, cellValueGetter } from '@devexpress/dx-grid-core';
+import { GridProps } from '../grid';
 
-export class GridCore extends React.PureComponent {
+export class GridCore extends React.PureComponent<GridProps> {
   render() {
     const {
       rows,
@@ -32,16 +32,3 @@ export class GridCore extends React.PureComponent {
     );
   }
 }
-
-GridCore.propTypes = {
-  rows: PropTypes.array.isRequired,
-  getRowId: PropTypes.func,
-  getCellValue: PropTypes.func,
-  columns: PropTypes.array.isRequired,
-  rootComponent: PropTypes.func.isRequired,
-};
-
-GridCore.defaultProps = {
-  getRowId: undefined,
-  getCellValue: undefined,
-};
