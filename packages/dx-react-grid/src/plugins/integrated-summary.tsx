@@ -42,12 +42,14 @@ class IntegratedSummaryBase extends React.PureComponent<IntegratedSummaryProps> 
       getCellValue,
       getRowLevelKey,
       isGroupRow,
+      getCollapsedRows,
     }: Getters) => groupSummaryValues(
       rows,
       groupSummaryItems,
       getCellValue,
       getRowLevelKey,
       isGroupRow,
+      getCollapsedRows,
       calculator,
     );
 

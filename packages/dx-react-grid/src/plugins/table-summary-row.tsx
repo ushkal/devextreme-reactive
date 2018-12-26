@@ -16,6 +16,9 @@ import {
   isTreeSummaryTableCell,
   isTotalSummaryTableRow,
   isGroupSummaryTableRow,
+  isGroupTableRow,
+  isGroupTableCell,
+  isGroupIndentTableCell,
   isTreeSummaryTableRow,
   getColumnSummaries,
   TABLE_TREE_SUMMARY_TYPE,
@@ -34,7 +37,7 @@ const dependencies = [
   { name: 'TableTreeColumn', optional: true },
 ];
 
-const defaultMessages = {
+export const defaultSummaryMessages = {
   sum: 'Sum',
   min: 'Min',
   max: 'Max',
@@ -54,7 +57,52 @@ const tableFooterRowsComputed = ({
 
 const defaultTypelessSummaries = ['count'];
 
-class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProps> {
+export const TableSummaryContent = ({
+  column, columnSummaries, formatlessSummaryTypes,
+  itemComponent: Item,
+  messages,
+}) => {
+  const getMessage = getMessagesFormatter({ ...defaultSummaryMessages, ...messages });
+  const SummaryItem = ({ summary, children }) => (
+    <Item
+      getMessage={getMessage}
+      type={summary.type}
+      value={summary.value}
+    >
+      {children || String(summary.value)}
+    </Item>
+  );
+
+  return (
+    <React.Fragment>
+      {columnSummaries.map((summary) => {
+        if (summary.value === null
+          || formatlessSummaryTypes.includes(summary.type)
+          || defaultTypelessSummaries.includes(summary.type)) {
+          return <SummaryItem key={summary.type} summary={summary} />;
+        }
+        return (
+          <TemplatePlaceholder
+            key={summary.type}
+            name="valueFormatter"
+            params={{
+              column,
+              value: summary.value,
+            }}
+          >
+            {content => (
+              <SummaryItem summary={summary}>
+                {content}
+              </SummaryItem>
+            )}
+          </TemplatePlaceholder>
+        );
+      })}
+    </React.Fragment>
+  );
+};
+
+export class TableSummaryRow extends React.PureComponent {
   static TREE_ROW_TYPE = TABLE_TREE_SUMMARY_TYPE;
   static GROUP_ROW_TYPE = TABLE_GROUP_SUMMARY_TYPE;
   static TOTAL_ROW_TYPE = TABLE_TOTAL_SUMMARY_TYPE;
@@ -75,50 +123,21 @@ class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProps> {
     itemComponent: 'Item',
   };
 
-  renderContent(column, columnSummaries: ReadonlyArray<ColumnSummary>) {
+  renderContent(column, columnSummaries) {
     const {
       formatlessSummaryTypes,
       itemComponent: Item,
       messages,
     } = this.props;
 
-    const getMessage = getMessagesFormatter({ ...defaultMessages, ...messages });
-    const SummaryItem: React.SFC<SummaryItemProps> = ({ summary, children }) => (
-      <Item
-        getMessage={getMessage}
-        type={summary.type}
-        value={summary.value}
-      >
-        {children || String(summary.value)}
-      </Item>
-    );
-
     return (
-      <React.Fragment>
-        {columnSummaries.map((summary) => {
-          if (summary.value === null
-            || formatlessSummaryTypes.includes(summary.type)
-            || defaultTypelessSummaries.includes(summary.type)) {
-            return <SummaryItem key={summary.type} summary={summary} />;
-          }
-          return (
-            <TemplatePlaceholder
-              key={summary.type}
-              name="valueFormatter"
-              params={{
-                column,
-                value: summary.value,
-              }}
-            >
-              {content => (
-                <SummaryItem summary={summary}>
-                  {content}
-                </SummaryItem>
-              )}
-            </TemplatePlaceholder>
-          );
-        })}
-      </React.Fragment>
+      <TableSummaryContent
+        column={column}
+        columnSummaries={columnSummaries}
+        formatlessSummaryTypes={formatlessSummaryTypes}
+        itemComponent={Item}
+        messages={messages}
+      />
     );
   }
 
@@ -181,6 +200,7 @@ class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProps> {
                   groupSummaryItems,
                   params.tableColumn.column!.name,
                   groupSummaryValues[params.tableRow.row.compoundKey],
+                  summaryItem => !(summaryItem.showInGroupRow || summaryItem.showInGroupCaption),
                 );
                 return (
                   <GroupCell
@@ -196,9 +216,43 @@ class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProps> {
         </Template>
         <Template
           name="tableCell"
-          predicate={(
-            { tableRow, tableColumn }: any,
-          ) => isTreeSummaryTableCell(tableRow, tableColumn)}
+          predicate={({ tableRow }) => isGroupTableRow(tableRow)}
+        >
+          {params => (
+            <TemplateConnector>
+              {({
+                groupSummaryItems, groupSummaryValues, grouping,
+              }) => {
+                if (!(isGroupTableCell(params.tableRow, params.tableColumn)
+                    || isGroupIndentTableCell(params.tableRow, params.tableColumn, grouping))
+                    && groupSummaryItems.find(summaryItem => (
+                      summaryItem.showInGroupRow
+                      && summaryItem.columnName === params.tableColumn.column.name
+                    ))) {
+                  const columnSummaries = getColumnSummaries(
+                    groupSummaryItems,
+                    params.tableColumn.column.name,
+                    groupSummaryValues[params.tableRow.row.compoundKey],
+                    summaryItem => summaryItem.showInGroupRow,
+                  );
+
+                  return (
+                    <GroupCell
+                      {...params}
+                      column={params.tableColumn.column}
+                    >
+                      {this.renderContent(params.tableColumn.column, columnSummaries)}
+                    </GroupCell>
+                  );
+                }
+                return <TemplatePlaceholder />;
+              }}
+            </TemplateConnector>
+          )}
+        </Template>
+        <Template
+          name="tableCell"
+          predicate={({ tableRow, tableColumn }) => isTreeSummaryTableCell(tableRow, tableColumn)}
         >
           {(params: TableCellProps) => (
             <TemplateConnector>

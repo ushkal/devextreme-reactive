@@ -61,7 +61,7 @@ export type TotalSummaryValuesFn = PureComputed<[
 /** @internal */
 export type GroupSummaryValuesFn = PureComputed<[
   TableRow[], SummaryItem[], GetCellValueFn, GetRowLevelKeyFn,
-  IsSpecificRowFn, SummaryCalculator?
+  IsSpecificRowFn, GetCollapsedRowsFn, SummaryCalculator?
 ], GroupSummaryValue>;
 
 /** @internal */
@@ -69,3 +69,9 @@ export type TreeSummaryValuesFn = PureComputed<[
   TableRow[], SummaryItem[], GetCellValueFn, GetRowLevelKeyFn,
   IsSpecificRowFn, GetRowIdFn, SummaryCalculator?
 ], TreeSummaryValue>;
+
+/** @internal */
+export type ExpandRowsFn = PureComputed<
+  [TableRow[], GetRowLevelKeyFn, GetCollapsedRowsFn, IsSpecificRowFn, boolean?],
+  TableRow[]
+>;
