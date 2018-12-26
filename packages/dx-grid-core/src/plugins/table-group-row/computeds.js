@@ -60,11 +60,29 @@ export const tableRowsWithGrouping = (tableRows, isGroupRow) => tableRows.map((t
   };
 });
 
-export const tableGroupCellColSpanGetter = getTableCellColSpan => (params) => {
+const groupSummaryChains = (tableColumns, groupSummaryItems) => (
+  tableColumns
+    .map(col => col.column.name)
+    .reduce((acc, colName) => {
+      if (groupSummaryItems.find(item => item.showInGroupRow && item.columnName === colName)) {
+        acc.push([]);
+      }
+      acc[acc.length - 1].push(colName);
+      return acc;
+    }, [[]])
+);
+
+export const tableGroupCellColSpanGetter = (
+  getTableCellColSpan, groupSummaryItems,
+) => (params) => {
   const { tableRow, tableColumns, tableColumn } = params;
-  if (tableRow.type === TABLE_GROUP_TYPE && tableColumn.type === TABLE_GROUP_TYPE
-    && tableRow.row.groupedBy === tableColumn.column.name) {
-    return tableColumns.length - tableColumns.indexOf(tableColumn);
+  if (tableRow.type === TABLE_GROUP_TYPE) {
+    const chains = groupSummaryChains(tableColumns, groupSummaryItems);
+    console.log(chains)
+    const chain = chains.find(ch => ch[0] === tableColumn.column.name);
+    if (chain) {
+      return chain.length;
+    }
   }
   return getTableCellColSpan(params);
 };

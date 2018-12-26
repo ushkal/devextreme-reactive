@@ -7,6 +7,10 @@ export const Cell = ({
   expanded, onToggle,
   children, tableRow, tableColumn,
   iconComponent: Icon, contentComponent: Content,
+  inlineSummaryComponent: InlineSummary,
+  inlineSummaryItemComponent: InlineSummaryItem,
+  inlineSummaries,
+  getMessage,
   ...restProps
 }) => {
   const handleClick = () => onToggle();
@@ -29,6 +33,16 @@ export const Cell = ({
       >
         {children}
       </Content>
+      {
+        inlineSummaries.length ? (
+          <InlineSummary
+            column={column}
+            inlineSummaries={inlineSummaries}
+            getMessage={getMessage}
+            inlineSummaryItemComponent={InlineSummaryItem}
+          />
+        ) : null
+      }
     </td>
   );
 };

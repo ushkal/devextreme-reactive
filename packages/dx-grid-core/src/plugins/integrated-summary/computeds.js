@@ -27,18 +27,12 @@ const rowsSummary = (rows, summaryItems, getCellValue, calculator) => summaryIte
     return acc;
   }, []);
 
-export const totalSummaryValues = (
-  rows,
-  summaryItems,
-  getCellValue,
-  getRowLevelKey,
-  isGroupRow,
-  getCollapsedRows,
-  calculator = defaultSummaryCalculator,
-) => {
-  const plainRows = rows.reduce((acc, row) => {
+const expandRows = (
+  rows, getRowLevelKey, getCollapsedRows, isGroupRow, includeGroupRow = false,
+) => rows
+  .reduce((acc, row) => {
     if (getRowLevelKey && getRowLevelKey(row)) {
-      if (!isGroupRow || !isGroupRow(row)) {
+      if (includeGroupRow || !(isGroupRow && isGroupRow(row))) {
         acc.push(row);
       }
       const collapsedRows = getCollapsedRows && getCollapsedRows(row);
@@ -50,6 +44,17 @@ export const totalSummaryValues = (
     acc.push(row);
     return acc;
   }, []);
+
+export const totalSummaryValues = (
+  rows,
+  summaryItems,
+  getCellValue,
+  getRowLevelKey,
+  isGroupRow,
+  getCollapsedRows,
+  calculator = defaultSummaryCalculator,
+) => {
+  const plainRows = expandRows(rows, getRowLevelKey, getCollapsedRows, isGroupRow);
   return rowsSummary(plainRows, summaryItems, getCellValue, calculator);
 };
 
@@ -59,11 +64,21 @@ export const groupSummaryValues = (
   getCellValue,
   getRowLevelKey,
   isGroupRow,
+  getCollapsedRows,
   calculator = defaultSummaryCalculator,
 ) => {
   let levels = [];
   const summaries = {};
-  rows.forEach((row) => {
+  let expandedRows = rows;
+
+  const anyRowLevelSummaryExist = summaryItems.some(item => (
+    item.showInGroupCaption || item.showInGroupRow
+  ));
+  if (anyRowLevelSummaryExist) {
+    expandedRows = expandRows(rows, getRowLevelKey, getCollapsedRows, isGroupRow, true);
+  }
+
+  expandedRows.forEach((row) => {
     const levelKey = getRowLevelKey(row);
     if (!levelKey) {
       levels.forEach((level) => {

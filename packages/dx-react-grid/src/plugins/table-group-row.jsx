@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import { getMessagesFormatter } from '@devexpress/dx-core';
 import {
   Getter, Template, Plugin, TemplatePlaceholder, TemplateConnector,
 } from '@devexpress/dx-react-core';
@@ -11,6 +12,7 @@ import {
   isGroupIndentTableCell,
   isGroupTableRow,
   TABLE_GROUP_TYPE,
+  getGroupInlineSummaries,
 } from '@devexpress/dx-grid-core';
 
 const pluginDependencies = [
@@ -19,12 +21,21 @@ const pluginDependencies = [
   { name: 'DataTypeProvider', optional: true },
 ];
 
+const defaultTypelessSummaries = ['count'];
+
+const defaultMessages = {
+  count: () => 'Count: ',
+  sum: ({ columnName }) => `Sum of ${columnName} is `,
+  max: ({ columnName }) => `Max of ${columnName} is `,
+  min: ({ columnName }) => `Min of ${columnName} is `,
+};
+
 const tableBodyRowsComputed = (
   { tableBodyRows, isGroupRow },
 ) => tableRowsWithGrouping(tableBodyRows, isGroupRow);
 const getCellColSpanComputed = (
-  { getTableCellColSpan },
-) => tableGroupCellColSpanGetter(getTableCellColSpan);
+  { getTableCellColSpan, groupSummaryItems },
+) => tableGroupCellColSpanGetter(getTableCellColSpan, groupSummaryItems);
 
 const showColumnWhenGroupedGetter = (showColumnsWhenGrouped, columnExtensions = []) => {
   const map = columnExtensions.reduce((acc, columnExtension) => {
@@ -43,10 +54,15 @@ export class TableGroupRow extends React.PureComponent {
       iconComponent: Icon,
       rowComponent: GroupRow,
       indentCellComponent: GroupIndentCell,
+      inlineSummaryComponent: InlineSummary,
+      inlineSummaryItemComponent: InlineSummaryItem,
       indentColumnWidth,
       showColumnsWhenGrouped,
       columnExtensions,
+      messages,
     } = this.props;
+
+    const getMessage = getMessagesFormatter({ ...defaultMessages, ...messages });
 
     const tableColumnsComputed = ({
       columns, tableColumns, grouping, draftGrouping,
@@ -74,8 +90,43 @@ export class TableGroupRow extends React.PureComponent {
         >
           {params => (
             <TemplateConnector>
-              {({ grouping, expandedGroups }, { toggleGroupExpanded }) => {
+              {(
+                {
+                  grouping, expandedGroups, groupSummaryItems, groupSummaryValues, tableColumns,
+                },
+                { toggleGroupExpanded },
+              ) => {
                 if (isGroupTableCell(params.tableRow, params.tableColumn)) {
+                  const inlineSummaries = getGroupInlineSummaries(
+                    groupSummaryItems, tableColumns,
+                    groupSummaryValues[params.tableRow.row.compoundKey],
+                  ).map(colSummary => ([
+                    ...colSummary.summaries.map(s => ({
+                      ...s,
+                      column: colSummary.column,
+                      component: () => (
+                        defaultTypelessSummaries.includes(s.type)
+                          ? s.value
+                          : (
+                            <TemplatePlaceholder
+                              key={s.type}
+                              name="valueFormatter"
+                              params={{
+                                column: colSummary.column,
+                                value: s.value,
+                              }}
+                            >
+                              {content => content}
+                            </TemplatePlaceholder>
+                          )
+                      ),
+                    })),
+                  ])).reduce((acc, summaries) => acc.concat(summaries), []);
+                  console.log(getGroupInlineSummaries(
+                    groupSummaryItems, tableColumns,
+                    groupSummaryValues[params.tableRow.row.compoundKey],
+                  ))
+
                   return (
                     <TemplatePlaceholder
                       name="valueFormatter"
@@ -95,6 +146,10 @@ export class TableGroupRow extends React.PureComponent {
                           onToggle={
                             () => toggleGroupExpanded({ groupKey: params.tableRow.row.compoundKey })
                           }
+                          inlineSummaries={inlineSummaries}
+                          inlineSummaryComponent={InlineSummary}
+                          inlineSummaryItemComponent={InlineSummaryItem}
+                          getMessage={getMessage}
                         >
                           {content}
                         </GroupCell>
@@ -160,4 +215,6 @@ TableGroupRow.components = {
   cellComponent: 'Cell',
   contentComponent: 'Content',
   iconComponent: 'Icon',
+  inlineSummaryComponent: 'InlineSummary',
+  inlineSummaryItemComponent: 'InlineSummaryItem',
 };

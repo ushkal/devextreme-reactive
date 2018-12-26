@@ -39,12 +39,14 @@ export class IntegratedSummary extends React.PureComponent {
       getCellValue,
       getRowLevelKey,
       isGroupRow,
+      getCollapsedRows,
     }) => groupSummaryValues(
       rows,
       groupSummaryItems,
       getCellValue,
       getRowLevelKey,
       isGroupRow,
+      getCollapsedRows,
       calculator,
     );
 
