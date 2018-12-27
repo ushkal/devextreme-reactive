@@ -33,10 +33,10 @@ const pluginDependencies = [
 
 const defaultMessages = {
   countOf: 'Count: ',
-  sumOf: 'Sum of {columnName} is ',
-  maxOf: 'Max of {columnName} is ',
-  minOf: 'Min of {columnName} is ',
-  avgOf: 'Avg of {columnName} is ',
+  sumOf: 'Sum of {columnTitle} is ',
+  maxOf: 'Max of {columnTitle} is ',
+  minOf: 'Min of {columnTitle} is ',
+  avgOf: 'Avg of {columnTitle} is ',
 };
 
 const tableBodyRowsComputed = (
@@ -98,8 +98,8 @@ const flattenGroupInlineSummaries = (
     .map(colSummaries => ([
       ...colSummaries.summaries.map(summary => ({
         ...summary,
+        columnTitle: colSummaries.column.title,
         messageKey: `${summary.type}Of`,
-        column: colSummaries.column,
         component: getInlineSummaryComponent(
           colSummaries.column, summary, formatlessSummaries,
         ),

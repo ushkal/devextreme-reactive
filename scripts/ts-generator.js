@@ -302,7 +302,7 @@ const generateTypeScriptForPackage = (packageName) => {
         .reduce((acc, line) => {
           const matches = /\[(\w+)(?:\.\w+)?\]\(.*#.*\)/.exec(line);
           if (matches !== null && matches[1] !== componentName
-            && matches[1] !== 'Table' && matches[1] !== 'TableHeaderRow'
+            && matches[1] !== 'Table' && matches[1] !== 'TableHeaderRow' && matches[1] !== 'TableSummaryRow'
             && acc.indexOf(matches[1]) === -1) {
             acc.push(matches[1]);
           }

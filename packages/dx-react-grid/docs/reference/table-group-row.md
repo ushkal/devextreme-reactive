@@ -41,10 +41,10 @@ rowComponent | ComponentType&lt;[TableGroupRow.RowProps](#tablegrouprowrowprops)
 contentComponent | ComponentType&lt;[TableGroupRow.ContentProps](#tablegrouprowcontentprops)&gt; | | A component that renders a group cell content.
 iconComponent | ComponentType&lt;[TableGroupRow.IconProps](#tablegrouprowiconprops)&gt; | | A component that renders a group expand icon.
 indentCellComponent? | ComponentType&lt;[TableGroupRow.IndentCellProps](#tablegrouprowindentcellprops)&gt; | null | A component that renders a group indent cell.
-inlineSummaryComponent | ComponentType&lt;[TableGroupRow.InlineSummaryProps](#tablegrouprowindentcellprops)&gt; | | A component that renders a group summary inside a group caption.
-inlineSummaryItemComponent | ComponentType&lt;[TableGroupRow.InlineSummaryItemProps](#tablegrouprowindentcellprops)&gt; | | A component that renders a group inline summary item.
-rowSummaryCellComponent | ComponentType&lt;[TableGroupRow.RowSummaryCellProps](#tablegrouprowindentcellprops)&gt; | | A component that renders a group summary in a corresponding column.
-rowSummaryItemComponent | ComponentType&lt;[TableSummaryRow.ItemProps](#tablesummaryrowitemprops)&gt; | | A component that renders a group row summary item.
+inlineSummaryComponent | ComponentType&lt;[TableGroupRow.InlineSummaryProps](#tablegrouprowinlinesummaryprops)&gt; | | A component that renders a group summary inside a group caption.
+inlineSummaryItemComponent | ComponentType&lt;[TableGroupRow.InlineSummaryItemProps](#tablegrouprowinlinesummaryitemprops)&gt; | | A component that renders a group inline summary item.
+rowSummaryCellComponent | ComponentType&lt;[TableGroupRow.RowSummaryCellProps](#tablegrouprowrowsummarycellprops)&gt; | | A component that renders a group summary in a corresponding column.
+rowSummaryItemComponent | ComponentType&lt;[TableSummaryRow.ItemProps](table-summary-row.md#tablesummaryrowitemprops)&gt; | | A component that renders a group row summary item.
 formatlessSummaryTypes | Array&lt;string&gt; | | An array of summary types that the `DataTypeProvider` plugin should not format.
 messages? | [TableGroupRow.LocalizationMessages](#localization-messages) | | An object that specifies localization messages.
 indentColumnWidth | number | | The group indent column's width.
@@ -59,6 +59,17 @@ Field | Type | Description
 ------|------|------------
 columnName | string | The name of a column to extend.
 showWhenGrouped? | boolean | Specifies whether the grid displays the column by which data is grouped.
+
+### TableGroupRow.InlineSummaryItem
+
+Describes a summary item prepared for showing inside a group row caption.
+
+Field | Type | Description
+------|------|------------
+columnTitle | string | The title of a column associated with the current summary item.
+type | [SummaryType](#summarytype) | A summary type.
+messageKey | string | A string specifying a [unique key](#localization-messages) used to get a localization message.
+component | ReactNode | A React node used to render the summary value.
 
 ### TableGroupRow.CellProps
 
@@ -118,7 +129,7 @@ Describes properties passed to a component that renders an inline summary.
 
 Field | Type | Description
 ------|------|------------
-inlineSummaries | Array&lt;[SummaryItem](summary-state.md#summaryitem)&gt; | The summary value
+inlineSummaries | Array&lt;[InlineSummaryItem](#inlinesummaryitem)&gt; | The summary value
 inlineSummaryItemComponent | ComponentType&lt;[TableGroupRow.InlineSummaryItemProps](#tablegrouprowindentcellprops)&gt; | A component that renders a group inline summary item.
 getMessage | ([messageKey](#localization-messages): string) => string | Returns a localization message by the message key.
 
@@ -128,7 +139,7 @@ Describes properties passed to a component that renders an inline summary item.
 
 Field | Type | Description
 ------|------|------------
-summary | SummaryItem | The summary value
+summary | [SummaryItem](summary-state.md#summaryitem) | The summary value
 getMessage | ([messageKey](#localization-messages): string) => string | Returns a localization message by the message key.
 
 ### TableGroupRow.RowSummaryCellProps
@@ -155,16 +166,16 @@ value | any | The current group value.
 
 Field | Type | Default | Description
 ------|------|---------|------------
-count? | string | 'Count' | Specifies the count type's text.
-sum? | string | 'Sum' | Specifies the summary type's text.
-min? | string | 'Min' | Specifies the minimum type's text.
-max? | string | 'Max' | Specifies the maximum type's text.
-avg? | string | 'Avg' | Specifies the average type text.
-countOf? | string | 'Count: ' | Specifies the count type's text for inline summary.
-sumOf? | string | 'Sum of {columnName} is' | Specifies the summary type's text for inline summary.
-minOf? | string | 'Min of {columnName} is' | Specifies the minimum type's text for inline summary.
-maxOf? | string | 'Max of {columnName} is' | Specifies the maximum type's text for inline summary.
-avgOf? | string | 'Avg of {columnName} is' | Specifies the average type text for inline summary.
+count? | string | 'Count' | Specifies the count type's text for a group row summary.
+sum? | string | 'Sum' | Specifies the summary type's text for a group row summary.
+min? | string | 'Min' | Specifies the minimum type's text for a group row summary.
+max? | string | 'Max' | Specifies the maximum type's text for a group row summary.
+avg? | string | 'Avg' | Specifies the average type text for a group row summary.
+countOf? | string | 'Count: ' | Specifies the count type's text for a group inline summary.
+sumOf? | string | 'Sum of {columnTitle} is' | Specifies the summary type's text for a group inline summary.
+minOf? | string | 'Min of {columnTitle} is' | Specifies the minimum type's text for a group inline summary.
+maxOf? | string | 'Max of {columnTitle} is' | Specifies the maximum type's text for a group inline summary.
+avgOf? | string | 'Avg of {columnTitle} is' | Specifies the average type text for a group inline summary.
 
 ## Plugin Components
 
@@ -177,7 +188,7 @@ TableGroupRow.Icon | [TableGroupRow.IconProps](#tablegrouprowiconprops) | A comp
 TableGroupRow.InlineSummary | [TableGroupRow.InlineSummaryProps](#tablegrouprowinlinesummaryprops) | A component that renders a group summary inside a group caption.
 TableGroupRow.InlineSummaryItem | [TableGroupRow.InlineSummaryItemProps](#tablegrouprowinlinesummaryitemprops) | A component that renders an inline group summary item.
 TableGroupRow.RowSummaryCell | [TableGroupRow.RowSummaryCellProps](#tablegrouprowrowsummarycellprops) | A component that renders a group summary in a corresponding column.
-TableGroupRow.RowSummaryItem | [TableSummaryRow.ItemProps](#tablesummaryrowitemprops) | A component that renders a group summary item.
+TableGroupRow.RowSummaryItem | [TableSummaryRow.ItemProps](table-summary-row.md#tablesummaryrowitemprops) | A component that renders a group summary item.
 
 
 Additional properties are added to the component's root element.
