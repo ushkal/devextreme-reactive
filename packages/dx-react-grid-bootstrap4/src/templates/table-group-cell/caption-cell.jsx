@@ -34,7 +34,6 @@ export const CaptionCell = ({
       {
         inlineSummaries.length ? (
           <InlineSummary
-            column={column}
             inlineSummaries={inlineSummaries}
             getMessage={getMessage}
             inlineSummaryItemComponent={InlineSummaryItem}

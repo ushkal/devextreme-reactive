@@ -20,8 +20,9 @@ import {
 } from '../types';
 
 const pluginDependencies = [
-  { name: 'DataTypeProvider', optional: true },
   { name: 'GroupingState' },
+  { name: 'Table' },
+  { name: 'DataTypeProvider', optional: true },
   { name: 'SummaryState', optional: true },
   { name: 'CustomSummary', optional: true },
   { name: 'IntegratedSummary', optional: true },
@@ -258,6 +259,8 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                   return (
                     <RowSummaryCell
                       {...params}
+                      row={params.tableRow.row}
+                      column={params.tableColumn.column}
                       onToggle={
                         () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey })
                       }
