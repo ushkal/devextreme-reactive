@@ -19,13 +19,12 @@ import {
 import { TableSummaryContent } from '../components/table-summary-content';
 
 const pluginDependencies = [
-  { name: 'DataTypeProvider', optional: true },
   { name: 'GroupingState' },
+  { name: 'Table' },
+  { name: 'DataTypeProvider', optional: true },
   { name: 'SummaryState', optional: true },
   { name: 'CustomSummary', optional: true },
   { name: 'IntegratedSummary', optional: true },
-  { name: 'Table' },
-  { name: 'DataTypeProvider', optional: true },
 ];
 
 const defaultMessages = {
@@ -239,6 +238,8 @@ export class TableGroupRow extends React.PureComponent {
                   return (
                     <RowSummaryCell
                       {...params}
+                      row={params.tableRow.row}
+                      column={params.tableColumn.column}
                       onToggle={
                         () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey })
                       }

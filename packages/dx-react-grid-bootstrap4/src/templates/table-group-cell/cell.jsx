@@ -3,6 +3,7 @@ import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 export const Cell = ({
+  row, column,
   tableRow, tableColumn,
   className,
   onToggle, children,
@@ -22,6 +23,8 @@ export const Cell = ({
 };
 
 Cell.propTypes = {
+  row: PropTypes.any,
+  column: PropTypes.object,
   className: PropTypes.string,
   colSpan: PropTypes.number,
   onToggle: PropTypes.func,
@@ -32,6 +35,8 @@ Cell.propTypes = {
 };
 
 Cell.defaultProps = {
+  row: {},
+  column: {},
   className: undefined,
   colSpan: 1,
   onToggle: () => {},
