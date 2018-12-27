@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getMessagesFormatter } from '@devexpress/dx-core';
-import { defaultTypelessSummaries } from '@devexpress/dx-grid-core';
+import { defaultFormatlessSummaries } from '@devexpress/dx-grid-core';
 import { TemplatePlaceholder } from '@devexpress/dx-react-core';
 
 export const defaultSummaryMessages = {
@@ -32,7 +32,7 @@ export const TableSummaryContent = ({
       {columnSummaries.map((summary) => {
         if (summary.value === null
           || formatlessSummaryTypes.includes(summary.type)
-          || defaultTypelessSummaries.includes(summary.type)) {
+          || defaultFormatlessSummaries.includes(summary.type)) {
           return <SummaryItem key={summary.type} summary={summary} />;
         }
         return (

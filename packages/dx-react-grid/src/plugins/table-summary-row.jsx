@@ -5,7 +5,6 @@ import {
   Template,
   Plugin,
   TemplateConnector,
-  TemplatePlaceholder,
 } from '@devexpress/dx-react-core';
 import {
   tableRowsWithSummaries,
@@ -15,9 +14,6 @@ import {
   isTreeSummaryTableCell,
   isTotalSummaryTableRow,
   isGroupSummaryTableRow,
-  isGroupTableRow,
-  isGroupTableCell,
-  isGroupIndentTableCell,
   isTreeSummaryTableRow,
   getColumnSummaries,
   TABLE_TREE_SUMMARY_TYPE,
