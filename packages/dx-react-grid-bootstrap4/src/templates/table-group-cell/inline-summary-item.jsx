@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 
 export const InlineSummaryItem = ({ summary, getMessage }) => (
   <React.Fragment>
-    {getMessage(summary.messageKey, { columnName: summary.column.name })}
+    {getMessage(summary.messageKey, { columnTitle: summary.columnTitle })}
     <summary.component />
   </React.Fragment>
 );
