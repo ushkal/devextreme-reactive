@@ -78,7 +78,7 @@ export const tableGroupCellColSpanGetter = (
   const { tableRow, tableColumns, tableColumn } = params;
   if (tableRow.type === TABLE_GROUP_TYPE) {
     const chains = groupSummaryChains(tableColumns, groupSummaryItems);
-    console.log(chains)
+    // console.log(chains)
     const chain = chains.find(ch => ch[0] === tableColumn.column.name);
     if (chain) {
       return chain.length;

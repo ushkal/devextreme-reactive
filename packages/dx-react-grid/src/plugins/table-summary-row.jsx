@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { getMessagesFormatter } from '@devexpress/dx-core';
 import {
   Getter,
   Template,
@@ -25,6 +24,7 @@ import {
   TABLE_GROUP_SUMMARY_TYPE,
   TABLE_TOTAL_SUMMARY_TYPE,
 } from '@devexpress/dx-grid-core';
+import { TableSummaryContent } from '../components/table-summary-content';
 
 const dependencies = [
   { name: 'DataTypeProvider', optional: true },
@@ -35,14 +35,6 @@ const dependencies = [
   { name: 'TableTreeColumn', optional: true },
 ];
 
-export const defaultSummaryMessages = {
-  sum: 'Sum',
-  min: 'Min',
-  max: 'Max',
-  avg: 'Avg',
-  count: 'Count',
-};
-
 const tableBodyRowsComputed = ({
   tableBodyRows,
   getRowLevelKey,
@@ -52,53 +44,6 @@ const tableBodyRowsComputed = ({
 const tableFooterRowsComputed = ({
   tableFooterRows,
 }) => tableRowsWithTotalSummaries(tableFooterRows);
-
-const defaultTypelessSummaries = ['count'];
-
-export const TableSummaryContent = ({
-  column, columnSummaries, formatlessSummaryTypes,
-  itemComponent: Item,
-  messages,
-}) => {
-  const getMessage = getMessagesFormatter({ ...defaultSummaryMessages, ...messages });
-  const SummaryItem = ({ summary, children }) => (
-    <Item
-      getMessage={getMessage}
-      type={summary.type}
-      value={summary.value}
-    >
-      {children || String(summary.value)}
-    </Item>
-  );
-
-  return (
-    <React.Fragment>
-      {columnSummaries.map((summary) => {
-        if (summary.value === null
-          || formatlessSummaryTypes.includes(summary.type)
-          || defaultTypelessSummaries.includes(summary.type)) {
-          return <SummaryItem key={summary.type} summary={summary} />;
-        }
-        return (
-          <TemplatePlaceholder
-            key={summary.type}
-            name="valueFormatter"
-            params={{
-              column,
-              value: summary.value,
-            }}
-          >
-            {content => (
-              <SummaryItem summary={summary}>
-                {content}
-              </SummaryItem>
-            )}
-          </TemplatePlaceholder>
-        );
-      })}
-    </React.Fragment>
-  );
-};
 
 export class TableSummaryRow extends React.PureComponent {
   renderContent(column, columnSummaries) {
@@ -184,42 +129,6 @@ export class TableSummaryRow extends React.PureComponent {
                     {this.renderContent(params.tableColumn.column, columnSummaries)}
                   </GroupCell>
                 );
-              }}
-            </TemplateConnector>
-          )}
-        </Template>
-        <Template
-          name="tableCell"
-          predicate={({ tableRow }) => isGroupTableRow(tableRow)}
-        >
-          {params => (
-            <TemplateConnector>
-              {({
-                groupSummaryItems, groupSummaryValues, grouping,
-              }) => {
-                if (!(isGroupTableCell(params.tableRow, params.tableColumn)
-                    || isGroupIndentTableCell(params.tableRow, params.tableColumn, grouping))
-                    && groupSummaryItems.find(summaryItem => (
-                      summaryItem.showInGroupRow
-                      && summaryItem.columnName === params.tableColumn.column.name
-                    ))) {
-                  const columnSummaries = getColumnSummaries(
-                    groupSummaryItems,
-                    params.tableColumn.column.name,
-                    groupSummaryValues[params.tableRow.row.compoundKey],
-                    summaryItem => summaryItem.showInGroupRow,
-                  );
-
-                  return (
-                    <GroupCell
-                      {...params}
-                      column={params.tableColumn.column}
-                    >
-                      {this.renderContent(params.tableColumn.column, columnSummaries)}
-                    </GroupCell>
-                  );
-                }
-                return <TemplatePlaceholder />;
               }}
             </TemplateConnector>
           )}

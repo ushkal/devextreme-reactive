@@ -30,7 +30,6 @@ export const getGroupInlineSummaries = (summaryItems, tableColumns, summaryValue
 
   return tableColumns.reduce((acc, col) => {
     const colName = col.column.name;
-    debugger
     const summaries = getColumnSummaries(
       summaryItems, colName, summaryValues, item => item.showInGroupCaption,
     );
