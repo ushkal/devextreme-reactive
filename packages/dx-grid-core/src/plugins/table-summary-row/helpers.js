@@ -23,8 +23,12 @@ export const getColumnSummaries = (
     .map(([item, index]) => ({ type: item.type, value: summaryValues[index] }))
 );
 
+const isInlineGroupSummary = summaryItem => (
+  summaryItem.showInGroupCaption || summaryItem.showInGroupRow
+);
+
 export const getGroupInlineSummaries = (summaryItems, tableColumns, summaryValues) => {
-  if (!summaryItems.some(item => item.showInGroupCaption || item.showInGroupRow)) {
+  if (!summaryItems.some(isInlineGroupSummary)) {
     return [];
   }
 

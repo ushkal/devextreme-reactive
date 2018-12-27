@@ -13,25 +13,29 @@ import {
   TABLE_GROUP_TYPE,
   getGroupInlineSummaries,
   getColumnSummaries,
+  defaultFormatlessSummaries,
 } from '@devexpress/dx-grid-core';
 import {
   TableGroupRowProps, ShowColumnWhenGroupedGetterFn, TableCellProps, TableRowProps,
 } from '../types';
 
 const pluginDependencies = [
+  { name: 'DataTypeProvider', optional: true },
   { name: 'GroupingState' },
+  { name: 'SummaryState', optional: true },
+  { name: 'CustomSummary', optional: true },
+  { name: 'IntegratedSummary', optional: true },
   { name: 'Table' },
   { name: 'DataTypeProvider', optional: true },
   { name: 'TableSelection', optional: true },
 ];
 
-const defaultTypelessSummaries = ['count'];
-
 const defaultMessages = {
-  count: () => 'Count: ',
-  sum: ({ columnName }) => `Sum of ${columnName} is `,
-  max: ({ columnName }) => `Max of ${columnName} is `,
-  min: ({ columnName }) => `Min of ${columnName} is `,
+  countOf: 'Count: ',
+  sumOf: 'Sum of {columnName} is ',
+  maxOf: 'Max of {columnName} is ',
+  minOf: 'Min of {columnName} is ',
+  avgOf: 'Avg of {columnName} is ',
 };
 
 const tableBodyRowsComputed = (
@@ -52,21 +56,57 @@ const showColumnWhenGroupedGetter: ShowColumnWhenGroupedGetterFn = (
   return columnName => map[columnName] || showColumnsWhenGrouped;
 };
 
-const columnContainsGroupRowSummary = (tableColumn, groupSummaryItems) => (
+const columnHasGroupRowSummary = (tableColumn, groupSummaryItems) => (
   groupSummaryItems
     .find(summaryItem => (
       summaryItem.showInGroupRow && summaryItem.columnName === tableColumn.column.name
     ))
 );
-const isGroupRowSummaryCell = (tableRow, tableColumn, groupSummaryItems, grouping) => {
-  console.log(groupSummaryItems)
-  return (
-    groupSummaryItems
-    && isGroupTableRow(tableRow)
-    && !isGroupTableCell(tableRow, tableColumn)
-    && !isGroupIndentTableCell(tableRow, tableColumn, grouping)
-    && columnContainsGroupRowSummary(tableColumn, groupSummaryItems)
-)};
+const isRowSummaryCell = (tableRow, tableColumn, grouping, groupSummaryItems) => (
+  !isGroupIndentTableCell(tableRow, tableColumn, grouping)
+  && columnHasGroupRowSummary(tableColumn, groupSummaryItems)
+);
+const isGroupRowOrdinaryCell = (tableRow, tableColumn) => (
+  isGroupTableRow(tableRow) && !isGroupTableCell(tableRow, tableColumn)
+);
+
+const getInlineSummaryComponent = (column, summary, formatlessSummaries) => () => (
+  (summary.value === null || formatlessSummaries.includes(summary.type))
+    ? summary.value
+    : (
+      <TemplatePlaceholder
+        key={summary.type}
+        name="valueFormatter"
+        params={{
+          column,
+          value: summary.value,
+        }}
+      >
+        {content => content}
+      </TemplatePlaceholder>
+    )
+);
+
+const flattenGroupInlineSummaries = (
+  tableColumns, tableRow, groupSummaryItems, groupSummaryValues, formatlessSummaries,
+) => (
+  getGroupInlineSummaries(
+    groupSummaryItems, tableColumns,
+    groupSummaryValues[tableRow.row.compoundKey],
+  )
+    .map(colSummaries => ([
+      ...colSummaries.summaries.map(summary => ({
+        ...summary,
+        messageKey: `${summary.type}Of`,
+        column: colSummaries.column,
+        component: getInlineSummaryComponent(
+          colSummaries.column, summary, formatlessSummaries,
+        ),
+      })),
+    ]))
+    .reduce((acc, summaries) => acc.concat(summaries), [])
+);
+
 
 class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
   static ROW_TYPE = TABLE_GROUP_TYPE;
@@ -93,6 +133,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
       indentCellComponent: GroupIndentCell,
       inlineSummaryComponent: InlineSummary,
       inlineSummaryItemComponent: InlineSummaryItem,
+      rowSummaryCellComponent: RowSummaryCell,
       rowSummaryItemComponent: RowSummaryItem,
       indentColumnWidth,
       showColumnsWhenGrouped,
@@ -136,32 +177,13 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                 { toggleGroupExpanded },
               ) => {
                 if (isGroupTableCell(params.tableRow, params.tableColumn)) {
-                  const inlineSummaries = getGroupInlineSummaries(
-                    groupSummaryItems, tableColumns,
-                    groupSummaryValues[params.tableRow.row.compoundKey],
-                  ).map(colSummary => ([
-                    ...colSummary.summaries.map(s => ({
-                      ...s,
-                      column: colSummary.column,
-                      component: () => (
-                        defaultTypelessSummaries.includes(s.type)
-                          ? s.value
-                          : (
-                            <TemplatePlaceholder
-                              key={s.type}
-                              name="valueFormatter"
-                              params={{
-                                column: colSummary.column,
-                                value: s.value,
-                              }}
-                            >
-                              {content => content}
-                            </TemplatePlaceholder>
-                          )
-                      ),
-                    })),
-                  ])).reduce((acc, summaries) => acc.concat(summaries), []);
-                  console.log(inlineSummaries)
+                  const formatlessSummaries = defaultFormatlessSummaries
+                    .concat(formatlessSummaryTypes);
+
+                  const inlineSummaries = flattenGroupInlineSummaries(
+                    tableColumns, params.tableRow, groupSummaryItems,
+                    groupSummaryValues, formatlessSummaries,
+                  );
 
                   return (
                     <TemplatePlaceholder
@@ -212,48 +234,42 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
         </Template>
         <Template
           name="tableCell"
-          predicate={(
-            params
-          //   {
-          //   tableRow, tableColumn, groupSummaryItems, grouping,
-          // }
-          ) => {
-            console.log(params)
-            return false;
-            // isGroupRowSummaryCell(tableRow, tableColumn, groupSummaryItems, grouping)
-          }}
+          predicate={({
+            tableRow, tableColumn,
+          }) => (isGroupRowOrdinaryCell(tableRow, tableColumn))}
         >
           {params => (
             <TemplateConnector>
-              {({
-                groupSummaryItems, groupSummaryValues, grouping,
-              }) => {
-                if (!(isGroupTableCell(params.tableRow, params.tableColumn)
-                    || isGroupIndentTableCell(params.tableRow, params.tableColumn, grouping))
-                    && groupSummaryItems.find(summaryItem => (
-                      summaryItem.showInGroupRow
-                      && summaryItem.columnName === params.tableColumn.column.name
-                    ))) {
+              {(
+                {
+                  groupSummaryItems, groupSummaryValues, grouping,
+                },
+                { toggleGroupExpanded },
+              ) => {
+                const { tableColumn, tableRow } = params;
+                if (isRowSummaryCell(tableRow, tableColumn, grouping, groupSummaryItems)) {
                   const columnSummaries = getColumnSummaries(
                     groupSummaryItems,
-                    params.tableColumn.column.name,
-                    groupSummaryValues[params.tableRow.row.compoundKey],
+                    tableColumn.column.name,
+                    groupSummaryValues[tableRow.row.compoundKey],
                     summaryItem => summaryItem.showInGroupRow,
                   );
 
                   return (
-                    <GroupCell
+                    <RowSummaryCell
                       {...params}
-                      column={params.tableColumn.column}
+                      onToggle={
+                        () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey })
+                      }
                     >
                       <TableSummaryContent
-                        column={params.tableColumn.column}
+                        column={tableColumn.column}
                         columnSummaries={columnSummaries}
                         formatlessSummaryTypes={formatlessSummaryTypes}
                         itemComponent={RowSummaryItem}
                         messages={messages}
                       />
-                    </GroupCell>
+                    </RowSummaryCell>
                   );
                 }
                 return <TemplatePlaceholder />;
