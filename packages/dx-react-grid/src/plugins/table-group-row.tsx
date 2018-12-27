@@ -12,6 +12,7 @@ import {
   isGroupTableRow,
   TABLE_GROUP_TYPE,
   getGroupInlineSummaries,
+  getColumnSummaries,
 } from '@devexpress/dx-grid-core';
 import {
   TableGroupRowProps, ShowColumnWhenGroupedGetterFn, TableCellProps, TableRowProps,
@@ -51,6 +52,22 @@ const showColumnWhenGroupedGetter: ShowColumnWhenGroupedGetterFn = (
   return columnName => map[columnName] || showColumnsWhenGrouped;
 };
 
+const columnContainsGroupRowSummary = (tableColumn, groupSummaryItems) => (
+  groupSummaryItems
+    .find(summaryItem => (
+      summaryItem.showInGroupRow && summaryItem.columnName === tableColumn.column.name
+    ))
+);
+const isGroupRowSummaryCell = (tableRow, tableColumn, groupSummaryItems, grouping) => {
+  console.log(groupSummaryItems)
+  return (
+    groupSummaryItems
+    && isGroupTableRow(tableRow)
+    && !isGroupTableCell(tableRow, tableColumn)
+    && !isGroupIndentTableCell(tableRow, tableColumn, grouping)
+    && columnContainsGroupRowSummary(tableColumn, groupSummaryItems)
+)};
+
 class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
   static ROW_TYPE = TABLE_GROUP_TYPE;
   static COLUMN_TYPE = TABLE_GROUP_TYPE;
@@ -63,7 +80,8 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
     contentComponent: 'Content',
     iconComponent: 'Icon',
     inlineSummaryComponent: 'InlineSummary',
-  	inlineSummaryItemComponent: 'InlineSummaryItem',
+    inlineSummaryItemComponent: 'InlineSummaryItem',
+    rowSummaryItemComponent: 'RowSummaryItem',
   };
 
   render() {
@@ -75,10 +93,12 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
       indentCellComponent: GroupIndentCell,
       inlineSummaryComponent: InlineSummary,
       inlineSummaryItemComponent: InlineSummaryItem,
+      rowSummaryItemComponent: RowSummaryItem,
       indentColumnWidth,
       showColumnsWhenGrouped,
       columnExtensions,
       messages,
+      formatlessSummaryTypes,
     } = this.props;
 
     const getMessage = getMessagesFormatter({ ...defaultMessages, ...messages });
@@ -141,10 +161,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                       ),
                     })),
                   ])).reduce((acc, summaries) => acc.concat(summaries), []);
-                  console.log(getGroupInlineSummaries(
-                    groupSummaryItems, tableColumns,
-                    groupSummaryValues[params.tableRow.row.compoundKey],
-                  ))
+                  console.log(inlineSummaries)
 
                   return (
                     <TemplatePlaceholder
@@ -189,6 +206,57 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                   return <TemplatePlaceholder />;
                 }
                 return null;
+              }}
+            </TemplateConnector>
+          )}
+        </Template>
+        <Template
+          name="tableCell"
+          predicate={(
+            params
+          //   {
+          //   tableRow, tableColumn, groupSummaryItems, grouping,
+          // }
+          ) => {
+            console.log(params)
+            return false;
+            // isGroupRowSummaryCell(tableRow, tableColumn, groupSummaryItems, grouping)
+          }}
+        >
+          {params => (
+            <TemplateConnector>
+              {({
+                groupSummaryItems, groupSummaryValues, grouping,
+              }) => {
+                if (!(isGroupTableCell(params.tableRow, params.tableColumn)
+                    || isGroupIndentTableCell(params.tableRow, params.tableColumn, grouping))
+                    && groupSummaryItems.find(summaryItem => (
+                      summaryItem.showInGroupRow
+                      && summaryItem.columnName === params.tableColumn.column.name
+                    ))) {
+                  const columnSummaries = getColumnSummaries(
+                    groupSummaryItems,
+                    params.tableColumn.column.name,
+                    groupSummaryValues[params.tableRow.row.compoundKey],
+                    summaryItem => summaryItem.showInGroupRow,
+                  );
+
+                  return (
+                    <GroupCell
+                      {...params}
+                      column={params.tableColumn.column}
+                    >
+                      <TableSummaryContent
+                        column={params.tableColumn.column}
+                        columnSummaries={columnSummaries}
+                        formatlessSummaryTypes={formatlessSummaryTypes}
+                        itemComponent={RowSummaryItem}
+                        messages={messages}
+                      />
+                    </GroupCell>
+                  );
+                }
+                return <TemplatePlaceholder />;
               }}
             </TemplateConnector>
           )}
