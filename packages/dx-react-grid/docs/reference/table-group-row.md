@@ -45,6 +45,7 @@ inlineSummaryComponent | ComponentType&lt;[TableGroupRow.InlineSummaryProps](#ta
 inlineSummaryItemComponent | ComponentType&lt;[TableGroupRow.InlineSummaryItemProps](#tablegrouprowinlinesummaryitemprops)&gt; | | A component that renders a group inline summary item.
 rowSummaryCellComponent | ComponentType&lt;[TableGroupRow.RowSummaryCellProps](#tablegrouprowrowsummarycellprops)&gt; | | A component that renders a group summary in a corresponding column.
 rowSummaryItemComponent | ComponentType&lt;[TableSummaryRow.ItemProps](table-summary-row.md#tablesummaryrowitemprops)&gt; | | A component that renders a group row summary item.
+stubCellComponent | ComponentType&lt;[TableGroupRow.StubCellProps](#tablegrouprowstubcellprops)&gt; | | A component that renders a cell between group row summary rows.
 formatlessSummaryTypes | Array&lt;string&gt; | | An array of summary types that the `DataTypeProvider` plugin should not format.
 messages? | [TableGroupRow.LocalizationMessages](#localization-messages) | | An object that specifies localization messages.
 indentColumnWidth | number | | The group indent column's width.
@@ -152,6 +153,16 @@ row | [GroupRow](#grouprow) | The group row.
 column | [Column](grid.md#column) | The column associated with the group.
 onToggle | () => void | An event that initiates group row expanding or collapsing.
 children | ReactNode | A React node to be rendered within the cell.
+
+### TableGroupRow.StubCellProps
+
+Describes properties passed to a component that renders a cell between group row summary cells.
+
+Field | Type | Description
+------|------|------------
+row | [GroupRow](#grouprow) | The group row.
+column | [Column](grid.md#column) | The column associated with the group.
+onToggle | () => void | An event that initiates group row expanding or collapsing.
 
 ### GroupRow
 

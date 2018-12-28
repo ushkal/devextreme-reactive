@@ -60,7 +60,8 @@ const showColumnWhenGroupedGetter: ShowColumnWhenGroupedGetterFn = (
 const columnHasGroupRowSummary = (tableColumn, groupSummaryItems) => (
   groupSummaryItems
     .find(summaryItem => (
-      summaryItem.showInGroupRow && summaryItem.columnName === tableColumn.column.name
+      summaryItem.showInGroupRow
+        && summaryItem.columnName === (tableColumn.column && tableColumn.column.name)
     ))
 );
 const isRowSummaryCell = (tableRow, tableColumn, grouping, groupSummaryItems) => (
@@ -70,6 +71,15 @@ const isRowSummaryCell = (tableRow, tableColumn, grouping, groupSummaryItems) =>
 const isGroupRowOrdinaryCell = (tableRow, tableColumn) => (
   isGroupTableRow(tableRow) && !isGroupTableCell(tableRow, tableColumn)
 );
+
+const isPreviousCellContainsSummary = (
+  tableRow, tableColumn, tableColumns, grouping, groupSummaryItems,
+) => {
+  const columnIndex = tableColumns.indexOf(tableColumn);
+  return columnIndex > 0 && isRowSummaryCell(
+    tableRow, tableColumns[columnIndex - 1], grouping, groupSummaryItems,
+  );
+};
 
 const getInlineSummaryComponent = (column, summary, formatlessSummaries) => () => (
   (summary.value === null || formatlessSummaries.includes(summary.type))
@@ -136,6 +146,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
       inlineSummaryItemComponent: InlineSummaryItem,
       rowSummaryCellComponent: RowSummaryCell,
       rowSummaryItemComponent: RowSummaryItem,
+      stubCellComponent: StubCell,
       indentColumnWidth,
       showColumnsWhenGrouped,
       columnExtensions,
@@ -243,11 +254,13 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
             <TemplateConnector>
               {(
                 {
-                  groupSummaryItems, groupSummaryValues, grouping,
+                  groupSummaryItems, groupSummaryValues, grouping, tableColumns,
                 },
                 { toggleGroupExpanded },
               ) => {
                 const { tableColumn, tableRow } = params;
+                const onToggle = () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey });
+
                 if (isRowSummaryCell(tableRow, tableColumn, grouping, groupSummaryItems)) {
                   const columnSummaries = getColumnSummaries(
                     groupSummaryItems,
@@ -261,9 +274,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                       {...params}
                       row={params.tableRow.row}
                       column={params.tableColumn.column}
-                      onToggle={
-                        () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey })
-                      }
+                      onToggle={onToggle}
                     >
                       <TableSummaryContent
                         column={tableColumn.column}
@@ -275,6 +286,13 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                     </RowSummaryCell>
                   );
                 }
+
+                if (isPreviousCellContainsSummary(
+                  tableRow, tableColumn, tableColumns, grouping, groupSummaryItems,
+                )) {
+                  return <StubCell {...params} onToggle={onToggle} />;
+                }
+
                 return <TemplatePlaceholder />;
               }}
             </TemplateConnector>

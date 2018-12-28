@@ -66,16 +66,33 @@ export const tableRowsWithGrouping: PureComputed<[TableRow[], IsSpecificRowFn]> 
   };
 });
 
-const groupSummaryChains: GroupSummaryChainsFn = (tableColumns, groupSummaryItems) => (
-  tableColumns
-    .map(col => col.column!.name)
-    .reduce((acc, colName) => {
-      if (groupSummaryItems.find(item =>
-        (item as any).showInGroupRow && item.columnName === colName,
-      )) {
-        acc.push([]);
+const isRowLevelSummary = (groupSummaryItems, colName) => (
+  groupSummaryItems.find(item => item.showInGroupRow && item.columnName === colName)
+);
+
+
+const groupSummaryChains = (tableRow, tableColumns, groupSummaryItems) => {
+  let captionStarted = false;
+  return tableColumns
+    .reduce((acc, col) => {
+      const colName = col.column && col.column.name;
+      const isStartOfGroupCaption = col.type === TABLE_GROUP_TYPE
+        && tableRow.row.groupedBy === colName;
+      const isIndentColumn = col.type === TABLE_GROUP_TYPE
+        && tableRow.row.groupedBy !== colName && !captionStarted;
+
+      if (isStartOfGroupCaption) {
+        captionStarted = true;
       }
-      acc[acc.length - 1].push(colName);
+
+      if (isStartOfGroupCaption || isIndentColumn) {
+        acc.push([colName]);
+      } else if (isRowLevelSummary(groupSummaryItems, colName)) {
+        acc.push([colName]);
+        acc.push([]);
+      } else {
+        acc[acc.length - 1].push(colName);
+      }
       return acc;
     }, [[]] as string[][])
 );
@@ -84,10 +101,10 @@ export const tableGroupCellColSpanGetter: GroupCellColSpanGetter = (
   getTableCellColSpan, groupSummaryItems,
 ) => (params) => {
   const { tableRow, tableColumns, tableColumn } = params;
+
   if (tableRow.type === TABLE_GROUP_TYPE) {
-    const chains = groupSummaryChains(tableColumns, groupSummaryItems);
-    console.log(chains)
-    const chain = chains.find(ch => ch[0] === tableColumn.column!.name);
+    const chains = groupSummaryChains(tableRow, tableColumns, groupSummaryItems);
+    const chain = chains.find(ch => ch[0] === (tableColumn.column && tableColumn.column.name));
     if (chain) {
       return chain.length;
     }
