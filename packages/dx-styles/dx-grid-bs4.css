@@ -204,7 +204,8 @@ button.dx-g-bs4-table-edit-command-cell {
 .dx-g-bs4-table-invisible-row {
   visibility: hidden;
 }
-.dx-rg-bs4-table-header-title {
+.dx-rg-bs4-table-header-title,
+.dx-g-bs4-group-cell {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -216,4 +217,7 @@ button.dx-g-bs4-table-edit-command-cell {
   width: 100%;
   text-align: center;
   margin-top: -15px;
+}
+.dx-g-bs4-group-cell {
+  vertical-align: middle;
 }

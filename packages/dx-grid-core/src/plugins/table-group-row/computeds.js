@@ -1,3 +1,4 @@
+import { TABLE_FLEX_TYPE } from '@devexpress/dx-grid-core';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { TABLE_GROUP_TYPE } from './constants';
 
@@ -60,14 +61,21 @@ export const tableRowsWithGrouping = (tableRows, isGroupRow) => tableRows.map((t
   };
 });
 
+const isRowLevelSummary = (groupSummaryItems, colName) => (
+  groupSummaryItems.find(item => item.showInGroupRow && item.columnName === colName)
+);
+
 const groupSummaryChains = (tableColumns, groupSummaryItems) => (
   tableColumns
-    .map(col => col.column.name)
+    // .filter(col => col.type !== TABLE_FLEX_TYPE)
+    .map(col => (col.column && col.column.name))
     .reduce((acc, colName) => {
-      if (groupSummaryItems.find(item => item.showInGroupRow && item.columnName === colName)) {
+      if (isRowLevelSummary(groupSummaryItems, colName)) {
+        acc.push([colName]);
         acc.push([]);
+      } else {
+        acc[acc.length - 1].push(colName);
       }
-      acc[acc.length - 1].push(colName);
       return acc;
     }, [[]])
 );
@@ -78,8 +86,8 @@ export const tableGroupCellColSpanGetter = (
   const { tableRow, tableColumns, tableColumn } = params;
   if (tableRow.type === TABLE_GROUP_TYPE) {
     const chains = groupSummaryChains(tableColumns, groupSummaryItems);
-    // console.log(chains)
-    const chain = chains.find(ch => ch[0] === tableColumn.column.name);
+    console.log(chains)
+    const chain = chains.find(ch => ch[0] === (tableColumn.column && tableColumn.column.name));
     if (chain) {
       return chain.length;
     }

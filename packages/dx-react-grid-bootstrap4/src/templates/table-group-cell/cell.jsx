@@ -13,7 +13,10 @@ export const Cell = ({
 
   return (
     <td
-      className={classNames('dx-g-bs4-cursor-pointer', className)}
+      className={classNames({
+        'dx-g-bs4-group-cell': true,
+        'text-nowrap': !(tableColumn && tableColumn.wordWrapEnabled),
+      }, className)}
       onClick={handleClick}
       {...restProps}
     >
