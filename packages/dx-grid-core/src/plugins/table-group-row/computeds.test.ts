@@ -27,7 +27,7 @@ describe('TableGroupRow Plugin computeds', () => {
     ];
 
     it('should work', () => {
-      expect(tableColumnsWithGrouping(columns, tableColumns, grouping, grouping, 123, () => false))
+      expect(tableColumnsWithGrouping(tableColumns, columns, grouping, grouping, 123, () => false))
         .toEqual([
           {
             key: `${TABLE_GROUP_TYPE.toString()}_a`, type: TABLE_GROUP_TYPE, column: { name: 'a' }, width: 123,
@@ -46,7 +46,7 @@ describe('TableGroupRow Plugin computeds', () => {
         { columnName: 'a' },
       ];
       expect(tableColumnsWithGrouping(
-        columns, tableColumns, grouping,
+        tableColumns, columns, grouping,
         draftGrouping, 123, () => false,
       )).toEqual([
         {
@@ -69,7 +69,7 @@ describe('TableGroupRow Plugin computeds', () => {
         { columnName: 'c' },
       ];
       expect(tableColumnsWithGrouping(
-        columns, tableColumns, grouping,
+        tableColumns, columns, grouping,
         draftGrouping, 123, () => false,
       )).toEqual([
         {
@@ -90,7 +90,7 @@ describe('TableGroupRow Plugin computeds', () => {
         { columnName: 'a' },
       ];
       expect(tableColumnsWithGrouping(
-        columns, tableColumns, grouping,
+        tableColumns, columns, grouping,
         draftGrouping, 123, () => false,
       )).toEqual([
         {
@@ -107,7 +107,7 @@ describe('TableGroupRow Plugin computeds', () => {
 
     it('can keep grouped columns in table', () => {
       expect(tableColumnsWithGrouping(
-        columns, tableColumns, grouping,
+        tableColumns, columns, grouping,
         grouping, 123, columnName => columnName === 'c',
       )).toEqual([
         {

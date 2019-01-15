@@ -32,5 +32,23 @@ export interface TableColumn {
   fixed?: 'left' | 'right';
 }
 
+export interface ColumnExtension {
+  /** The name of the column to extend. */
+  columnName: string;
+  /** The table column width in pixels. */
+  width?: number;
+  /** The table column alignment. */
+  align?: 'left' | 'right' | 'center';
+  /** Specifies whether word wrap is enabled in a column's cells. */
+  wordWrapEnabled?: boolean;
+}
+
 export type TableColumns = ReadonlyArray<TableColumn>;
 export type TableRows = ReadonlyArray<TableRow>;
+
+export type GetCellColSpanFn = (
+  params: { tableRow: TableRow, tableColumns: TableColumns, tableColumn: TableColumn }
+) => number;
+export type CellColSpanGetter = (
+  getTableCellColSpan: GetCellColSpanFn,
+) => GetCellColSpanFn;

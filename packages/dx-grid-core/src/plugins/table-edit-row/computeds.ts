@@ -1,7 +1,14 @@
 import { TABLE_ADDED_TYPE, TABLE_EDIT_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
+import { TableRows } from '../../types';
 
-export const tableRowsWithEditing = (tableRows, editingRowIds, addedRows, rowHeight) => {
+type RowsWithEditingComputed = (
+  tableRows: TableRows, editingRowIds: ReadonlyArray<any>, addedRows: TableRows, rowHeight: number,
+) => TableRows;
+
+export const tableRowsWithEditing: RowsWithEditingComputed = (
+  tableRows, editingRowIds, addedRows, rowHeight,
+) => {
   const rowIds = new Set(editingRowIds);
   const editedTableRows = tableRows
     .map(tableRow => (

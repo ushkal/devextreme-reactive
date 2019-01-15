@@ -8,7 +8,21 @@ export interface Filter {
   value?: string;
 }
 
+/** Describes data filtering expressions */
+export interface FilterExpression {
+  /** Specifies the Boolean operator */
+  operator: 'and' | 'or';
+  /** Specifies filters or filter expressions */
+  // tslint:disable-next-line:prefer-array-literal
+  filters: Array<FilterExpression | Filter>;
+}
+
 /*** Describes a filter operation. Accepts one of the built-in operations or a custom string.
  * Built-in operations: `contains`, `notContains`, `startsWith`, `endsWith`, `equal`, `notEqual`,
  * `greaterThan`, `graterThenOrEqual`, `lessThan`, `lessThanOrEqual` */
 export type FilterOperation = string;
+
+export type FilterPredicate = (value: any, filter: Filter, row: any) => boolean;
+export type FilterPredicates = ReadonlyArray<FilterPredicate>;
+
+export type Filters = ReadonlyArray<Filter>;

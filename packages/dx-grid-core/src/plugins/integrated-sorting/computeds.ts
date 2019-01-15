@@ -1,6 +1,6 @@
 import mergeSort, { ICompare } from '../../utils/merge-sort';
 import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierarchical-data';
-import { Sortings, Row, Rows, IGetCellValue, IGetRowLevelKey, IsGroupRow } from '../../types';
+import { Sortings, Row, Rows, IGetCellValue, IGetRowLevelKey, IsSpecificRowFn } from '../../types';
 
 const defaultCompare = (a: any, b: any) => {
   if (a === b) return 0;
@@ -75,7 +75,7 @@ export const sortedRows = (
   sorting: Sortings,
   getCellValue: IGetCellValue,
   getColumnCompare: IGetColumnCompare,
-  isGroupRow: IsGroupRow,
+  isGroupRow: IsSpecificRowFn,
   getRowLevelKey: IGetRowLevelKey,
 ) => {
   if (!sorting.length || !rows.length) return rows;

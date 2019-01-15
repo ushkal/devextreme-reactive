@@ -1,9 +1,13 @@
 import { GROUP_KEY_SEPARATOR } from './constants';
-import { Grouping } from '../../types/grouping.types';
+import { Grouping, Groupings } from '../../types/grouping.types';
+import { Getters } from '@devexpress/dx-react-core';
+
+type ChangeGroupingPayload = { columnName: string, groupIndex: number };
+type ColumnGroupingState = { grouping: Groupings, expandedGroups: ReadonlyArray<string> };
 
 const applyColumnGrouping = (
   grouping: ReadonlyArray<Grouping>,
-  { columnName, groupIndex },
+  { columnName, groupIndex }: ChangeGroupingPayload,
 ) => {
   const nextGrouping = grouping.slice();
   const groupingIndex = nextGrouping.findIndex(g => g.columnName === columnName);
@@ -24,7 +28,10 @@ const applyColumnGrouping = (
   return nextGrouping;
 };
 
-export const changeColumnGrouping = ({ grouping, expandedGroups }, { columnName, groupIndex }) => {
+export const changeColumnGrouping = (
+  { grouping, expandedGroups }: ColumnGroupingState,
+  { columnName, groupIndex }: ChangeGroupingPayload,
+) => {
   const nextGrouping = applyColumnGrouping(grouping, { columnName, groupIndex });
 
   const ungroupedColumnIndex = grouping.findIndex(
@@ -51,7 +58,10 @@ export const changeColumnGrouping = ({ grouping, expandedGroups }, { columnName,
   };
 };
 
-export const toggleExpandedGroups = (state, { groupKey }) => {
+export const toggleExpandedGroups = (
+  state: ColumnGroupingState,
+  { groupKey }: { groupKey: string },
+) => {
   const expandedGroups = state.expandedGroups.slice();
   const groupKeyIndex = expandedGroups.indexOf(groupKey);
 
@@ -66,7 +76,10 @@ export const toggleExpandedGroups = (state, { groupKey }) => {
   };
 };
 
-export const draftColumnGrouping = ({ grouping, draftGrouping }, { columnName, groupIndex }) => ({
+export const draftColumnGrouping = (
+  { grouping, draftGrouping }: Getters,
+  { columnName, groupIndex }: ChangeGroupingPayload,
+) => ({
   draftGrouping: applyColumnGrouping(draftGrouping || grouping, { columnName, groupIndex }),
 });
 

@@ -4,13 +4,31 @@ import {
 import { TABLE_HEADING_TYPE } from '../table-header-row/constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { findChainByColumnIndex } from '../table-header-row/helpers';
+import {
+  IsSpecificRowFn, TableColumn, TableRow, ColumnBands, TableRows, TableColumns,
+  HeaderColumnChainRows,
+} from '../../types';
 
-export const isBandedTableRow = tableRow => (tableRow.type === TABLE_BAND_TYPE);
-export const isBandedOrHeaderRow = tableRow => isBandedTableRow(tableRow)
+type ColumnBandMeta = { level: number, title: string | null };
+
+type GetColumnBandMetaFn = (
+  columnName: string, bands: ColumnBands[], tableRowLevel: number,
+  level?: number, title?: string | null | undefined, result?: ColumnBandMeta | null,
+) => ColumnBandMeta;
+type GetBandComponentFn = (
+  params: { tableColumn: TableColumn, tableRow: TableRow & { level: number }, rowSpan: number },
+  tableHeaderRows: TableRows,
+  tableColumns: TableColumns,
+  columnsBands: ColumnBands[],
+  tableHeaderColumnChains: HeaderColumnChainRows,
+) => { type: string | null, payload: object | null };
+
+export const isBandedTableRow: IsSpecificRowFn = tableRow => (tableRow.type === TABLE_BAND_TYPE);
+export const isBandedOrHeaderRow: IsSpecificRowFn = tableRow => isBandedTableRow(tableRow)
   || tableRow.type === TABLE_HEADING_TYPE;
-export const isNoDataColumn = columnType => columnType !== TABLE_DATA_TYPE;
+export const isNoDataColumn = (columnType: symbol) => columnType !== TABLE_DATA_TYPE;
 
-export const getColumnMeta = (
+export const getColumnMeta: GetColumnBandMetaFn = (
   columnName, bands, tableRowLevel,
   level = 0, title = null, result = null,
 ) => bands.reduce((acc, column) => {
@@ -32,7 +50,7 @@ export const getColumnMeta = (
   return acc;
 }, result || { level, title });
 
-export const getBandComponent = (
+export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
   tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains,
 ) => {
@@ -42,7 +60,7 @@ export const getBandComponent = (
   const currentRowLevel = tableRow.level === undefined
     ? maxLevel - 1 : tableRow.level;
   const currentColumnMeta = currentTableColumn.type === TABLE_DATA_TYPE
-    ? getColumnMeta(currentTableColumn.column.name, columnBands, currentRowLevel)
+    ? getColumnMeta(currentTableColumn.column!.name, columnBands, currentRowLevel)
     : { level: 0, title: '' };
 
   if (currentColumnMeta.level < currentRowLevel) return { type: BAND_EMPTY_CELL, payload: null };
@@ -69,14 +87,14 @@ export const getBandComponent = (
     tableHeaderColumnChains[currentRowLevel],
     currentColumnIndex,
   );
-  if (currentColumnChain.start < currentColumnIndex) {
+  if (currentColumnChain!.start < currentColumnIndex) {
     return { type: null, payload: null };
   }
 
   return {
     type: BAND_GROUP_CELL,
     payload: {
-      colSpan: currentColumnChain.columns.length,
+      colSpan: currentColumnChain!.columns.length,
       value: currentColumnMeta.title,
       column: currentColumnMeta,
       ...beforeBorder && { beforeBorder },

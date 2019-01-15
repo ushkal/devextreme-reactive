@@ -5,13 +5,15 @@ import {
   GRID_GROUP_LEVEL_KEY,
   GRID_GROUP_COLLAPSED_ROWS,
 } from './constants';
-import { Rows, Groupings, IGetCellValue, ExpandedGroups, IGroupingCriteria } from '../../types';
+import {
+  Rows, Groupings, IGetCellValue, ExpandedGroups, IGroupingCriteria, Row, IGetCollapsedRows,
+} from '../../types';
 
-export const groupRowChecker = row => row[GRID_GROUP_CHECK];
+export const groupRowChecker = (row: Row) => row[GRID_GROUP_CHECK];
 
-export const groupRowLevelKeyGetter = row => (row ? row[GRID_GROUP_LEVEL_KEY] : undefined);
+export const groupRowLevelKeyGetter = (row: Row) => (row ? row[GRID_GROUP_LEVEL_KEY] : undefined);
 
-const defaultColumnCriteria = value => ({
+const defaultColumnCriteria = (value: any) => ({
   value,
   key: String(value),
 });
@@ -20,7 +22,7 @@ export const groupedRows = (
   rows: Rows,
   grouping: Groupings,
   getCellValue: IGetCellValue,
-  getColumnCriteria: (string) => IGroupingCriteria,
+  getColumnCriteria: (columnName: string) => IGroupingCriteria,
   keyPrefix = '',
 ) => {
   if (!grouping.length) return rows;
@@ -65,10 +67,16 @@ export const groupedRows = (
     }, []);
 };
 
-export const expandedGroupRows: (...args) => Rows = (
+type IExpandedGroupRows = (
   rows: Rows,
   grouping: Groupings,
   expandedGroups: ExpandedGroups,
+) => Rows;
+
+export const expandedGroupRows: IExpandedGroupRows = (
+  rows,
+  grouping,
+  expandedGroups,
 ) => {
   if (!grouping.length) return rows;
 
@@ -108,5 +116,6 @@ export const expandedGroupRows: (...args) => Rows = (
   }, []);
 };
 
-export const groupCollapsedRowsGetter = getCollapsedRows => row => row[GRID_GROUP_COLLAPSED_ROWS]
-|| (getCollapsedRows && getCollapsedRows(row));
+export const groupCollapsedRowsGetter = (getCollapsedRows: IGetCollapsedRows) => (row: Row) => (
+  row[GRID_GROUP_COLLAPSED_ROWS] || (getCollapsedRows && getCollapsedRows(row))
+);

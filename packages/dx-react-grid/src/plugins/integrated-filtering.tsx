@@ -22,14 +22,6 @@ export namespace IntegratedFiltering {
   }
 }
 
-/** Describes data filtering expressions */
-export interface FilterExpression {
-  /** Specifies the Boolean operator */
-  operator: 'and' | 'or';
-  /** Specifies filters or filter expressions */
-  filters: Array<FilterExpression | Filter>;
-}
-
 export interface IntegratedFilteringProps {
   /** Additional column properties that the plugin can handle. */
   columnExtensions?: IntegratedFiltering.ColumnExtension[];

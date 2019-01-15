@@ -1,3 +1,5 @@
+import { Rows } from './grid-core.types';
+
 /** Describes grouping options. */
 export interface Grouping {
   /** Specifies the name of the column by which the data is grouped. */
@@ -17,3 +19,4 @@ export type GetChildGroups = (
 ) => ChildGroup[];
 
 export type IGroupingCriteria = (value: any, row?: any) => { key: string | number, value?: any };
+export type IGetCollapsedRows = (row: any) => Rows;

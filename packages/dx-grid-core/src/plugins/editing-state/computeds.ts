@@ -1,4 +1,7 @@
-export const changedRowsByIds = (changes, rowIds) => {
+import { RowIds, Rows, Row } from '../../types';
+import { EditingColumnExtension } from '../../types/editing.types';
+
+export const changedRowsByIds = (changes: any, rowIds: RowIds) => {
   const result = {};
   rowIds.forEach((rowId) => {
     result[rowId] = changes[rowId];
@@ -6,7 +9,7 @@ export const changedRowsByIds = (changes, rowIds) => {
   return result;
 };
 
-export const addedRowsByIds = (addedRows, rowIds) => {
+export const addedRowsByIds = (addedRows: Rows, rowIds: RowIds) => {
   const rowIdSet = new Set(rowIds);
   const result: any = [];
   addedRows.forEach((row, index) => {
@@ -17,8 +20,15 @@ export const addedRowsByIds = (addedRows, rowIds) => {
   return result;
 };
 
-const defaultCreateRowChange = (row, value, columnName) => ({ [columnName]: value });
-export const createRowChangeGetter = (
+type ICreateRowChange = (row: Row, value: any, columnName: string) => any;
+type CreateRowChangeGetter = (
+  createRowChange: ICreateRowChange, columnExtensions: EditingColumnExtension[],
+) => ICreateRowChange;
+
+const defaultCreateRowChange: ICreateRowChange = (row, value, columnName) => (
+  { [columnName]: value }
+);
+export const createRowChangeGetter: CreateRowChangeGetter = (
   createRowChange = defaultCreateRowChange,
   columnExtensions: any[] = [],
 ) => {

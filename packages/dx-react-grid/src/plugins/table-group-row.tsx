@@ -51,8 +51,8 @@ export class TableGroupRow extends React.PureComponent {
     const tableColumnsComputed = ({
       columns, tableColumns, grouping, draftGrouping,
     }) => tableColumnsWithGrouping(
-      columns,
       tableColumns,
+      columns,
       grouping,
       draftGrouping,
       indentColumnWidth,

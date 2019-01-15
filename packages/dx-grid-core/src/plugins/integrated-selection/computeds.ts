@@ -1,4 +1,14 @@
-export const rowsWithAvailableToSelect = (rows, getRowId, isGroupRow) => {
+import { Rows, GetRowIdFn, IsSpecificRowFn, RowsWithSelection, RowsSelection } from '../../types';
+
+type IGetRowsWithSelection = (
+  rows: Rows,
+  getRowsId: GetRowIdFn,
+  isGroupRow: IsSpecificRowFn,
+) => RowsWithSelection;
+
+export const rowsWithAvailableToSelect: IGetRowsWithSelection = (
+  rows, getRowId, isGroupRow,
+) => {
   let dataRows = rows;
   if (isGroupRow) {
     dataRows = dataRows.filter(row => !isGroupRow(row));
@@ -6,7 +16,11 @@ export const rowsWithAvailableToSelect = (rows, getRowId, isGroupRow) => {
   return { rows, availableToSelect: dataRows.map(row => getRowId(row)) };
 };
 
-export const someSelected = ({ availableToSelect }, selection) => {
+type IRowsSelected = (
+  rows: RowsWithSelection,
+  selection: RowsSelection,
+) => boolean;
+export const someSelected: IRowsSelected = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);
 
   return availableToSelect.length !== 0 && selectionSet.size !== 0
@@ -14,11 +28,11 @@ export const someSelected = ({ availableToSelect }, selection) => {
     && availableToSelect.some(elem => !selectionSet.has(elem));
 };
 
-export const allSelected = ({ availableToSelect }, selection) => {
+export const allSelected: IRowsSelected = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);
 
   return selectionSet.size !== 0 && availableToSelect.length !== 0
     && !availableToSelect.some(elem => !selectionSet.has(elem));
 };
 
-export const unwrapSelectedRows = ({ rows }) => rows;
+export const unwrapSelectedRows = ({ rows }: RowsWithSelection) => rows;

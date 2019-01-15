@@ -1,8 +1,16 @@
 import mergeSort from '../../utils/merge-sort';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { TABLE_REORDERING_TYPE } from './constants';
+import { TableColumns, ColumnOrder, TableRows } from '../../types';
 
-export const orderedColumns = (tableColumns, order) => mergeSort(tableColumns, (a, b) => {
+type OrderedColumnsComputed = (tableColumns: TableColumns, order: ColumnOrder) => TableColumns;
+type DraftOrderComputed = (
+  order: ColumnOrder, sourceColumnIndex: number, targetColumnIndex: number,
+) => ColumnOrder;
+
+export const orderedColumns: OrderedColumnsComputed = (
+  tableColumns, order,
+) => mergeSort(tableColumns, (a, b) => {
   if (a.type !== TABLE_DATA_TYPE || b.type !== TABLE_DATA_TYPE) return 0;
 
   const aPos = order.indexOf(a.column.name);
@@ -10,7 +18,7 @@ export const orderedColumns = (tableColumns, order) => mergeSort(tableColumns, (
   return aPos - bPos;
 });
 
-export const tableHeaderRowsWithReordering = tableHeaderRows => [
+export const tableHeaderRowsWithReordering = (tableHeaderRows: TableRows) => [
   ...tableHeaderRows,
   {
     key: TABLE_REORDERING_TYPE.toString(),
@@ -19,7 +27,7 @@ export const tableHeaderRowsWithReordering = tableHeaderRows => [
   },
 ];
 
-export const draftOrder = (order, sourceColumnIndex, targetColumnIndex) => {
+export const draftOrder: DraftOrderComputed = (order, sourceColumnIndex, targetColumnIndex) => {
   if (sourceColumnIndex === -1
     || targetColumnIndex === -1
     || sourceColumnIndex === targetColumnIndex) {

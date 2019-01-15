@@ -5,7 +5,7 @@ import {
   GRID_GROUP_CHECK,
   GRID_GROUP_LEVEL_KEY,
 } from '../integrated-grouping/constants';
-import { IGetRowId, Rows } from '../../types/grid-core.types';
+import { GetRowIdFn, Rows, Row } from '../../types/grid-core.types';
 
 export const customGroupedRows = (
   currentRows: any[],
@@ -41,7 +41,7 @@ export const customGroupedRows = (
     }, [] as any[]);
 };
 
-export const customGroupingRowIdGetter = (getRowId: IGetRowId, rows: Rows) => {
+export const customGroupingRowIdGetter = (getRowId: GetRowIdFn, rows: Rows) => {
   const firstRow = rows.find(row => !row[GRID_GROUP_CHECK]);
   if (!firstRow || getRowId(firstRow) !== undefined) {
     return getRowId;
@@ -51,5 +51,5 @@ export const customGroupingRowIdGetter = (getRowId: IGetRowId, rows: Rows) => {
     .filter(row => !row[GRID_GROUP_CHECK])
     .map((row, rowIndex) => [row, rowIndex]) as [any, any]);
 
-  return row => map.get(row);
+  return (row: Row) => map.get(row);
 };

@@ -1,4 +1,9 @@
-export const changeColumnFilter = (filters, { columnName, config }) => {
+import { Filters } from '../../types';
+
+export const changeColumnFilter = (
+  filters: Filters,
+  { columnName, config }: { columnName: string, config: object },
+) => {
   const filterIndex = filters.findIndex(f => f.columnName === columnName);
   const nextState = filters.slice();
 

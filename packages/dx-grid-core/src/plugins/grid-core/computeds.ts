@@ -1,7 +1,7 @@
 import { GRID_GROUP_CHECK } from '../integrated-grouping/constants';
-import { IGetRowId, Row, Rows, Columns } from '../../types';
+import { GetRowIdFn, Row, Rows, Columns } from '../../types';
 
-const warnIfRowIdUndefined = (getRowId: IGetRowId) => (row: Row) => {
+const warnIfRowIdUndefined = (getRowId: GetRowIdFn) => (row: Row) => {
   const result = getRowId(row);
   if (!row[GRID_GROUP_CHECK] && result === undefined) {
     // tslint:disable-next-line: no-console
@@ -10,7 +10,7 @@ const warnIfRowIdUndefined = (getRowId: IGetRowId) => (row: Row) => {
   return result;
 };
 
-export const rowIdGetter = (getRowId: IGetRowId, rows: Rows) => {
+export const rowIdGetter = (getRowId: GetRowIdFn, rows: Rows) => {
   if (!getRowId) {
     const map = new Map(rows.map((row, rowIndex) => [row, rowIndex]) as [any, any]);
     return (row: Row) => map.get(row);

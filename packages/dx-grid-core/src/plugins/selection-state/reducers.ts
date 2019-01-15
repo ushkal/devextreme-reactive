@@ -1,3 +1,6 @@
 import { toggle } from '../../utils/common-reducers';
+import { IToggleSelection } from '../../types';
 
-export const toggleSelection = (selection, { rowIds, state }) => toggle(selection, rowIds, state);
+export const toggleSelection: IToggleSelection = (
+  selection, { rowIds, state },
+) => toggle(selection, rowIds, state as any);

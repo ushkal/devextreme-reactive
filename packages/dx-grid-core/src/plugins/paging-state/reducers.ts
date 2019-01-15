@@ -1,2 +1,2 @@
-export const setCurrentPage = (prevPage, page) => page;
-export const setPageSize = (prevPageSize, size) => size;
+export const setCurrentPage = (prevPage: number, page: number) => page;
+export const setPageSize = (prevPageSize: number, size: number) => size;

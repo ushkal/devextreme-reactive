@@ -1,7 +1,11 @@
+import { Computed } from '@devexpress/dx-core';
 import { TABLE_DETAIL_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
+import { TableRows, TableColumns, CellColSpanGetter } from '../../types';
 
-export const tableRowsWithExpandedDetail = (tableRows, expandedDetailRowIds, rowHeight) => {
+export const tableRowsWithExpandedDetail: Computed<
+  TableRows, number[], number
+> = (tableRows, expandedDetailRowIds, rowHeight) => {
   let result = tableRows;
   expandedDetailRowIds
     .forEach((expandedRowId) => {
@@ -26,12 +30,14 @@ export const tableRowsWithExpandedDetail = (tableRows, expandedDetailRowIds, row
   return result;
 };
 
-export const tableColumnsWithDetail = (tableColumns, toggleColumnWidth) => [
+export const tableColumnsWithDetail: Computed<TableColumns, number> = (
+  tableColumns, toggleColumnWidth,
+) => [
   { key: TABLE_DETAIL_TYPE.toString(), type: TABLE_DETAIL_TYPE, width: toggleColumnWidth },
   ...tableColumns,
 ];
 
-export const tableDetailCellColSpanGetter = getTableCellColSpan => (params) => {
+export const tableDetailCellColSpanGetter: CellColSpanGetter = getTableCellColSpan => (params) => {
   const { tableRow, tableColumns, tableColumn } = params;
   if (tableRow.type === TABLE_DETAIL_TYPE && tableColumns.indexOf(tableColumn) === 0) {
     return tableColumns.length;

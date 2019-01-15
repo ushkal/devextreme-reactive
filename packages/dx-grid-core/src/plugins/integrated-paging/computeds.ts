@@ -1,15 +1,18 @@
 import { clamp } from './helpers';
+import { Rows, IGetRowLevelKey } from '../../types';
 
 // tslint:disable-next-line:max-line-length
 const PAGE_HEADERS_OVERFLOW_ERROR = 'Max row level exceeds the page size. Consider increasing the page size.';
 
-export const paginatedRows = (rows, pageSize, page) => (
+export const paginatedRows = (rows: Rows, pageSize: number, page: number) => (
   pageSize
     ? rows.slice(pageSize * page, pageSize * (page + 1))
     : rows
 );
 
-export const rowsWithPageHeaders = (rows, pageSize, getRowLevelKey) => {
+export const rowsWithPageHeaders = (
+  rows: Rows, pageSize: number, getRowLevelKey: IGetRowLevelKey,
+) => {
   if (!pageSize || !getRowLevelKey) return rows;
 
   let result = rows.slice();
@@ -21,6 +24,7 @@ export const rowsWithPageHeaders = (rows, pageSize, getRowLevelKey) => {
     const levelKey = getRowLevelKey(row);
     if (levelKey) {
       const headerIndex = headerRows.findIndex(headerRow => getRowLevelKey(headerRow) === levelKey);
+      // tslint:disable-next-line:prefer-conditional-expression
       if (headerIndex === -1) {
         headerRows = [...headerRows, row];
       } else {
@@ -44,13 +48,15 @@ export const rowsWithPageHeaders = (rows, pageSize, getRowLevelKey) => {
   return result;
 };
 
-export const rowCount = rows => rows.length;
+export const rowCount = (rows: Rows) => rows.length;
 
-export const pageCount = (count, pageSize) => (
+export const pageCount = (count: number, pageSize: number) => (
   pageSize ? Math.ceil(count / pageSize) : 1
 );
 
-export const currentPage = (page, totalCount, pageSize, setCurrentPage) => {
+export const currentPage = (
+  page: number, totalCount: number, pageSize: number, setCurrentPage: (page: number) => void,
+) => {
   const totalPages = pageCount(totalCount, pageSize);
   const adjustedCurrentPage = clamp(page, totalPages - 1);
   if (page !== adjustedCurrentPage) {
