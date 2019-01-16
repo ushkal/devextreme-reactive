@@ -1,18 +1,12 @@
-import { TableRows, Row, SummaryType, SummaryItem, Rows, IGetCellValue } from "../../types";
-
-type GetRowValueFn = (row: Row) => any;
-type DefaultSummaryCalulator = (rows: TableRows, getValue: GetRowValueFn) => number | null;
-type DefaultSummaryCalculators = { [key: string]: DefaultSummaryCalulator };
-type SummaryValue = number | null;
-type SummaryCalculator = (
-  type: SummaryType, rows: TableRows, getValue: GetRowValueFn
-) => SummaryValue;
-type RowsSummaryFn = (
-  rows: Rows,
-  summaryItems: SummaryItem[],
-  getCellValue: IGetCellValue,
-  calculator: SummaryCalculator,
-) => SummaryValue[];
+import {
+  TableRows, Row, SummaryType, SummaryItem, Rows, IGetCellValue, DefaultSummaryCalculators,
+  SummaryCalculator,
+  RowsSummaryFn,
+  SummaryValue,
+  TotalSummaryValuesFn,
+  TableRow,
+  GroupSummaryValuesFn,
+} from '../../types';
 
 const defaultSummaryCalculators: DefaultSummaryCalculators = {
   count: rows => rows.length,
@@ -43,7 +37,7 @@ const rowsSummary: RowsSummaryFn = (rows, summaryItems, getCellValue, calculator
     return acc;
   }, [] as SummaryValue[]);
 
-export const totalSummaryValues = (
+export const totalSummaryValues: TotalSummaryValuesFn = (
   rows,
   summaryItems,
   getCellValue,
@@ -65,11 +59,11 @@ export const totalSummaryValues = (
     }
     acc.push(row);
     return acc;
-  }, []);
+  }, [] as TableRow[]);
   return rowsSummary(plainRows, summaryItems, getCellValue, calculator);
 };
 
-export const groupSummaryValues = (
+export const groupSummaryValues: GroupSummaryValuesFn = (
   rows,
   summaryItems,
   getCellValue,
