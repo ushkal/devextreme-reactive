@@ -1,4 +1,20 @@
-const defaultSummaryCalculators = {
+import { TableRows, Row, SummaryType, SummaryItem, Rows, IGetCellValue } from "../../types";
+
+type GetRowValueFn = (row: Row) => any;
+type DefaultSummaryCalulator = (rows: TableRows, getValue: GetRowValueFn) => number | null;
+type DefaultSummaryCalculators = { [key: string]: DefaultSummaryCalulator };
+type SummaryValue = number | null;
+type SummaryCalculator = (
+  type: SummaryType, rows: TableRows, getValue: GetRowValueFn
+) => SummaryValue;
+type RowsSummaryFn = (
+  rows: Rows,
+  summaryItems: SummaryItem[],
+  getCellValue: IGetCellValue,
+  calculator: SummaryCalculator,
+) => SummaryValue[];
+
+const defaultSummaryCalculators: DefaultSummaryCalculators = {
   count: rows => rows.length,
   sum: (rows, getValue) => rows.reduce((acc, row) => acc + getValue(row), 0),
   max: (rows, getValue) => (rows.length
@@ -12,7 +28,7 @@ const defaultSummaryCalculators = {
     : null),
 };
 
-export const defaultSummaryCalculator = (type, rows, getValue) => {
+export const defaultSummaryCalculator: SummaryCalculator = (type, rows, getValue) => {
   const summaryCalculator = defaultSummaryCalculators[type];
   if (!summaryCalculator) {
     throw new Error(`The summary type '${type}' is not defined`);
@@ -20,12 +36,12 @@ export const defaultSummaryCalculator = (type, rows, getValue) => {
   return summaryCalculator(rows, getValue);
 };
 
-const rowsSummary = (rows, summaryItems, getCellValue, calculator) => summaryItems
+const rowsSummary: RowsSummaryFn = (rows, summaryItems, getCellValue, calculator) => summaryItems
   .reduce((acc, { type, columnName }) => {
-    const getValue = row => getCellValue(row, columnName);
+    const getValue = (row: Row) => getCellValue(row, columnName);
     acc.push(calculator(type, rows, getValue));
     return acc;
-  }, []);
+  }, [] as SummaryValue[]);
 
 export const totalSummaryValues = (
   rows,

@@ -1,5 +1,7 @@
+import { RowIds } from '../types';
+
 export const toggle = (
-  source: ReadonlyArray<any>, items: ReadonlyArray<any>, state: Readonly<any>,
+  source: RowIds, items: RowIds, state?: boolean,
 ) => {
   const itemsSet = new Set(items);
 

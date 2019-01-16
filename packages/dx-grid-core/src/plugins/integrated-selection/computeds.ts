@@ -1,4 +1,4 @@
-import { Rows, GetRowIdFn, IsSpecificRowFn, RowsWithSelection, RowsSelection } from '../../types';
+import { Rows, GetRowIdFn, IsSpecificRowFn, RowsWithSelection, RowIds } from '../../types';
 
 type IGetRowsWithSelection = (
   rows: Rows,
@@ -18,7 +18,7 @@ export const rowsWithAvailableToSelect: IGetRowsWithSelection = (
 
 type IRowsSelected = (
   rows: RowsWithSelection,
-  selection: RowsSelection,
+  selection: RowIds,
 ) => boolean;
 export const someSelected: IRowsSelected = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);

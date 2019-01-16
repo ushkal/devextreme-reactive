@@ -1,6 +1,10 @@
-export const searchFilterExpression = (searchValue, columns, filterExpression) => {
+import { SearchFilterExpressionFn, FilterExpression } from "../../types";
+
+export const searchFilterExpression: SearchFilterExpressionFn = (
+  searchValue, columns, filterExpression,
+) => {
   const filters = columns.map(({ name }) => ({ columnName: name, value: searchValue }));
-  const selfFilterExpression = { operator: 'or', filters };
+  const selfFilterExpression: FilterExpression = { operator: 'or', filters };
   if (!filterExpression) {
     return selfFilterExpression;
   }

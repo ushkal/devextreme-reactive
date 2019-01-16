@@ -1,9 +1,11 @@
 import { TABLE_FILTER_TYPE, DEFAULT_FILTER_OPERATIONS } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
-import { IsSpecificCellFn, IsSpecificRowFn, FilterOperation, Filter } from '../../types';
+import {
+  IsSpecificCellFn, IsSpecificRowFn, FilterOperation, Filter, GetAvailableFilterOperationsFn,
+} from '../../types';
 
 type GetFilterOperationsFn = (
-  getAvailableFilterOperations: (columnName: string) => FilterOperation[],
+  getAvailableFilterOperations: GetAvailableFilterOperationsFn,
   columnName: string,
 ) => FilterOperation[];
 type GetSelectedFilterOperationFn = (

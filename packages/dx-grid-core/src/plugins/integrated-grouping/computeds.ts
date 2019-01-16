@@ -6,7 +6,7 @@ import {
   GRID_GROUP_COLLAPSED_ROWS,
 } from './constants';
 import {
-  Rows, Groupings, IGetCellValue, ExpandedGroups, IGroupingCriteria, Row, IGetCollapsedRows,
+  Rows, Groupings, IGetCellValue, ExpandedGroups, IGroupingCriteria, Row, GetCollapsedRowsFn,
 } from '../../types';
 
 export const groupRowChecker = (row: Row) => row[GRID_GROUP_CHECK];
@@ -116,6 +116,6 @@ export const expandedGroupRows: IExpandedGroupRows = (
   }, []);
 };
 
-export const groupCollapsedRowsGetter = (getCollapsedRows: IGetCollapsedRows) => (row: Row) => (
+export const groupCollapsedRowsGetter = (getCollapsedRows: GetCollapsedRowsFn) => (row: Row) => (
   row[GRID_GROUP_COLLAPSED_ROWS] || (getCollapsedRows && getCollapsedRows(row))
 );

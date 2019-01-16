@@ -1,10 +1,8 @@
-import { Rows, RowId } from './grid-core.types';
+import { Rows, RowId, RowIds } from './grid-core.types';
 
-export type RowsSelection = ReadonlyArray<number | string>;
-export type ToggleSelectionPayload = { rowIds: ReadonlyArray<number>, state: Readonly<boolean> };
 export type IToggleSelection = (
-  selection: RowsSelection,
-  payload: { rowIds: ReadonlyArray<number>, state: boolean },
+  selection: RowIds,
+  payload: { rowIds: RowIds, state: boolean },
 ) => void;
 
 export type RowsWithSelection = { rows: Rows, availableToSelect: RowId[] };

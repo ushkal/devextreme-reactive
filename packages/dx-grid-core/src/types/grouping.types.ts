@@ -19,4 +19,3 @@ export type GetChildGroups = (
 ) => ChildGroup[];
 
 export type IGroupingCriteria = (value: any, row?: any) => { key: string | number, value?: any };
-export type IGetCollapsedRows = (row: any) => Rows;

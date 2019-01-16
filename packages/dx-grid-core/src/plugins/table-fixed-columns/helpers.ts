@@ -3,17 +3,35 @@ import {
   FIXED_COLUMN_LEFT_SIDE, TABLE_FIXED_TYPE,
 } from './constants';
 import { findChainByColumnIndex } from '../table-header-row/helpers';
+import { TableColumns, FixedColumnName, IsSpecificRowFn, TableColumn, HeaderColumnChainRows, FixedColumnSide } from '../../types';
 
-export const getFixedColumnKeys = (tableColumns, fixedNames) => tableColumns
+type ColumnDimensions = { [key: string]: number };
+type GetFixedColumnKeysFn = (tableColumns: TableColumns, fiexdNames: FixedColumnName[]) => string[];
+
+type CalculatePositionFn = (array: string[], index: number, dimensions: ColumnDimensions) => number;
+type CalculateFixedColumnPropsFn = (
+  params: { tableColumn: TableColumn },
+  fixedNames: { leftColumns: FixedColumnName[], rightColumns: FixedColumnName[] },
+  tableColumns: TableColumns,
+  tableColumnDimensions: ColumnDimensions,
+  tableHeaderColumnChains: HeaderColumnChainRows,
+) => {
+  showRightDivider: boolean,
+  showLeftDivider: boolean,
+  position: number,
+  side: FixedColumnSide,
+};
+
+export const getFixedColumnKeys: GetFixedColumnKeysFn = (tableColumns, fixedNames) => tableColumns
   .filter(tableColumn => (
-    (tableColumn.type === TABLE_DATA_TYPE && fixedNames.indexOf(tableColumn.column.name) !== -1)
+    (tableColumn.type === TABLE_DATA_TYPE && fixedNames.indexOf(tableColumn.column!.name) !== -1)
     || fixedNames.indexOf(tableColumn.type) !== -1
   ))
   .map(({ key }) => key);
 
-export const isFixedTableRow = tableRow => tableRow.type === TABLE_FIXED_TYPE;
+export const isFixedTableRow: IsSpecificRowFn = tableRow => tableRow.type === TABLE_FIXED_TYPE;
 
-const calculatePosition = (array, index, tableColumnDimensions) => (
+const calculatePosition: CalculatePositionFn = (array, index, tableColumnDimensions) => (
   index === 0
     ? 0
     : array
@@ -21,7 +39,7 @@ const calculatePosition = (array, index, tableColumnDimensions) => (
       .reduce((acc, target) => acc + tableColumnDimensions[target] || 0, 0)
 );
 
-export const calculateFixedColumnProps = (
+export const calculateFixedColumnProps: CalculateFixedColumnPropsFn = (
   { tableColumn },
   { leftColumns, rightColumns },
   tableColumns,
@@ -35,7 +53,7 @@ export const calculateFixedColumnProps = (
 
   const index = tableColumns.findIndex(({ key }) => key === tableColumn.key);
   const fixedIndex = targetArray.indexOf(tableColumn.key);
-  const columnChain = findChainByColumnIndex(tableHeaderColumnChains[0], index);
+  const columnChain = findChainByColumnIndex(tableHeaderColumnChains[0], index)!;
 
   const showLeftDivider = columnChain.start === index && index !== 0;
   const showRightDivider = columnChain.start + columnChain.columns.length - 1 === index

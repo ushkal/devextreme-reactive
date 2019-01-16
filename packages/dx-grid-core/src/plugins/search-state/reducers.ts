@@ -1,1 +1,3 @@
-export const changeSearchValue = (prevSearchValue, searchValue) => searchValue;
+export const changeSearchValue = (
+  prevSearchValue: string, searchValue: string,
+) => searchValue;

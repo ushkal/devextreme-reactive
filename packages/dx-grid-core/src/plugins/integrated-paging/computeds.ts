@@ -1,5 +1,5 @@
 import { clamp } from './helpers';
-import { Rows, IGetRowLevelKey } from '../../types';
+import { Rows, GetRowLevelKeyFn } from '../../types';
 
 // tslint:disable-next-line:max-line-length
 const PAGE_HEADERS_OVERFLOW_ERROR = 'Max row level exceeds the page size. Consider increasing the page size.';
@@ -11,7 +11,7 @@ export const paginatedRows = (rows: Rows, pageSize: number, page: number) => (
 );
 
 export const rowsWithPageHeaders = (
-  rows: Rows, pageSize: number, getRowLevelKey: IGetRowLevelKey,
+  rows: Rows, pageSize: number, getRowLevelKey: GetRowLevelKeyFn,
 ) => {
   if (!pageSize || !getRowLevelKey) return rows;
 

@@ -47,7 +47,7 @@ export type TableColumns = ReadonlyArray<TableColumn>;
 export type TableRows = ReadonlyArray<TableRow>;
 
 export type GetCellColSpanFn = (
-  params: { tableRow: TableRow, tableColumns: TableColumns, tableColumn: TableColumn }
+  params: { tableRow: TableRow, tableColumns: TableColumns, tableColumn: TableColumn },
 ) => number;
 export type CellColSpanGetter = (
   getTableCellColSpan: GetCellColSpanFn,

@@ -1,4 +1,11 @@
-export const getAvailableFilterOperationsGetter = (
+import { Computed } from "@devexpress/dx-core";
+import { GetAvailableFilterOperationsFn, FilterOperation } from "../../types";
+
+export const getAvailableFilterOperationsGetter: Computed<
+  GetAvailableFilterOperationsFn,
+  FilterOperation[],
+  string[]
+> = (
   getAvailableFilterOperations,
   availableFilterOperations,
   columnNames,

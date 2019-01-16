@@ -1,13 +1,6 @@
-import { StateReducer } from '@devexpress/dx-core';
 import { toggle } from '../../utils/common-reducers';
+import { ToggleRowFieldReducer } from '../../types';
 
-type DetailRowToggleState = number[];
-type DetailRowTogglePayload = {
-  rowId: number, state: DetailRowToggleState,
-};
-
-export const toggleDetailRowExpanded: StateReducer<
-  DetailRowToggleState, DetailRowTogglePayload
-> = (
+export const toggleDetailRowExpanded: ToggleRowFieldReducer = (
   prevExpanded, { rowId, state },
 ) => toggle(prevExpanded, [rowId], state);

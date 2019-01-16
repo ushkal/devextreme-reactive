@@ -1,7 +1,7 @@
 import { NODE_CHECK, rowsToTree, treeToRows } from '../../utils/hierarchical-data';
 import {
-  Row, Filter, Rows, FilterPredicate, IGetRowLevelKey,
-  FilterExpression, IGetCellValue, IGetCollapsedRows,
+  Row, Filter, Rows, FilterPredicate, GetRowLevelKeyFn,
+  FilterExpression, IGetCellValue, GetCollapsedRowsFn,
 } from '../../types';
 
 type IGetColumnPredicate = (columnName: string) => FilterPredicate;
@@ -75,8 +75,8 @@ const filterTree = (tree: any[], predicate: ICompiledPredicate) => tree.reduce(
 const filterHierarchicalRows = (
   rows: Rows,
   predicate: ICompiledPredicate,
-  getRowLevelKey: IGetRowLevelKey,
-  getCollapsedRows: IGetCollapsedRows,
+  getRowLevelKey: GetRowLevelKeyFn,
+  getCollapsedRows: GetCollapsedRowsFn,
 ) => {
   const tree = rowsToTree(rows, getRowLevelKey);
   const collapsedRowsMeta: any[] = [];
@@ -132,8 +132,8 @@ export const filteredRows = (
   filterExpression: FilterExpression,
   getCellValue: IGetCellValue,
   getColumnPredicate: IGetColumnPredicate,
-  getRowLevelKey: IGetRowLevelKey,
-  getCollapsedRows: IGetCollapsedRows,
+  getRowLevelKey: GetRowLevelKeyFn,
+  getCollapsedRows: GetCollapsedRowsFn,
 ) => {
   if (!(filterExpression && Object.keys(filterExpression).length && rows.length)) {
     return { rows };

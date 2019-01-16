@@ -1,7 +1,13 @@
+import { Computed } from '@devexpress/dx-core';
 import { GRID_TREE_NODE_TYPE } from './constants';
+import {
+  GetCustomTreeRowsFn, CustomTreeRowsWithMetaComputed, RowsWithTreeMetaMap,
+  RowsWithCollapsedRowsMetaMap, ExpandedTreeRowsComputed, IsSpecificTreeRowGetter,
+  GetRowIdFn, GetRowLevelKeyFn, GetCollapsedRowsFn, Rows,
+} from '../../types';
 
-const customTreeRows = (
-  currentRow: any,
+const customTreeRows: GetCustomTreeRowsFn = (
+  currentRow,
   getChildRows,
   rootRows,
   level = 0,
@@ -25,7 +31,7 @@ const customTreeRows = (
     }, { rows: [], treeMeta: [] });
 };
 
-export const customTreeRowsWithMeta = (
+export const customTreeRowsWithMeta: CustomTreeRowsWithMetaComputed = (
   rows,
   getChildRows,
 ) => {
@@ -37,17 +43,21 @@ export const customTreeRowsWithMeta = (
   };
 };
 
-export const customTreeRowIdGetter = (getRowId, { rows, treeMeta }) => {
-  const firstNestedRowIndex = rows.findIndex(row => treeMeta.get(row).level > 0);
+export const customTreeRowIdGetter: Computed<GetRowIdFn, RowsWithTreeMetaMap> = (
+  getRowId, { rows, treeMeta },
+) => {
+  const firstNestedRowIndex = rows.findIndex(row => treeMeta.get(row)!.level > 0);
   if (firstNestedRowIndex === -1 || getRowId(rows[firstNestedRowIndex]) !== undefined) {
     return getRowId;
   }
   const map = new Map(rows
-    .map((row, rowIndex) => [row, rowIndex]));
+    .map((row, rowIndex) => [row, rowIndex] as [any, any]));
   return row => map.get(row);
 };
 
-export const customTreeRowLevelKeyGetter = (getRowLevelKey, { treeMeta }) => (row) => {
+export const customTreeRowLevelKeyGetter: Computed<GetRowLevelKeyFn, RowsWithTreeMetaMap> = (
+  getRowLevelKey, { treeMeta },
+) => (row) => {
   const rowMeta = treeMeta.get(row);
   if (rowMeta !== undefined) {
     return `${GRID_TREE_NODE_TYPE.toString()}_${rowMeta.level}`;
@@ -55,7 +65,9 @@ export const customTreeRowLevelKeyGetter = (getRowLevelKey, { treeMeta }) => (ro
   return getRowLevelKey && getRowLevelKey();
 };
 
-export const expandedTreeRows = ({ rows, treeMeta }, getRowId, expandedRowIds) => {
+export const expandedTreeRows: ExpandedTreeRowsComputed = (
+  { rows, treeMeta }, getRowId, expandedRowIds,
+) => {
   const expandedRowIdsSet = new Set(expandedRowIds);
 
   let currentExpanded = true;
@@ -80,7 +92,7 @@ export const expandedTreeRows = ({ rows, treeMeta }, getRowId, expandedRowIds) =
     }
 
     currentExpanded = expandedRowIdsSet.has(getRowId(row));
-    currentLevel = level;
+    currentLevel = level!;
 
     acc.rows.push(row);
 
@@ -88,18 +100,21 @@ export const expandedTreeRows = ({ rows, treeMeta }, getRowId, expandedRowIds) =
   }, { rows: [], treeMeta, collapsedRowsMeta: new Map() });
 };
 
-export const collapsedTreeRowsGetter = (
+export const collapsedTreeRowsGetter: Computed<
+  GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap
+> = (
   getCollapsedRows, { collapsedRowsMeta },
 ) => row => collapsedRowsMeta.get(row) || (getCollapsedRows && getCollapsedRows(row));
 
-export const isTreeRowLeafGetter = ({ treeMeta }) => (row) => {
+export const isTreeRowLeafGetter: IsSpecificTreeRowGetter = ({ treeMeta }) => (row) => {
   const rowMeta = treeMeta.get(row);
-  return rowMeta && rowMeta.leaf;
+  return !!rowMeta && rowMeta.leaf;
 };
 
-export const getTreeRowLevelGetter = ({ treeMeta }) => (row) => {
+export const getTreeRowLevelGetter: IsSpecificTreeRowGetter = ({ treeMeta }) => (row) => {
   const rowMeta = treeMeta.get(row);
-  return rowMeta && rowMeta.level;
+  return !!(rowMeta && rowMeta.level);
 };
 
-export const unwrappedCustomTreeRows = ({ rows }) => rows;
+type UnwrapRowsFn = (params: { rows: Rows }) => Rows;
+export const unwrappedCustomTreeRows: UnwrapRowsFn = ({ rows }) => rows;
