@@ -1,4 +1,5 @@
 import { Column } from './grid-core.types';
+import { Style } from 'jss/css';
 
 /** Describes properties of a table row that the Table plugin renders. */
 export interface TableRow {
@@ -52,3 +53,23 @@ export type GetCellColSpanFn = (
 export type CellColSpanGetter = (
   getTableCellColSpan: GetCellColSpanFn,
 ) => GetCellColSpanFn;
+
+export type ColumnGeometry = { left: number, right: number };
+export type TargetColumnGeometry = ColumnGeometry & { top: number, bottom: number };
+export type GetTableColumnGeometriesFn = (...args: [TableColumns, number]) => ColumnGeometry[];
+export type GetTableTargetColumnIndexFn = (...args: [
+  TargetColumnGeometry[], number, number
+]) => number;
+export type GetTargetColumnGeometriesFn = (
+  ...args: [TargetColumnGeometry[], number]
+) => TargetColumnGeometry[];
+
+export type ColumnAnimation = {
+  startTime: number,
+  style: Style,
+  left?: { from: number, to: number },
+};
+export type ColumnAnimationMap = Map<string, ColumnAnimation>;
+export type GetColumnAnimationsFn = (
+  ...args: [TableColumns, TableColumns, number, ColumnAnimationMap]
+) => ColumnAnimationMap;

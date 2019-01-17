@@ -1,5 +1,7 @@
-import { Rows, IGetCellValue, TableRows, Row } from '.';
-import { GetRowLevelKeyFn, IsSpecificRowFn, GetCollapsedRowsFn, GetRowIdFn } from './grid-core.types';
+import {
+  GetRowLevelKeyFn, IsSpecificRowFn, GetCollapsedRowsFn, GetRowIdFn, Row, GetCellValueFn,
+} from './grid-core.types';
+import { TableRows } from './table.types';
 
 export interface SummaryItem {
   /** The name of a column associated with the current summary item. */
@@ -10,24 +12,34 @@ export interface SummaryItem {
 export type SummaryType = string;
 
 type GetRowValueFn = (row: Row) => any;
+export type GetColumnSummariesFn = (...args: [
+  SummaryItem[], string, SummaryValue[]
+// tslint:disable-next-line:prefer-array-literal
+]) => Array<{ type: SummaryType, value: SummaryValue }>;
+
 type DefaultSummaryCalulator = (rows: TableRows, getValue: GetRowValueFn) => number | null;
 export type DefaultSummaryCalculators = { [key: string]: DefaultSummaryCalulator };
 export type SummaryValue = number | null;
-export type SummaryCalculator = (
-  type: SummaryType, rows: TableRows, getValue: GetRowValueFn,
-) => SummaryValue;
+type GroupSummaryValue = { [key: string]: SummaryValue[] };
+type TreeSummaryValue = { [key: number]: SummaryValue[] };
 
-type RowsSummaryBaseFn<P3, P4 = never, P5 = never, P6 = never> = (
-  rows: TableRows, summaryItems: SummaryItem[], getCellValue: IGetCellValue,
-  p3: P3, p4?: P4, p5?: P5, p6?: P6,
-) => SummaryValue[];
+export type SummaryCalculator = (...args: [SummaryType, TableRows, GetRowValueFn]) => SummaryValue;
 
-type SummaryValuesBaseFn<P5, P6 = never> = RowsSummaryBaseFn<
-  GetRowLevelKeyFn, IsSpecificRowFn, P5, P6
->;
+export type RowsSummaryFn = (...args: [
+  TableRows, SummaryItem[], GetCellValueFn, SummaryCalculator
+]) => SummaryValue[];
 
-export type RowsSummaryFn = RowsSummaryBaseFn<SummaryCalculator>;
+export type TotalSummaryValuesFn = (...args: [
+  TableRows, SummaryItem[], GetCellValueFn, GetRowLevelKeyFn,
+  IsSpecificRowFn, GetCollapsedRowsFn, SummaryCalculator
+]) => SummaryValue[];
 
-export type TotalSummaryValuesFn = SummaryValuesBaseFn<GetCollapsedRowsFn, SummaryCalculator>;
-export type GroupSummaryValuesFn = SummaryValuesBaseFn<SummaryCalculator>;
-export type TreeSummaryValuesFn = SummaryValuesBaseFn<GetRowIdFn, SummaryCalculator>;
+export type GroupSummaryValuesFn = (...args: [
+  TableRows, SummaryItem[], GetCellValueFn, GetRowLevelKeyFn,
+  IsSpecificRowFn, SummaryCalculator
+]) => GroupSummaryValue;
+
+export type TreeSummaryValuesFn = (...args: [
+  TableRows, SummaryItem[], GetCellValueFn, GetRowLevelKeyFn,
+  IsSpecificRowFn, GetRowIdFn, SummaryCalculator
+]) => TreeSummaryValue;

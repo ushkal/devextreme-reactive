@@ -1,9 +1,9 @@
+import { MergeFn, SortArrayToAuxiliaryFn, CompareFn } from '../types';
+
 /* eslint-disable no-plusplus, no-param-reassign, no-use-before-define, no-constant-condition */
 /* tslint:disable no-increment-decrement */
 
-export type ICompare =(a: any, b: any) => number;
-
-const merge = (array, auxiliary, lo, mid, hi, compare) => {
+const merge: MergeFn = (array, auxiliary, lo, mid, hi, compare) => {
   let i = lo;
   let j = mid + 1;
   let k = lo;
@@ -29,7 +29,7 @@ const merge = (array, auxiliary, lo, mid, hi, compare) => {
   }
 };
 
-const sortArrayToAuxiliary = (array, auxiliary, lo, hi, compare) => {
+const sortArrayToAuxiliary: SortArrayToAuxiliaryFn = (array, auxiliary, lo, hi, compare) => {
   if (hi < lo) return;
   if (hi === lo) {
     auxiliary[lo] = array[lo];
@@ -41,7 +41,7 @@ const sortArrayToAuxiliary = (array, auxiliary, lo, hi, compare) => {
   merge(array, auxiliary, lo, mid, hi, compare);
 };
 
-const sortAuxiliaryToArray = (array, auxiliary, lo, hi, compare) => {
+const sortAuxiliaryToArray: SortArrayToAuxiliaryFn = (array, auxiliary, lo, hi, compare) => {
   if (hi <= lo) return;
   const mid = Math.floor(lo + ((hi - lo) / 2));
   sortArrayToAuxiliary(array, auxiliary, lo, mid, compare);
@@ -50,8 +50,8 @@ const sortAuxiliaryToArray = (array, auxiliary, lo, hi, compare) => {
 };
 
 export default (
-  array,
-  compare = (a, b): number => {
+  array: any[] | ReadonlyArray<any>,
+  compare: CompareFn = (a, b): number => {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;

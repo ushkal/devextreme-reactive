@@ -1,11 +1,12 @@
 import {
-  TableRows, Row, SummaryType, SummaryItem, Rows, IGetCellValue, DefaultSummaryCalculators,
+  Row, DefaultSummaryCalculators,
   SummaryCalculator,
   RowsSummaryFn,
   SummaryValue,
   TotalSummaryValuesFn,
   TableRow,
   GroupSummaryValuesFn,
+  TreeSummaryValuesFn,
 } from '../../types';
 
 const defaultSummaryCalculators: DefaultSummaryCalculators = {
@@ -89,7 +90,7 @@ export const groupSummaryValues: GroupSummaryValuesFn = (
       });
       levels = levels.slice(0, levelIndex);
     }
-    if (isGroupRow(row)) {
+    if (isGroupRow!(row)) {
       levels.push({
         levelKey,
         row,
@@ -105,7 +106,7 @@ export const groupSummaryValues: GroupSummaryValuesFn = (
   return summaries;
 };
 
-export const treeSummaryValues = (
+export const treeSummaryValues: TreeSummaryValuesFn = (
   rows,
   summaryItems,
   getCellValue,

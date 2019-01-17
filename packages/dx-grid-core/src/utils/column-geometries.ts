@@ -1,6 +1,10 @@
-export const getTargetColumnGeometries = (columnGeometries, sourceIndex) => {
+import { GetTargetColumnGeometriesFn } from '../types';
+
+export const getTargetColumnGeometries: GetTargetColumnGeometriesFn = (
+  columnGeometries, sourceIndex,
+) => {
   const sourceWidth = columnGeometries[sourceIndex].right - columnGeometries[sourceIndex].left;
-  const getWidthDifference = index => columnGeometries[index].right
+  const getWidthDifference = (index: number) => columnGeometries[index].right
                                       - columnGeometries[index].left
                                       - sourceWidth;
 

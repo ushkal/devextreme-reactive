@@ -1,17 +1,26 @@
+import {
+  GetVisibleBoundaryWithFixedFn, VisibleBoundary, GetVisibleBoundaryFn, GetSpanBoundaryFn,
+  CollapseBoundariesFn, GetColumnsSizeFn, GetCollapsedColumnsFn, CollapsedColumn,
+  GetCollapsedAndStubRowsFn, GetCollapsedCellsFn, GetCollapsedGridFn, GetColumnWidthFn,
+  GetRowHeightFn,
+} from '../types';
+
 export const TABLE_STUB_TYPE = Symbol('stub');
 
-export const getVisibleBoundaryWithFixed = (
+export const getVisibleBoundaryWithFixed: GetVisibleBoundaryWithFixedFn = (
   visibleBoundary, items,
 ) => items.reduce((acc, item, index) => {
   if (item.fixed && (index < visibleBoundary[0] || index > visibleBoundary[1])) {
     acc.push([index, index]);
   }
   return acc;
-}, [visibleBoundary]);
+}, [visibleBoundary] as [VisibleBoundary]);
 
-export const getVisibleBoundary = (items, viewportStart, viewportSize, getItemSize, overscan) => {
-  let start: any = null;
-  let end: any = null;
+export const getVisibleBoundary: GetVisibleBoundaryFn = (
+  items, viewportStart, viewportSize, getItemSize, overscan,
+) => {
+  let start: number | null = null;
+  let end: number | null = null;
 
   const viewportEnd = viewportStart + viewportSize;
   let index = 0;
@@ -47,31 +56,35 @@ export const getVisibleBoundary = (items, viewportStart, viewportSize, getItemSi
   return [start, end];
 };
 
-export const getSpanBoundary = (items, visibleBoundaries, getItemSpan) => visibleBoundaries
-  .map((visibleBoundary) => {
-    let [start, end] = visibleBoundary;
+export const getSpanBoundary: GetSpanBoundaryFn = (
+  items, visibleBoundaries, getItemSpan,
+) => visibleBoundaries
+      .map((visibleBoundary) => {
+        let [start, end] = visibleBoundary;
 
-    for (let index = 0; index <= visibleBoundary[1]; index += 1) {
-      const span = getItemSpan(items[index]);
-      if (index < visibleBoundary[0] && index + span > visibleBoundary[0]) {
-        start = index;
-      }
-      if (index + (span - 1) > visibleBoundary[1]) {
-        end = index + (span - 1);
-      }
-    }
-    return [start, end];
-  });
+        for (let index = 0; index <= visibleBoundary[1]; index += 1) {
+          const span = getItemSpan(items[index]);
+          if (index < visibleBoundary[0] && index + span > visibleBoundary[0]) {
+            start = index;
+          }
+          if (index + (span - 1) > visibleBoundary[1]) {
+            end = index + (span - 1);
+          }
+        }
+        return [start, end] as VisibleBoundary;
+      });
 
-export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries) => {
-  const boundaries: any[] = [];
+export const collapseBoundaries: CollapseBoundariesFn = (
+  itemsCount, visibleBoundaries, spanBoundaries,
+) => {
+  const boundaries: VisibleBoundary[] = [];
 
   const visiblePoints = visibleBoundaries.reduce((acc, boundary) => {
     for (let point = boundary[0]; point <= boundary[1]; point += 1) {
       acc.push(point);
     }
     return acc;
-  }, []);
+  }, [] as number[]);
 
   const spanStartPoints = new Set();
   const spanEndPoints = new Set();
@@ -81,7 +94,7 @@ export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries
       spanEndPoints.add(boundary[1]);
     }));
 
-  let lastPoint: any;
+  let lastPoint: number | undefined;
   for (let index = 0; index < itemsCount; index += 1) {
     if (visiblePoints.indexOf(index) !== -1) {
       if (lastPoint !== undefined) {
@@ -115,7 +128,7 @@ export const collapseBoundaries = (itemsCount, visibleBoundaries, spanBoundaries
   return boundaries;
 };
 
-const getColumnsSize = (columns, startIndex, endIndex, getColumnSize) => {
+const getColumnsSize: GetColumnsSizeFn = (columns, startIndex, endIndex, getColumnSize) => {
   let size = 0;
   let index;
   const loopEndIndex = endIndex + 1;
@@ -125,8 +138,10 @@ const getColumnsSize = (columns, startIndex, endIndex, getColumnSize) => {
   return size;
 };
 
-export const getCollapsedColumns = (columns, visibleBoundaries, boundaries, getColumnWidth) => {
-  const collapsedColumns: any[] = [];
+export const getCollapsedColumns: GetCollapsedColumnsFn = (
+  columns, visibleBoundaries, boundaries, getColumnWidth,
+) => {
+  const collapsedColumns: CollapsedColumn[] = [];
   boundaries.forEach((boundary) => {
     const isVisible = visibleBoundaries.reduce((acc, visibleBoundary) => (
       acc || (visibleBoundary[0] <= boundary[0] && boundary[1] <= visibleBoundary[1])
@@ -149,18 +164,20 @@ export const getCollapsedColumns = (columns, visibleBoundaries, boundaries, getC
   return collapsedColumns;
 };
 
-export const getCollapsedRows = (rows, visibleBoundary, boundaries, getRowHeight, getCells) => {
-  const collapsedColumns: any[] = [];
+export const getCollapsedRows: GetCollapsedAndStubRowsFn = (
+  rows, visibleBoundary, boundaries, getRowHeight, getCells,
+) => {
+  const collapsedRows: any[] = [];
   boundaries.forEach((boundary) => {
     const isVisible = visibleBoundary[0] <= boundary[0] && boundary[1] <= visibleBoundary[1];
     if (isVisible) {
       const row = rows[boundary[0]];
-      collapsedColumns.push({
+      collapsedRows.push({
         row,
         cells: getCells(row),
       });
     } else {
-      collapsedColumns.push({
+      collapsedRows.push({
         row: {
           key: `${TABLE_STUB_TYPE.toString()}_${boundary[0]}_${boundary[1]}`,
           type: TABLE_STUB_TYPE,
@@ -169,11 +186,13 @@ export const getCollapsedRows = (rows, visibleBoundary, boundaries, getRowHeight
       });
     }
   });
-  return collapsedColumns;
+  return collapsedRows;
 };
 
-export const getCollapsedCells = (columns, spanBoundaries, boundaries, getColSpan) => {
-  const collapsedColumns: any[] = [];
+export const getCollapsedCells: GetCollapsedCellsFn = (
+  columns, spanBoundaries, boundaries, getColSpan,
+) => {
+  const collapsedCells = [];
   let index = 0;
   while (index < boundaries.length) {
     const boundary = boundaries[index];
@@ -188,13 +207,13 @@ export const getCollapsedCells = (columns, spanBoundaries, boundaries, getColSpa
         <= realColSpanEnd && realColSpanEnd
         <= colSpanBoundary[1],
       );
-      collapsedColumns.push({
+      collapsedCells.push({
         column,
         colSpan: (colSpanEnd - index) + 1,
       });
       index += 1;
     } else {
-      collapsedColumns.push({
+      collapsedCells.push({
         column: {
           key: `${TABLE_STUB_TYPE.toString()}_${boundary[0]}_${boundary[1]}`,
           type: TABLE_STUB_TYPE,
@@ -204,19 +223,19 @@ export const getCollapsedCells = (columns, spanBoundaries, boundaries, getColSpa
       index += 1;
     }
   }
-  return collapsedColumns;
+  return collapsedCells;
 };
 
-export const getCollapsedGrid = ({
+export const getCollapsedGrid: GetCollapsedGridFn = ({
   rows,
   columns,
   top,
   height,
   left,
   width,
-  getColumnWidth = column => column.width,
-  getRowHeight = row => row.height,
-  getColSpan = (...args) => 1,
+  getColumnWidth = (column => column.width) as GetColumnWidthFn,
+  getRowHeight = (row => row.height) as GetRowHeightFn,
+  getColSpan = (...args: any[]) => 1,
 }) => {
   if (!rows.length || !columns.length) {
     return {

@@ -6,7 +6,7 @@ import {
   GRID_GROUP_COLLAPSED_ROWS,
 } from './constants';
 import {
-  Rows, Groupings, IGetCellValue, ExpandedGroups, IGroupingCriteria, Row, GetCollapsedRowsFn,
+  Rows, Groupings, GetCellValueFn, ExpandedGroups, IGroupingCriteria, Row, GetCollapsedRowsFn,
 } from '../../types';
 
 export const groupRowChecker = (row: Row) => row[GRID_GROUP_CHECK];
@@ -21,7 +21,7 @@ const defaultColumnCriteria = (value: any) => ({
 export const groupedRows = (
   rows: Rows,
   grouping: Groupings,
-  getCellValue: IGetCellValue,
+  getCellValue: GetCellValueFn,
   getColumnCriteria: (columnName: string) => IGroupingCriteria,
   keyPrefix = '',
 ) => {

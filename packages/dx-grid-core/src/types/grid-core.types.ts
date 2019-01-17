@@ -9,7 +9,7 @@ export interface Column {
   /** Specifies the column title. */
   title?: string;
   /** Specifies the function used to get the column value for a given row. */
-  getCellValue?: IGetCellValue;
+  getCellValue?: GetCellValueFn;
 }
 
 export type Row = any;
@@ -23,7 +23,7 @@ export type ToggleRowsFieldReducer = StateReducer<RowIds, ToggleRowsPayload & { 
 export type ToggleRowFieldReducer = StateReducer<RowIds, ToggleRowsPayload & { rowId: RowId }>;
 
 /** Specifies the function used to get a cell's value. */
-export type IGetCellValue = (row: any, columnName: string) => any;
+export type GetCellValueFn = (row: any, columnName: string) => any;
 export type GetRowLevelKeyFn = (row?: any) => string;
 export type GetCollapsedRowsFn = (row: any) => Rows;
 export type IsSpecificRowFn = (row: any) => boolean;

@@ -1,6 +1,8 @@
-import mergeSort, { ICompare } from '../../utils/merge-sort';
+import mergeSort from '../../utils/merge-sort';
 import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierarchical-data';
-import { Sortings, Row, Rows, IGetCellValue, GetRowLevelKeyFn, IsSpecificRowFn } from '../../types';
+import {
+  Sortings, Row, Rows, GetCellValueFn, GetRowLevelKeyFn, IsSpecificRowFn, CompareFn,
+} from '../../types';
 
 const defaultCompare = (a: any, b: any) => {
   if (a === b) return 0;
@@ -19,7 +21,7 @@ const defaultCompare = (a: any, b: any) => {
 
 type IGetColumnCompare = (name: string) => (a: any, b: any) => number;
 
-const createCompare: (...args: any[]) => ICompare = (
+const createCompare: (...args: any[]) => CompareFn = (
   sorting: Sortings,
   getColumnCompare: IGetColumnCompare,
   getComparableValue: (row: Row, columnName: string) => any,
@@ -45,7 +47,7 @@ const createCompare: (...args: any[]) => ICompare = (
     (...args: any[]) => 0,
   );
 
-type ISortTree = (tree: TreeNode[], compare: ICompare) => TreeNode[];
+type ISortTree = (tree: TreeNode[], compare: CompareFn) => TreeNode[];
 const sortTree: ISortTree = (tree, compare) => {
   const sortedTree = tree.map((node) => {
     if (node[NODE_CHECK]) {
@@ -62,7 +64,7 @@ const sortTree: ISortTree = (tree, compare) => {
   ) as TreeNode[];
 };
 
-const sortHierarchicalRows = (rows: Rows, compare: ICompare, getRowLevelKey: GetRowLevelKeyFn) => {
+const sortHierarchicalRows = (rows: Rows, compare: CompareFn, getRowLevelKey: GetRowLevelKeyFn) => {
   const tree = rowsToTree(rows, getRowLevelKey);
 
   const sortedTree = sortTree(tree, compare);
@@ -73,7 +75,7 @@ const sortHierarchicalRows = (rows: Rows, compare: ICompare, getRowLevelKey: Get
 export const sortedRows = (
   rows: Rows,
   sorting: Sortings,
-  getCellValue: IGetCellValue,
+  getCellValue: GetCellValueFn,
   getColumnCompare: IGetColumnCompare,
   isGroupRow: IsSpecificRowFn,
   getRowLevelKey: GetRowLevelKeyFn,

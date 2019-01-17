@@ -1,19 +1,29 @@
+import { Computed } from '@devexpress/dx-core';
 import {
   TABLE_TOTAL_SUMMARY_TYPE,
   TABLE_GROUP_SUMMARY_TYPE,
   TABLE_TREE_SUMMARY_TYPE,
 } from './constants';
+import {
+  TableRows, GetRowLevelKeyFn, IsSpecificRowFn, GetRowIdFn, Row, TableRow,
+} from '../../types';
 
-export const tableRowsWithTotalSummaries = footerRows => [
+type RowLevel = { levelKey: number, row: Row, opened: boolean };
+
+export const tableRowsWithTotalSummaries: Computed<TableRows> = footerRows => [
   { key: TABLE_TOTAL_SUMMARY_TYPE.toString(), type: TABLE_TOTAL_SUMMARY_TYPE },
   ...footerRows,
 ];
 
-export const tableRowsWithSummaries = (tableRows, getRowLevelKey, isGroupRow, getRowId) => {
+export const tableRowsWithSummaries: Computed<
+  TableRows, GetRowLevelKeyFn, IsSpecificRowFn, GetRowIdFn
+> = (
+  tableRows, getRowLevelKey, isGroupRow, getRowId,
+) => {
   if (!getRowLevelKey) return tableRows;
 
-  const result: any[] = [];
-  const closeLevel = (level) => {
+  const result: TableRow[] = [];
+  const closeLevel = (level: RowLevel) => {
     if (!level.opened) return;
     if (isGroupRow && isGroupRow(level.row)) {
       const { compoundKey } = level.row;

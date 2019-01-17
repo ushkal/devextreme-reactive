@@ -1,4 +1,4 @@
-import { Row } from '../types';
+import { Row, GetRowLevelKeyFn, TableRows } from '../types';
 
 export const NODE_CHECK = Symbol('node');
 
@@ -7,8 +7,10 @@ export type TreeNode = {
   root?: Row;
   children: TreeNode[];
 };
+type RowsToTreeFn = (...args: [TableRows, GetRowLevelKeyFn]) => TreeNode[];
+type TreeToRowsFn = (...args: [TreeNode[], TreeNode[]?]) => TreeNode[];
 
-export const rowsToTree = (rows, getRowLevelKey) => {
+export const rowsToTree: RowsToTreeFn = (rows, getRowLevelKey) => {
   if (!rows.length) return rows;
 
   const levels: any[] = [{ children: [] }];
@@ -32,7 +34,7 @@ export const rowsToTree = (rows, getRowLevelKey) => {
   return levels[0].children;
 };
 
-export const treeToRows = (tree, rows = []) => {
+export const treeToRows: TreeToRowsFn = (tree, rows = []) => {
   if (!tree.length) return tree;
   return tree.reduce(
     (acc, node) => {

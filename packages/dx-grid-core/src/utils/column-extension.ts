@@ -1,15 +1,24 @@
-export const getColumnExtension = (columnExtensions, columnName) => {
+import { ColumnExtension } from '../types';
+
+type GetColumnExtensionFn = (...args: [ColumnExtension[], string]) => ColumnExtension;
+type GetColumnExtensionValueGetterFn = (...args: [
+  ColumnExtension[], string, any
+]) => (columnName: string) => any;
+
+export const getColumnExtension: GetColumnExtensionFn = (columnExtensions, columnName) => {
   if (!columnExtensions) {
-    return {};
+    // tslint:disable-next-line:no-object-literal-type-assertion
+    return {} as ColumnExtension;
   }
   const columnExtension = columnExtensions.find(extension => extension.columnName === columnName);
   if (!columnExtension) {
-    return {};
+    // tslint:disable-next-line:no-object-literal-type-assertion
+    return {} as ColumnExtension;
   }
   return columnExtension;
 };
 
-export const getColumnExtensionValueGetter = (
+export const getColumnExtensionValueGetter: GetColumnExtensionValueGetterFn = (
   columnExtensions, extensionName, defaultValue,
 ) => (columnName) => {
   if (columnExtensions) {
