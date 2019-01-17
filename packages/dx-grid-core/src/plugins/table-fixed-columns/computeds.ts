@@ -1,11 +1,11 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { FIXED_COLUMN_LEFT_SIDE, FIXED_COLUMN_RIGHT_SIDE, TABLE_FIXED_TYPE } from './constants';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
-import { Computed } from '@devexpress/dx-core';
 import { FixedColumnName, TableColumns, FixedColumnSide, TableRows, HeaderColumnChainRows, ShouldSplitChainFn, TableColumn } from '../../types';
 
-export const tableColumnsWithFixed: Computed<
-  TableColumns, FixedColumnName[], FixedColumnName[]
+export const tableColumnsWithFixed: PureComputed<
+  [TableColumns, FixedColumnName[], FixedColumnName[]]
 > = (
   tableColumns, leftColumns, rightColumns,
 ) => tableColumns
@@ -24,13 +24,13 @@ export const tableColumnsWithFixed: Computed<
     return fixed ? { ...tableColumn, fixed } : tableColumn;
   });
 
-export const tableHeaderRowsWithFixed: Computed<TableRows> = tableHeaderRows => [
+export const tableHeaderRowsWithFixed: PureComputed<[TableRows]> = tableHeaderRows => [
   ...tableHeaderRows,
   { key: TABLE_FIXED_TYPE.toString(), type: TABLE_FIXED_TYPE, height: 0 },
 ];
 
-export const tableHeaderColumnChainsWithFixed: Computed<
-  HeaderColumnChainRows, TableRows, TableColumns
+export const tableHeaderColumnChainsWithFixed: PureComputed<
+  [HeaderColumnChainRows, TableRows, TableColumns]
 > = (
   tableHeaderColumnChains, tableHeaderRows, tableColumns,
 ) => {

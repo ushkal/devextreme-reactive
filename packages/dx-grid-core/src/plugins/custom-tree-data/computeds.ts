@@ -1,4 +1,4 @@
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import { GRID_TREE_NODE_TYPE } from './constants';
 import {
   GetCustomTreeRowsFn, CustomTreeRowsWithMetaComputed, RowsWithTreeMetaMap,
@@ -43,7 +43,7 @@ export const customTreeRowsWithMeta: CustomTreeRowsWithMetaComputed = (
   };
 };
 
-export const customTreeRowIdGetter: Computed<GetRowIdFn, RowsWithTreeMetaMap> = (
+export const customTreeRowIdGetter: PureComputed<[GetRowIdFn, RowsWithTreeMetaMap]> = (
   getRowId, { rows, treeMeta },
 ) => {
   const firstNestedRowIndex = rows.findIndex(row => treeMeta.get(row)!.level > 0);
@@ -55,7 +55,7 @@ export const customTreeRowIdGetter: Computed<GetRowIdFn, RowsWithTreeMetaMap> = 
   return row => map.get(row);
 };
 
-export const customTreeRowLevelKeyGetter: Computed<GetRowLevelKeyFn, RowsWithTreeMetaMap> = (
+export const customTreeRowLevelKeyGetter: PureComputed<[GetRowLevelKeyFn, RowsWithTreeMetaMap]> = (
   getRowLevelKey, { treeMeta },
 ) => (row) => {
   const rowMeta = treeMeta.get(row);
@@ -100,8 +100,8 @@ export const expandedTreeRows: ExpandedTreeRowsComputed = (
   }, { rows: [], treeMeta, collapsedRowsMeta: new Map() });
 };
 
-export const collapsedTreeRowsGetter: Computed<
-  GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap
+export const collapsedTreeRowsGetter: PureComputed<
+  [GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap]
 > = (
   getCollapsedRows, { collapsedRowsMeta },
 ) => row => collapsedRowsMeta.get(row) || (getCollapsedRows && getCollapsedRows(row));

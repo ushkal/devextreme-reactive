@@ -1,4 +1,4 @@
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_BAND_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { getColumnMeta } from './helpers';
@@ -11,8 +11,8 @@ type GetMaxNestedLevelFn = (
   bands: ColumnBands[], level?: number, result?: { level: number } | null,
 ) => { level: number };
 
-export const tableRowsWithBands: Computed<
-  TableRows, ColumnBands[], TableColumns
+export const tableRowsWithBands: PureComputed<
+  [TableRows, ColumnBands[], TableColumns]
 > = (
   tableHeaderRows, columnBands, tableColumns,
 ) => {

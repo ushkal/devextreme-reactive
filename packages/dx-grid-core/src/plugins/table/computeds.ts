@@ -1,10 +1,10 @@
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_DATA_TYPE, TABLE_NODATA_TYPE } from './constants';
 import { getColumnExtension } from '../../utils/column-extension';
 import { ColumnExtension, GetCellColSpanFn } from './../../types/table.types';
 import { Rows, GetRowIdFn } from '../../types';
 
-export const tableColumnsWithDataRows: Computed<any[], ColumnExtension[]> = (
+export const tableColumnsWithDataRows: PureComputed<[any[], ColumnExtension[]]> = (
   columns, columnExtensions,
 ) => columns.map((column) => {
   const { name } = column;
@@ -19,7 +19,7 @@ export const tableColumnsWithDataRows: Computed<any[], ColumnExtension[]> = (
   };
 });
 
-export const tableRowsWithDataRows: Computed<Rows, GetRowIdFn> = (rows, getRowId) => (
+export const tableRowsWithDataRows: PureComputed<[Rows, GetRowIdFn]> = (rows, getRowId) => (
   !rows.length
     ? [{ key: TABLE_NODATA_TYPE.toString(), type: TABLE_NODATA_TYPE }]
     : rows.map((row) => {

@@ -1,4 +1,4 @@
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import {
   TABLE_TOTAL_SUMMARY_TYPE,
   TABLE_GROUP_SUMMARY_TYPE,
@@ -10,13 +10,13 @@ import {
 
 type RowLevel = { levelKey: number, row: Row, opened: boolean };
 
-export const tableRowsWithTotalSummaries: Computed<TableRows> = footerRows => [
+export const tableRowsWithTotalSummaries: PureComputed<[TableRows]> = footerRows => [
   { key: TABLE_TOTAL_SUMMARY_TYPE.toString(), type: TABLE_TOTAL_SUMMARY_TYPE },
   ...footerRows,
 ];
 
-export const tableRowsWithSummaries: Computed<
-  TableRows, GetRowLevelKeyFn, IsSpecificRowFn, GetRowIdFn
+export const tableRowsWithSummaries: PureComputed<
+  [TableRows, GetRowLevelKeyFn, IsSpecificRowFn, GetRowIdFn]
 > = (
   tableRows, getRowLevelKey, isGroupRow, getRowId,
 ) => {

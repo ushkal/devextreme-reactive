@@ -4,7 +4,7 @@ export type GetColumnWidthFn = (...args: [TableColumn, number?]) => number;
 export type GetRowHeightFn = (...args: [TableRow, number?]) => number;
 export type GetColSpanFn = (...args: [TableRow, TableColumn?]) => number;
 export type CollapsedColumn = TableColumn & { width: number };
-type CollapsedCell = { column: Pick<TableColumn, 'key' | 'type'>, colSpan: number };
+export type CollapsedCell = { column: Pick<TableColumn, 'key' | 'type'>, colSpan: number };
 type CollapsedRow = TableRow & { cells: any[], height: number };
 
 export type VisibleBoundary = [number, number];

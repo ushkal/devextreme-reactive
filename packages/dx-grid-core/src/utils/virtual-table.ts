@@ -3,6 +3,7 @@ import {
   CollapseBoundariesFn, GetColumnsSizeFn, GetCollapsedColumnsFn, CollapsedColumn,
   GetCollapsedAndStubRowsFn, GetCollapsedCellsFn, GetCollapsedGridFn, GetColumnWidthFn,
   GetRowHeightFn,
+  CollapsedCell,
 } from '../types';
 
 export const TABLE_STUB_TYPE = Symbol('stub');
@@ -192,7 +193,7 @@ export const getCollapsedRows: GetCollapsedAndStubRowsFn = (
 export const getCollapsedCells: GetCollapsedCellsFn = (
   columns, spanBoundaries, boundaries, getColSpan,
 ) => {
-  const collapsedCells = [];
+  const collapsedCells: CollapsedCell[] = [];
   let index = 0;
   while (index < boundaries.length) {
     const boundary = boundaries[index];

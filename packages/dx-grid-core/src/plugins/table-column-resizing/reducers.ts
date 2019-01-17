@@ -1,11 +1,11 @@
-import { StateReducer } from '@devexpress/dx-core';
+import { PureReducer } from '@devexpress/dx-core';
 
 type ColumnWidth = { columnName: string, width: number };
 type ColumnWidthPayload = { columnName: string, shift: number, minColumnWidth: number };
 type ColumnWidthState = { columnWidths: ColumnWidth[] };
 type DraftColumnWidthState = { draftColumnWidths: ColumnWidth[] };
-type ColumnWidthReducer = StateReducer<ColumnWidthState, ColumnWidthPayload>;
-type DraftColumnWidthReducer = StateReducer<
+type ColumnWidthReducer = PureReducer<ColumnWidthState, ColumnWidthPayload>;
+type DraftColumnWidthReducer = PureReducer<
   ColumnWidthState, ColumnWidthPayload, DraftColumnWidthState
 >;
 

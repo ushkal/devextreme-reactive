@@ -1,6 +1,6 @@
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { TABLE_GROUP_TYPE } from './constants';
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import {
   TableColumns, Groupings, TableColumn, Columns, TableRows, CellColSpanGetter,
 } from '../../types';
@@ -42,17 +42,8 @@ const tableColumnsWithDraftGrouping: TableColumnsWithGroupingComputed = (
   // tslint:disable-next-line: prefer-array-literal
   }, [] as Array<TableColumn & { draft?: boolean }>);
 
-// type ColumnsWithGrouping = (
-//   columns: Columns,
-//   tableColumns: TableColumns,
-//   grouping: Groupings,
-//   draftGrouping: Groupings,
-//   indentColumnWidth: number,
-//   showColumnWhenGrouped: ShowColumnWhenGroupedFn,
-// ) => TableColumns;
-
-export const tableColumnsWithGrouping: Computed<
-  TableColumns, Columns, Groupings, Groupings, number, ShowColumnWhenGroupedFn
+export const tableColumnsWithGrouping: PureComputed<
+  [TableColumns, Columns, Groupings, Groupings, number, ShowColumnWhenGroupedFn]
 > = (
   tableColumns, columns, grouping, draftGrouping, indentColumnWidth, showColumnWhenGrouped,
 ) => [

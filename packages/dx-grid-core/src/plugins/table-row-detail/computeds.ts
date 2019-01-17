@@ -1,10 +1,10 @@
-import { Computed } from '@devexpress/dx-core';
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_DETAIL_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { TableRows, TableColumns, CellColSpanGetter } from '../../types';
 
-export const tableRowsWithExpandedDetail: Computed<
-  TableRows, number[], number
+export const tableRowsWithExpandedDetail: PureComputed<
+  [TableRows, number[], number]
 > = (tableRows, expandedDetailRowIds, rowHeight) => {
   let result = tableRows;
   expandedDetailRowIds
@@ -30,7 +30,7 @@ export const tableRowsWithExpandedDetail: Computed<
   return result;
 };
 
-export const tableColumnsWithDetail: Computed<TableColumns, number> = (
+export const tableColumnsWithDetail: PureComputed<[TableColumns, number]> = (
   tableColumns, toggleColumnWidth,
 ) => [
   { key: TABLE_DETAIL_TYPE.toString(), type: TABLE_DETAIL_TYPE, width: toggleColumnWidth },
