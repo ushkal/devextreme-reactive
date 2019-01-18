@@ -1,36 +1,31 @@
-import { RowId, RowIds, Rows, Row } from '../../types';
+import { PureReducer } from '@devexpress/dx-core';
+import { RowId, Row, RowIdsPayload, RowPayload, RowChangePayload, RowChanges } from '../../types';
 
-type RowIdsPayload = { rowIds: RowIds; };
-type EditRowsReducer = (state: RowIds, payload: RowIdsPayload) => void;
-
-type RowChangePayload = { rowId: RowId, change: any };
-type RowChanges = Map<RowId, any>;
-type RowChangeReducer = (state: RowChanges, payload: RowChangePayload) => RowChanges;
-type AddRowReducer = (state: Rows, payload: { row: Row }) => Rows;
-
-type ChangeAddedRowReducer = (rows: Rows, payload: RowChangePayload) => Rows;
-type CancelChangesReducer = (state: RowChanges, payload: RowIdsPayload) => RowChanges;
-type DeleteRowsReducer = (state: RowIds, payload: RowIdsPayload) => RowIds;
-
-export const startEditRows: EditRowsReducer = (
+export const startEditRows: PureReducer<RowId[], RowIdsPayload> = (
   prevEditingRowIds, { rowIds },
 ) => [...prevEditingRowIds, ...rowIds];
 
-export const stopEditRows: EditRowsReducer = (prevEditingRowIds, { rowIds }) => {
+export const stopEditRows: PureReducer<RowId[], RowIdsPayload> = (
+  prevEditingRowIds, { rowIds },
+) => {
   const rowIdSet = new Set(rowIds);
   return prevEditingRowIds.filter(id => !rowIdSet.has(id));
 };
 
-export const addRow: AddRowReducer = (addedRows, { row } = { row: {} }) => [...addedRows, row];
+export const addRow: PureReducer<Row[], RowPayload> = (
+  addedRows, { row } = { row: {} },
+) => [...addedRows, row];
 
-export const changeAddedRow: ChangeAddedRowReducer = (addedRows, { rowId, change }) => {
+export const changeAddedRow: PureReducer<Row[], RowChangePayload> = (
+  addedRows, { rowId, change },
+) => {
   const result = addedRows.slice();
   result[rowId] = { ...result[rowId], ...change };
   return result;
 };
 
-export const cancelAddedRows: EditRowsReducer = (addedRows, { rowIds }) => {
-  const result: any[] = [];
+export const cancelAddedRows: PureReducer<Row[], RowIdsPayload> = (addedRows, { rowIds }) => {
+  const result: Row[] = [];
   const indexSet = new Set(rowIds);
   addedRows.forEach((row, index) => {
     if (!indexSet.has(index)) {
@@ -40,7 +35,9 @@ export const cancelAddedRows: EditRowsReducer = (addedRows, { rowIds }) => {
   return result;
 };
 
-export const changeRow: RowChangeReducer = (prevRowChanges, { rowId, change }) => {
+export const changeRow: PureReducer<RowChanges, RowChangePayload> = (
+  prevRowChanges, { rowId, change },
+) => {
   const prevChange = prevRowChanges[rowId] || {};
   return {
     ...prevRowChanges,
@@ -51,7 +48,9 @@ export const changeRow: RowChangeReducer = (prevRowChanges, { rowId, change }) =
   };
 };
 
-export const cancelChanges: CancelChangesReducer = (prevRowChanges, { rowIds }) => {
+export const cancelChanges: PureReducer<RowChanges, RowIdsPayload> = (
+  prevRowChanges, { rowIds },
+) => {
   const result = { ...prevRowChanges };
   rowIds.forEach((rowId) => {
     delete result[rowId];
@@ -59,11 +58,13 @@ export const cancelChanges: CancelChangesReducer = (prevRowChanges, { rowIds }) 
   return result;
 };
 
-export const deleteRows: DeleteRowsReducer = (deletedRowIds, { rowIds }) => [
+export const deleteRows: PureReducer<RowId[], RowIdsPayload> = (deletedRowIds, { rowIds }) => [
   ...deletedRowIds, ...rowIds,
 ];
 
-export const cancelDeletedRows: DeleteRowsReducer = (deletedRowIds, { rowIds }) => {
+export const cancelDeletedRows: PureReducer<RowId[], RowIdsPayload> = (
+  deletedRowIds, { rowIds },
+) => {
   const rowIdSet = new Set(rowIds);
   return deletedRowIds.filter(rowId => !rowIdSet.has(rowId));
 };

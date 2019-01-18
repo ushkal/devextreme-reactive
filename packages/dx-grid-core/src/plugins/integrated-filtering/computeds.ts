@@ -1,50 +1,52 @@
-import { NODE_CHECK, rowsToTree, treeToRows } from '../../utils/hierarchical-data';
+import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierarchical-data';
+import { PureComputed } from '@devexpress/dx-core';
 import {
-  Row, Filter, Rows, FilterPredicate, GetRowLevelKeyFn,
-  FilterExpression, GetCellValueFn, GetCollapsedRowsFn,
+  Row, Filter, FilterPredicate, GetRowLevelKeyFn,
+  FilterExpression, GetCellValueFn, GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap, UnwrapRowsComputed,
 } from '../../types';
 
-type IGetColumnPredicate = (columnName: string) => FilterPredicate;
-type ICompiledPredicate = (row: any, ...args: any[]) => boolean;
+type GetColumnPredicateFn = (columnName: string) => FilterPredicate;
+type CompiledPredicate = (row: any, ...args: any[]) => boolean;
+
 
 const operators = {
-  or: (predicates: ICompiledPredicate[]) => (row: Row) => (
+  or: (predicates: CompiledPredicate[]) => (row: Row) => (
     predicates.reduce((acc, predicate) => acc || predicate(row), false)
   ),
-  and: (predicates: ICompiledPredicate[]) => (row: Row) => (
+  and: (predicates: CompiledPredicate[]) => (row: Row) => (
     predicates.reduce((acc, predicate) => acc && predicate(row), true)
   ),
 };
 
 const toLowerCase = (value: any) => String(value).toLowerCase();
 
-const operationPredicates = {
-  contains: (value: any, filter: Filter) => toLowerCase(value)
+const operationPredicates: { [key: string]: FilterPredicate } = {
+  contains: (value, filter) => toLowerCase(value)
     .indexOf(toLowerCase(filter.value)) > -1,
 
-  notContains: (value: any, filter: Filter) => toLowerCase(value)
+  notContains: (value, filter) => toLowerCase(value)
     .indexOf(toLowerCase(filter.value)) === -1,
 
-  startsWith: (value: any, filter: Filter) => toLowerCase(value)
+  startsWith: (value, filter) => toLowerCase(value)
     .startsWith(toLowerCase(filter.value)),
 
-  endsWith: (value: any, filter: Filter) => toLowerCase(value)
+  endsWith: (value, filter) => toLowerCase(value)
     .endsWith(toLowerCase(filter.value)),
 
-  equal: (value: any, filter: Filter) => value === filter.value,
-  notEqual: (value: any, filter: Filter) => value !== filter.value,
-  greaterThan: (value: any, filter: Filter) => value > filter.value!,
-  greaterThanOrEqual: (value: any, filter: Filter) => value >= filter.value!,
-  lessThan: (value: any, filter: Filter) => value < filter.value!,
-  lessThanOrEqual: (value: any, filter: Filter) => value <= filter.value!,
+  equal: (value, filter) => value === filter.value,
+  notEqual: (value, filter) => value !== filter.value,
+  greaterThan: (value, filter) => value > filter.value!,
+  greaterThanOrEqual: (value, filter) => value >= filter.value!,
+  lessThan: (value, filter) => value < filter.value!,
+  lessThanOrEqual: (value, filter) => value <= filter.value!,
 };
 
-export const defaultFilterPredicate = (value: any, filter: Filter) => {
+export const defaultFilterPredicate: FilterPredicate = (value, filter) => {
   const operation = filter.operation || 'contains';
   return operationPredicates[operation](value, filter);
 };
 
-const filterTree = (tree: any[], predicate: ICompiledPredicate) => tree.reduce(
+const filterTree: PureComputed<[TreeNode[], CompiledPredicate]> = (tree, predicate) => tree.reduce(
   (acc, node) => {
     if (node[NODE_CHECK]) {
       const filteredChildren = filterTree(node.children, predicate);
@@ -69,14 +71,14 @@ const filterTree = (tree: any[], predicate: ICompiledPredicate) => tree.reduce(
 
     return acc;
   },
-  [],
+  [] as TreeNode[],
 );
 
-const filterHierarchicalRows = (
-  rows: Rows,
-  predicate: ICompiledPredicate,
-  getRowLevelKey: GetRowLevelKeyFn,
-  getCollapsedRows: GetCollapsedRowsFn,
+const filterHierarchicalRows: PureComputed<
+  [Row[], CompiledPredicate, GetRowLevelKeyFn, GetCollapsedRowsFn],
+  Partial<RowsWithCollapsedRowsMetaMap>
+> = (
+  rows, predicate, getRowLevelKey, getCollapsedRows,
 ) => {
   const tree = rowsToTree(rows, getRowLevelKey);
   const collapsedRowsMeta: any[] = [];
@@ -101,10 +103,11 @@ const filterHierarchicalRows = (
   return { rows: treeToRows(filteredTree), collapsedRowsMeta: new Map(collapsedRowsMeta) };
 };
 
-const buildPredicate = (
-  initialFilterExpression: FilterExpression,
-  getCellValue: GetCellValueFn,
-  getColumnPredicate: IGetColumnPredicate,
+const buildPredicate: PureComputed<
+  [FilterExpression, GetCellValueFn, GetColumnPredicateFn],
+  CompiledPredicate
+> = (
+  initialFilterExpression, getCellValue, getColumnPredicate,
 ) => {
   const getSimplePredicate = (filter: Filter) => {
     const { columnName } = filter;
@@ -115,7 +118,6 @@ const buildPredicate = (
 
   const getOperatorPredicate: any = (filterExpression: FilterExpression) => {
     const build = operators[toLowerCase(filterExpression.operator)];
-    // eslint-disable-next-line no-use-before-define
     return build && build(filterExpression.filters.map(getPredicate));
   };
 
@@ -127,16 +129,17 @@ const buildPredicate = (
   return getPredicate(initialFilterExpression);
 };
 
-export const filteredRows = (
-  rows: Rows,
-  filterExpression: FilterExpression,
-  getCellValue: GetCellValueFn,
-  getColumnPredicate: IGetColumnPredicate,
-  getRowLevelKey: GetRowLevelKeyFn,
-  getCollapsedRows: GetCollapsedRowsFn,
+export const filteredRows: PureComputed<
+  [Row[], FilterExpression, GetCellValueFn,
+   GetColumnPredicateFn, GetRowLevelKeyFn, GetCollapsedRowsFn
+  ],
+  Partial<RowsWithCollapsedRowsMetaMap>
+> = (
+  rows, filterExpression, getCellValue, getColumnPredicate, getRowLevelKey, getCollapsedRows,
 ) => {
   if (!(filterExpression && Object.keys(filterExpression).length && rows.length)) {
-    return { rows };
+    // tslint:disable-next-line:no-object-literal-type-assertion
+    return { rows } as Partial<RowsWithCollapsedRowsMetaMap>;
   }
 
   const predicate = buildPredicate(
@@ -154,4 +157,7 @@ export const filteredCollapsedRowsGetter = (
   { collapsedRowsMeta }: { collapsedRowsMeta: Map<any, any> },
 ) => (row: Row) => collapsedRowsMeta && collapsedRowsMeta.get(row);
 
-export const unwrappedFilteredRows = ({ rows }: { rows: Rows }) => rows;
+export const unwrappedFilteredRows: UnwrapRowsComputed = ({ rows }) => {
+  // rows.push(0);
+  return rows;
+};

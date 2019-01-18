@@ -1,8 +1,8 @@
-import { Filters } from '../../types';
+import { Filter, ChangeFilterPayload } from '../../types';
+import { PureReducer } from '@devexpress/dx-core';
 
-export const changeColumnFilter = (
-  filters: Filters,
-  { columnName, config }: { columnName: string, config: object },
+export const changeColumnFilter: PureReducer<Filter[], ChangeFilterPayload> = (
+  filters, { columnName, config },
 ) => {
   const filterIndex = filters.findIndex(f => f.columnName === columnName);
   const nextState = filters.slice();

@@ -1,13 +1,12 @@
-import { GROUP_KEY_SEPARATOR } from './constants';
-import { Grouping, Groupings } from '../../types/grouping.types';
+import { PureReducer } from '@devexpress/dx-core';
 import { Getters } from '@devexpress/dx-react-core';
+import { GROUP_KEY_SEPARATOR } from './constants';
+import {
+  Grouping, ColumnGroupingState, ChangeGroupingPayload, ToggleGroupPayload, DraftGroupingState,
+} from '../../types';
 
-type ChangeGroupingPayload = { columnName: string, groupIndex: number };
-type ColumnGroupingState = { grouping: Groupings, expandedGroups: ReadonlyArray<string> };
-
-const applyColumnGrouping = (
-  grouping: ReadonlyArray<Grouping>,
-  { columnName, groupIndex }: ChangeGroupingPayload,
+const applyColumnGrouping: PureReducer<Grouping[], ChangeGroupingPayload> = (
+  grouping, { columnName, groupIndex },
 ) => {
   const nextGrouping = grouping.slice();
   const groupingIndex = nextGrouping.findIndex(g => g.columnName === columnName);
@@ -28,13 +27,12 @@ const applyColumnGrouping = (
   return nextGrouping;
 };
 
-export const changeColumnGrouping = (
-  { grouping, expandedGroups }: ColumnGroupingState,
-  { columnName, groupIndex }: ChangeGroupingPayload,
+export const changeColumnGrouping: PureReducer<ColumnGroupingState, ChangeGroupingPayload> = (
+  { grouping, expandedGroups }, { columnName, groupIndex },
 ) => {
-  const nextGrouping = applyColumnGrouping(grouping, { columnName, groupIndex });
+  const nextGrouping = applyColumnGrouping(grouping!, { columnName, groupIndex });
 
-  const ungroupedColumnIndex = grouping.findIndex(
+  const ungroupedColumnIndex = grouping!.findIndex(
     (group, index) => !nextGrouping[index] || group.columnName !== nextGrouping[index].columnName,
   );
   if (ungroupedColumnIndex === -1) {
@@ -43,10 +41,10 @@ export const changeColumnGrouping = (
     };
   }
 
-  const filteredExpandedGroups = expandedGroups.filter(
+  const filteredExpandedGroups = expandedGroups!.filter(
     group => group.split(GROUP_KEY_SEPARATOR).length <= ungroupedColumnIndex,
   );
-  if (filteredExpandedGroups.length === expandedGroups.length) {
+  if (filteredExpandedGroups.length === expandedGroups!.length) {
     return {
       grouping: nextGrouping,
     };
@@ -58,11 +56,10 @@ export const changeColumnGrouping = (
   };
 };
 
-export const toggleExpandedGroups = (
-  state: ColumnGroupingState,
-  { groupKey }: { groupKey: string },
+export const toggleExpandedGroups: PureReducer<ColumnGroupingState, ToggleGroupPayload> = (
+  state, { groupKey },
 ) => {
-  const expandedGroups = state.expandedGroups.slice();
+  const expandedGroups = state.expandedGroups!.slice();
   const groupKeyIndex = expandedGroups.indexOf(groupKey);
 
   if (groupKeyIndex > -1) {
@@ -76,9 +73,11 @@ export const toggleExpandedGroups = (
   };
 };
 
-export const draftColumnGrouping = (
-  { grouping, draftGrouping }: Getters,
-  { columnName, groupIndex }: ChangeGroupingPayload,
+export const draftColumnGrouping: PureReducer<
+  Getters, ChangeGroupingPayload, DraftGroupingState
+> = (
+  { grouping, draftGrouping },
+  { columnName, groupIndex },
 ) => ({
   draftGrouping: applyColumnGrouping(draftGrouping || grouping, { columnName, groupIndex }),
 });

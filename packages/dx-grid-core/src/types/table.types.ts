@@ -1,5 +1,6 @@
 import { Column } from './grid-core.types';
 import { Style } from 'jss/css';
+import { PureComputed } from '@devexpress/dx-core';
 
 /** Describes properties of a table row that the Table plugin renders. */
 export interface TableRow {
@@ -47,12 +48,11 @@ export interface ColumnExtension {
 export type TableColumns = ReadonlyArray<TableColumn>;
 export type TableRows = ReadonlyArray<TableRow>;
 
-export type GetCellColSpanFn = (
-  params: { tableRow: TableRow, tableColumns: TableColumns, tableColumn: TableColumn },
-) => number;
-export type CellColSpanGetter = (
-  getTableCellColSpan: GetCellColSpanFn,
-) => GetCellColSpanFn;
+export type GetCellColSpanFn = PureComputed<
+  [{ tableRow: TableRow, tableColumns: TableColumn[], tableColumn: TableColumn }],
+  number
+>;
+export type CellColSpanGetter = PureComputed<[GetCellColSpanFn]>;
 
 export type ColumnGeometry = { left: number, right: number };
 export type TargetColumnGeometry = ColumnGeometry & { top: number, bottom: number };

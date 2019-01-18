@@ -1,7 +1,8 @@
+import { PureComputed } from '@devexpress/dx-core';
 import mergeSort from '../../utils/merge-sort';
 import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierarchical-data';
 import {
-  Sortings, Row, Rows, GetCellValueFn, GetRowLevelKeyFn, IsSpecificRowFn, CompareFn,
+  Sortings, Row, GetCellValueFn, GetRowLevelKeyFn, IsSpecificRowFn, CompareFn, Sorting,
 } from '../../types';
 
 const defaultCompare = (a: any, b: any) => {
@@ -19,11 +20,11 @@ const defaultCompare = (a: any, b: any) => {
   return a < b ? -1 : 1;
 };
 
-type IGetColumnCompare = (name: string) => (a: any, b: any) => number;
+type GetColumnCompareFn = (name: string) => (a: any, b: any) => number;
 
 const createCompare: (...args: any[]) => CompareFn = (
   sorting: Sortings,
-  getColumnCompare: IGetColumnCompare,
+  getColumnCompare: GetColumnCompareFn,
   getComparableValue: (row: Row, columnName: string) => any,
 ) => sorting.slice()
   .reverse()
@@ -47,8 +48,7 @@ const createCompare: (...args: any[]) => CompareFn = (
     (...args: any[]) => 0,
   );
 
-type ISortTree = (tree: TreeNode[], compare: CompareFn) => TreeNode[];
-const sortTree: ISortTree = (tree, compare) => {
+const sortTree: PureComputed<[TreeNode[], CompareFn]> = (tree, compare) => {
   const sortedTree = tree.map((node) => {
     if (node[NODE_CHECK]) {
       return {
@@ -61,10 +61,12 @@ const sortTree: ISortTree = (tree, compare) => {
 
   return mergeSort(
     sortedTree, (a, b) => compare(a[NODE_CHECK] ? a.root : a, b[NODE_CHECK] ? b.root : b),
-  ) as TreeNode[];
+  );
 };
 
-const sortHierarchicalRows = (rows: Rows, compare: CompareFn, getRowLevelKey: GetRowLevelKeyFn) => {
+const sortHierarchicalRows: PureComputed<[Row[], CompareFn, GetRowLevelKeyFn]> = (
+  rows, compare, getRowLevelKey,
+) => {
   const tree = rowsToTree(rows, getRowLevelKey);
 
   const sortedTree = sortTree(tree, compare);
@@ -72,15 +74,12 @@ const sortHierarchicalRows = (rows: Rows, compare: CompareFn, getRowLevelKey: Ge
   return treeToRows(sortedTree);
 };
 
-export const sortedRows = (
-  rows: Rows,
-  sorting: Sortings,
-  getCellValue: GetCellValueFn,
-  getColumnCompare: IGetColumnCompare,
-  isGroupRow: IsSpecificRowFn,
-  getRowLevelKey: GetRowLevelKeyFn,
+export const sortedRows: PureComputed<
+  [Row[], Sorting[], GetCellValueFn, GetColumnCompareFn, IsSpecificRowFn, GetRowLevelKeyFn]
+> = (
+  rows, sorting, getCellValue, getColumnCompare, isGroupRow, getRowLevelKey,
 ) => {
-  if (!sorting.length || !rows.length) return rows;
+  if (!sorting.length || !rows.length) return rows as Row[];
 
   let compare;
   if (!getRowLevelKey) {

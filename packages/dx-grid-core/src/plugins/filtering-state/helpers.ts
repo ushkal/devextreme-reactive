@@ -1,6 +1,9 @@
-import { Filters } from '../../types';
+import { PureComputed } from '@devexpress/dx-core';
+import { Filter } from '../../types';
 
-export const getColumnFilterConfig = (filters: Filters, columnName: string) => {
+export const getColumnFilterConfig: PureComputed<
+  [Filter[], string], Filter | null
+> = (filters, columnName) => {
   if (!filters.length) { return null; }
 
   const filter = filters.filter(s => s.columnName === columnName)[0];

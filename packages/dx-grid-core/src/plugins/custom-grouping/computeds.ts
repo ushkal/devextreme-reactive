@@ -1,18 +1,17 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { GROUP_KEY_SEPARATOR } from '../grouping-state/constants';
-import { Grouping, GetChildGroups } from '../../types/grouping.types';
+import { Grouping, GetChildGroupsFn } from '../../types/grouping.types';
 import {
   GRID_GROUP_TYPE,
   GRID_GROUP_CHECK,
   GRID_GROUP_LEVEL_KEY,
 } from '../integrated-grouping/constants';
-import { GetRowIdFn, Rows, Row } from '../../types/grid-core.types';
+import { TableRow, GetRowIdFn, Rows, Row } from '../../types';
 
-export const customGroupedRows = (
-  currentRows: any[],
-  grouping: Grouping[],
-  getChildGroups: GetChildGroups,
-  rootRows = currentRows,
-  keyPrefix = '',
+export const customGroupedRows: PureComputed<
+  [TableRow[], Grouping[], GetChildGroupsFn, TableRow[], string]
+> = (
+  currentRows, grouping, getChildGroups, rootRows = currentRows, keyPrefix = '',
 ) => {
   if (!currentRows || !currentRows.length) return [];
   if (!grouping.length) return currentRows;
@@ -47,7 +46,7 @@ export const customGroupingRowIdGetter = (getRowId: GetRowIdFn, rows: Rows) => {
     return getRowId;
   }
 
-  const map: Map<any, any> = new Map(rows
+  const map = new Map(rows
     .filter(row => !row[GRID_GROUP_CHECK])
     .map((row, rowIndex) => [row, rowIndex]) as [any, any]);
 

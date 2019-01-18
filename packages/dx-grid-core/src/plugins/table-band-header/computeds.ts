@@ -33,7 +33,9 @@ export const tableRowsWithBands: PureComputed<
     }, result || { level: 0 })
   );
 
-  const tableBandHeaders = Array.from({ length: getMaxNestedLevel(columnBands, 0).level })
+  const tableBandHeaders = Array.from({
+    length: getMaxNestedLevel(columnBands as ColumnBands[], 0).level,
+  })
     .map((row, index) => ({
       key: `${TABLE_BAND_TYPE.toString()}_${index}`,
       type: TABLE_BAND_TYPE,

@@ -3,4 +3,4 @@ import { ToggleRowsFieldReducer } from '../../types';
 
 export const toggleSelection: ToggleRowsFieldReducer = (
   selection, { rowIds, state },
-) => toggle(selection, rowIds, state as any);
+) => toggle(selection, rowIds, state as boolean);

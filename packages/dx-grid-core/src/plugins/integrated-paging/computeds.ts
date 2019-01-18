@@ -1,19 +1,20 @@
 import { clamp } from './helpers';
-import { Rows, GetRowLevelKeyFn } from '../../types';
+import { Row, GetRowLevelKeyFn } from '../../types';
+import { PureComputed } from '@devexpress/dx-core';
 
 // tslint:disable-next-line:max-line-length
 const PAGE_HEADERS_OVERFLOW_ERROR = 'Max row level exceeds the page size. Consider increasing the page size.';
 
-export const paginatedRows = (rows: Rows, pageSize: number, page: number) => (
+export const paginatedRows: PureComputed<[Row[], number, number]> = (rows, pageSize, page) => (
   pageSize
     ? rows.slice(pageSize * page, pageSize * (page + 1))
-    : rows
+    : rows as Row[]
 );
 
-export const rowsWithPageHeaders = (
-  rows: Rows, pageSize: number, getRowLevelKey: GetRowLevelKeyFn,
+export const rowsWithPageHeaders: PureComputed<[Row[], number, GetRowLevelKeyFn]> = (
+  rows, pageSize, getRowLevelKey,
 ) => {
-  if (!pageSize || !getRowLevelKey) return rows;
+  if (!pageSize || !getRowLevelKey) return rows as Row[];
 
   let result = rows.slice();
 
@@ -48,14 +49,14 @@ export const rowsWithPageHeaders = (
   return result;
 };
 
-export const rowCount = (rows: Rows) => rows.length;
+export const rowCount = (rows: Row[]) => rows.length;
 
-export const pageCount = (count: number, pageSize: number) => (
+export const pageCount: PureComputed<[number, number]> = (count, pageSize) => (
   pageSize ? Math.ceil(count / pageSize) : 1
 );
 
-export const currentPage = (
-  page: number, totalCount: number, pageSize: number, setCurrentPage: (page: number) => void,
+export const currentPage: PureComputed<[number, number, number, (p: number) => void]> = (
+  page, totalCount, pageSize, setCurrentPage,
 ) => {
   const totalPages = pageCount(totalCount, pageSize);
   const adjustedCurrentPage = clamp(page, totalPages - 1);

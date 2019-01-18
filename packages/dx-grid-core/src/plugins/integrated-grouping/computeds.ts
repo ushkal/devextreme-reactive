@@ -1,3 +1,4 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { GROUP_KEY_SEPARATOR } from '../grouping-state/constants';
 import {
   GRID_GROUP_TYPE,
@@ -6,10 +7,10 @@ import {
   GRID_GROUP_COLLAPSED_ROWS,
 } from './constants';
 import {
-  Rows, Groupings, GetCellValueFn, ExpandedGroups, IGroupingCriteria, Row, GetCollapsedRowsFn,
+  Grouping, GroupKey, GetCellValueFn, GroupingCriteriaFn, Row, GetCollapsedRowsFn, IsSpecificRowFn,
 } from '../../types';
 
-export const groupRowChecker = (row: Row) => row[GRID_GROUP_CHECK];
+export const groupRowChecker: IsSpecificRowFn = row => row[GRID_GROUP_CHECK];
 
 export const groupRowLevelKeyGetter = (row: Row) => (row ? row[GRID_GROUP_LEVEL_KEY] : undefined);
 
@@ -18,12 +19,10 @@ const defaultColumnCriteria = (value: any) => ({
   key: String(value),
 });
 
-export const groupedRows = (
-  rows: Rows,
-  grouping: Groupings,
-  getCellValue: GetCellValueFn,
-  getColumnCriteria: (columnName: string) => IGroupingCriteria,
-  keyPrefix = '',
+export const groupedRows: PureComputed<
+  [Row[], Grouping[], GetCellValueFn, (c: string) => GroupingCriteriaFn, string?]
+> = (
+  rows, grouping, getCellValue, getColumnCriteria, keyPrefix = '',
 ) => {
   if (!grouping.length) return rows;
 
@@ -67,13 +66,7 @@ export const groupedRows = (
     }, []);
 };
 
-type IExpandedGroupRows = (
-  rows: Rows,
-  grouping: Groupings,
-  expandedGroups: ExpandedGroups,
-) => Rows;
-
-export const expandedGroupRows: IExpandedGroupRows = (
+export const expandedGroupRows: PureComputed<[Row[], Grouping[], GroupKey[]]> = (
   rows,
   grouping,
   expandedGroups,
@@ -116,6 +109,7 @@ export const expandedGroupRows: IExpandedGroupRows = (
   }, []);
 };
 
-export const groupCollapsedRowsGetter = (getCollapsedRows: GetCollapsedRowsFn) => (row: Row) => (
+export const groupCollapsedRowsGetter: PureComputed<[GetCollapsedRowsFn]> =
+  getCollapsedRows => row => (
   row[GRID_GROUP_COLLAPSED_ROWS] || (getCollapsedRows && getCollapsedRows(row))
 );

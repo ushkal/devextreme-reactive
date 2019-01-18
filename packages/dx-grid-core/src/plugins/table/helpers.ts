@@ -13,4 +13,4 @@ export const isDataTableRow: IsSpecificRowFn = tableRow => tableRow.type === TAB
 export const isNoDataTableRow: IsSpecificRowFn = tableRow => tableRow.type === TABLE_NODATA_TYPE;
 export const isNoDataTableCell: IsSpecificCellFn<TableColumn, TableColumns> = (
   tableColumn, tableColumns,
-) => tableColumns.indexOf(tableColumn) === 0;
+) => tableColumns.indexOf(tableColumn as any) === 0;

@@ -1,5 +1,6 @@
 import { GRID_GROUP_CHECK } from '../integrated-grouping/constants';
-import { GetRowIdFn, Row, Rows, Columns } from '../../types';
+import { GetRowIdFn, Row, RowId, GetCellValueFn, Column } from '../../types';
+import { PureComputed } from '@devexpress/dx-core';
 
 const warnIfRowIdUndefined = (getRowId: GetRowIdFn) => (row: Row) => {
   const result = getRowId(row);
@@ -10,16 +11,19 @@ const warnIfRowIdUndefined = (getRowId: GetRowIdFn) => (row: Row) => {
   return result;
 };
 
-export const rowIdGetter = (getRowId: GetRowIdFn, rows: Rows) => {
+export const rowIdGetter: PureComputed<[GetRowIdFn, Row[]]> = (getRowId, rows) => {
   if (!getRowId) {
-    const map = new Map(rows.map((row, rowIndex) => [row, rowIndex]) as [any, any]);
-    return (row: Row) => map.get(row);
+    const map = new Map(rows.map((row, rowIndex) => [row, rowIndex]) as [any, number]);
+    return (row: Row) => map.get(row) as RowId;
   }
   return warnIfRowIdUndefined(getRowId);
 };
 
-const defaultGetCellValue = (row: Row, columnName: string) => row[columnName];
-export const cellValueGetter = (getCellValue = defaultGetCellValue, columns: Columns) => {
+const defaultGetCellValue: GetCellValueFn = (row, columnName) => row[columnName];
+
+export const cellValueGetter: PureComputed<
+  [GetCellValueFn, Column[]]
+> = (getCellValue = defaultGetCellValue, columns) => {
   let useFastAccessor = true;
   const map = columns.reduce((acc, column) => {
     if (column.getCellValue) {
@@ -33,7 +37,7 @@ export const cellValueGetter = (getCellValue = defaultGetCellValue, columns: Col
     return getCellValue;
   }
 
-  return (row: Row, columnName: string) => (map[columnName]
+  return (row, columnName) => (map[columnName]
     ? map[columnName](row, columnName)
-    : getCellValue(row, columnName));
+    : getCellValue(row, columnName)) as GetCellValueFn;
 };

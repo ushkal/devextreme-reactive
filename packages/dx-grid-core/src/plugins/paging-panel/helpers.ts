@@ -1,13 +1,15 @@
-type INthRowOnPage = (currentPage: number, pageSize: number, totalCount: number) => number;
+import { PureComputed } from '@devexpress/dx-core';
 
-export const firstRowOnPage: INthRowOnPage = (currentPage, pageSize, totalCount) => {
+type NthRowOnPageFn = PureComputed<[number, number, number]>;
+
+export const firstRowOnPage: NthRowOnPageFn = (currentPage, pageSize, totalCount) => {
   if (totalCount === 0) {
     return 0;
   }
   return pageSize ? (currentPage * pageSize) + 1 : 1;
 };
 
-export const lastRowOnPage: INthRowOnPage = (currentPage, pageSize, totalRowCount) => {
+export const lastRowOnPage: NthRowOnPageFn = (currentPage, pageSize, totalRowCount) => {
   let result = totalRowCount;
   if (pageSize) {
     const index = (currentPage + 1) * pageSize;
@@ -17,10 +19,7 @@ export const lastRowOnPage: INthRowOnPage = (currentPage, pageSize, totalRowCoun
   return result;
 };
 
-type ICalculateStartPage = (
-  currentPage: number, maxButtonCount: number, totalPageCount: number,
-) => number;
-export const calculateStartPage: ICalculateStartPage = (
+export const calculateStartPage: PureComputed<[number, number, number]> = (
   currentPage, maxButtonCount, totalPageCount,
 ) => (
   Math.max(

@@ -1,3 +1,5 @@
+import { Row, RowId } from './grid-core.types';
+
 export interface EditingColumnExtension {
   /** The name of a column to extend. */
   columnName: string;
@@ -8,3 +10,10 @@ export interface EditingColumnExtension {
    * editor's value changes. */
   createRowChange?: (row: any, value: any, columnName: string) => any;
 }
+
+export type CreateRowChangeFn = (row: Row, value: any, columnName: string) => any;
+
+export type RowIdsPayload = { rowIds: RowId[]; };
+export type RowPayload = { row: Row };
+export type RowChangePayload = { rowId: RowId, change: any };
+export type RowChanges = { [key: string]: any };

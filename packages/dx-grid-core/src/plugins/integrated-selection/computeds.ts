@@ -1,12 +1,14 @@
-import { Rows, GetRowIdFn, IsSpecificRowFn, RowsWithSelection, RowIds } from '../../types';
+import { PureComputed } from '@devexpress/dx-core';
+import {
+  GetRowIdFn, IsSpecificRowFn, RowsWithSelection, Row, UnwrapRowsComputed, RowId,
+} from '../../types';
 
-type IGetRowsWithSelection = (
-  rows: Rows,
-  getRowsId: GetRowIdFn,
-  isGroupRow: IsSpecificRowFn,
-) => RowsWithSelection;
+type IRowsSelected = PureComputed<[RowsWithSelection, RowId[]], boolean>;
 
-export const rowsWithAvailableToSelect: IGetRowsWithSelection = (
+export const rowsWithAvailableToSelect: PureComputed<
+  [Row[], GetRowIdFn, IsSpecificRowFn],
+  RowsWithSelection
+> = (
   rows, getRowId, isGroupRow,
 ) => {
   let dataRows = rows;
@@ -16,10 +18,6 @@ export const rowsWithAvailableToSelect: IGetRowsWithSelection = (
   return { rows, availableToSelect: dataRows.map(row => getRowId(row)) };
 };
 
-type IRowsSelected = (
-  rows: RowsWithSelection,
-  selection: RowIds,
-) => boolean;
 export const someSelected: IRowsSelected = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);
 
@@ -35,4 +33,4 @@ export const allSelected: IRowsSelected = ({ availableToSelect }, selection) => 
     && !availableToSelect.some(elem => !selectionSet.has(elem));
 };
 
-export const unwrapSelectedRows = ({ rows }: RowsWithSelection) => rows;
+export const unwrapSelectedRows: UnwrapRowsComputed = ({ rows }) => rows;

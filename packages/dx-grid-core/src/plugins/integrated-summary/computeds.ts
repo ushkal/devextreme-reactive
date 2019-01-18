@@ -1,13 +1,14 @@
+
 import {
-  Row, DefaultSummaryCalculators,
-  SummaryCalculator,
-  RowsSummaryFn,
-  SummaryValue,
+  SummaryValue, TableRows, SummaryItem, GetCellValueFn, SummaryCalculator,
+  DefaultSummaryCalculators,
+  Row,
   TotalSummaryValuesFn,
-  TableRow,
   GroupSummaryValuesFn,
   TreeSummaryValuesFn,
+  RowsSummaryValuesFn,
 } from '../../types';
+import { PureComputed } from '@devexpress/dx-core';
 
 const defaultSummaryCalculators: DefaultSummaryCalculators = {
   count: rows => rows.length,
@@ -31,7 +32,9 @@ export const defaultSummaryCalculator: SummaryCalculator = (type, rows, getValue
   return summaryCalculator(rows, getValue);
 };
 
-const rowsSummary: RowsSummaryFn = (rows, summaryItems, getCellValue, calculator) => summaryItems
+const rowsSummary: RowsSummaryValuesFn = (
+  rows, summaryItems, getCellValue, calculator,
+) => summaryItems
   .reduce((acc, { type, columnName }) => {
     const getValue = (row: Row) => getCellValue(row, columnName);
     acc.push(calculator(type, rows, getValue));
@@ -60,7 +63,7 @@ export const totalSummaryValues: TotalSummaryValuesFn = (
     }
     acc.push(row);
     return acc;
-  }, [] as TableRow[]);
+  }, [] as Row[]);
   return rowsSummary(plainRows, summaryItems, getCellValue, calculator);
 };
 

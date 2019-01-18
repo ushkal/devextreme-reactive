@@ -1,4 +1,5 @@
-export const pureHelper = (/* param1, param2 */) => {
+export const pureHelper = (arg: any/* param1, param2 */) => {
+  // tslint:disable-next-line:prefer-const
   let result;
 
   // ...

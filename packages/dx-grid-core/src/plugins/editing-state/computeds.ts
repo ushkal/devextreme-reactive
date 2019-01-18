@@ -1,7 +1,9 @@
-import { RowIds, Rows, Row } from '../../types';
-import { EditingColumnExtension } from '../../types/editing.types';
+import { PureComputed } from '@devexpress/dx-core';
+import { EditingColumnExtension, CreateRowChangeFn, Row, RowId } from '../../types';
 
-export const changedRowsByIds = (changes: any, rowIds: RowIds) => {
+export const changedRowsByIds: PureComputed<
+  [any, RowId[]], { [key: string]: any }
+> = (changes, rowIds) => {
   const result = {};
   rowIds.forEach((rowId) => {
     result[rowId] = changes[rowId];
@@ -9,9 +11,9 @@ export const changedRowsByIds = (changes: any, rowIds: RowIds) => {
   return result;
 };
 
-export const addedRowsByIds = (addedRows: Rows, rowIds: RowIds) => {
+export const addedRowsByIds: PureComputed<[Row[], RowId[]]> = (addedRows, rowIds) => {
   const rowIdSet = new Set(rowIds);
-  const result: any = [];
+  const result: Row[] = [];
   addedRows.forEach((row, index) => {
     if (rowIdSet.has(index)) {
       result.push(row);
@@ -20,17 +22,12 @@ export const addedRowsByIds = (addedRows: Rows, rowIds: RowIds) => {
   return result;
 };
 
-type ICreateRowChange = (row: Row, value: any, columnName: string) => any;
-type CreateRowChangeGetter = (
-  createRowChange: ICreateRowChange, columnExtensions: EditingColumnExtension[],
-) => ICreateRowChange;
-
-const defaultCreateRowChange: ICreateRowChange = (row, value, columnName) => (
+const defaultCreateRowChange: CreateRowChangeFn = (row, value, columnName) => (
   { [columnName]: value }
 );
-export const createRowChangeGetter: CreateRowChangeGetter = (
+export const createRowChangeGetter: PureComputed<[CreateRowChangeFn, EditingColumnExtension[]?]> = (
   createRowChange = defaultCreateRowChange,
-  columnExtensions: any[] = [],
+  columnExtensions = [],
 ) => {
   const map = columnExtensions.reduce((acc, columnExtension) => {
     if (columnExtension.createRowChange) {

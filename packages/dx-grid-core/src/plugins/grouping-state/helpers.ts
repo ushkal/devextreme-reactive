@@ -1,10 +1,8 @@
-import { Grouping } from './../../types/grouping.types';
-import { Sorting } from '../../types/sorting.types';
+import { PureComputed } from '@devexpress/dx-core';
+import { Grouping, Sorting } from '../../types';
 
-export const adjustSortIndex = (
-  groupingIndex: number,
-  grouping: ReadonlyArray<Grouping>,
-  sorting: ReadonlyArray<Sorting>,
+export const adjustSortIndex: PureComputed<[number, Grouping[], Sorting[]]> = (
+  groupingIndex, grouping, sorting,
 ) => Math.max(
   grouping.slice(0, groupingIndex).reduce(
     (acc, columnGrouping) => {

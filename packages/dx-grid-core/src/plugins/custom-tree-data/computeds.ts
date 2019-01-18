@@ -1,16 +1,14 @@
 import { PureComputed } from '@devexpress/dx-core';
 import { GRID_TREE_NODE_TYPE } from './constants';
 import {
-  GetCustomTreeRowsFn, CustomTreeRowsWithMetaComputed, RowsWithTreeMetaMap,
-  RowsWithCollapsedRowsMetaMap, ExpandedTreeRowsComputed, IsSpecificTreeRowGetter,
-  GetRowIdFn, GetRowLevelKeyFn, GetCollapsedRowsFn, Rows,
+  RowsWithTreeMetaMap, RowsWithCollapsedRowsMetaMap, IsSpecificTreeRowGetter, GetRowIdFn,
+  GetRowLevelKeyFn, GetCollapsedRowsFn, Row, GetTreeChildRowsFn, RowsWithTreeMeta, RowId, UnwrapRowsComputed,
 } from '../../types';
 
-const customTreeRows: GetCustomTreeRowsFn = (
-  currentRow,
-  getChildRows,
-  rootRows,
-  level = 0,
+const customTreeRows: PureComputed<
+  [Row, GetTreeChildRowsFn, Row[], number?], RowsWithTreeMeta
+> = (
+  currentRow, getChildRows, rootRows, level = 0,
 ) => {
   const childRows = getChildRows(currentRow, rootRows);
 
@@ -31,10 +29,9 @@ const customTreeRows: GetCustomTreeRowsFn = (
     }, { rows: [], treeMeta: [] });
 };
 
-export const customTreeRowsWithMeta: CustomTreeRowsWithMetaComputed = (
-  rows,
-  getChildRows,
-) => {
+export const customTreeRowsWithMeta: PureComputed<
+  [Row[], GetTreeChildRowsFn], RowsWithTreeMetaMap
+> = (rows, getChildRows) => {
   const result = customTreeRows(null, getChildRows, rows);
 
   return {
@@ -55,7 +52,9 @@ export const customTreeRowIdGetter: PureComputed<[GetRowIdFn, RowsWithTreeMetaMa
   return row => map.get(row);
 };
 
-export const customTreeRowLevelKeyGetter: PureComputed<[GetRowLevelKeyFn, RowsWithTreeMetaMap]> = (
+export const customTreeRowLevelKeyGetter: PureComputed<
+  [GetRowLevelKeyFn, RowsWithTreeMetaMap]
+> = (
   getRowLevelKey, { treeMeta },
 ) => (row) => {
   const rowMeta = treeMeta.get(row);
@@ -65,7 +64,9 @@ export const customTreeRowLevelKeyGetter: PureComputed<[GetRowLevelKeyFn, RowsWi
   return getRowLevelKey && getRowLevelKey();
 };
 
-export const expandedTreeRows: ExpandedTreeRowsComputed = (
+export const expandedTreeRows: PureComputed<
+  [RowsWithTreeMetaMap, GetRowIdFn, RowId[]], RowsWithCollapsedRowsMetaMap
+> = (
   { rows, treeMeta }, getRowId, expandedRowIds,
 ) => {
   const expandedRowIdsSet = new Set(expandedRowIds);
@@ -116,5 +117,4 @@ export const getTreeRowLevelGetter: IsSpecificTreeRowGetter = ({ treeMeta }) => 
   return !!(rowMeta && rowMeta.level);
 };
 
-type UnwrapRowsFn = (params: { rows: Rows }) => Rows;
-export const unwrappedCustomTreeRows: UnwrapRowsFn = ({ rows }) => rows;
+export const unwrappedCustomTreeRows: UnwrapRowsComputed = ({ rows }) => rows;

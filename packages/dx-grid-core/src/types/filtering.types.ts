@@ -1,4 +1,6 @@
 /** Describes a filter. */
+import { PureComputed } from '@devexpress/dx-core';
+import { Row } from './grid-core.types';
 export interface Filter {
   /** Specifies the name of a column whose value is used for filtering. */
   columnName: string;
@@ -23,7 +25,6 @@ export interface FilterExpression {
 export type FilterOperation = string;
 export type GetAvailableFilterOperationsFn = (columnName: string) => FilterOperation[] | undefined;
 
-export type FilterPredicate = (value: any, filter: Filter, row: any) => boolean;
-export type FilterPredicates = ReadonlyArray<FilterPredicate>;
+export type FilterPredicate = PureComputed<[any, Filter, Row?], boolean>;
 
-export type Filters = ReadonlyArray<Filter>;
+export type ChangeFilterPayload = { columnName: string, config: object };

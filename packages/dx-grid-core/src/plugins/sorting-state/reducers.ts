@@ -1,15 +1,10 @@
-import { Sorting } from '../../types';
+import { ColumnSortingState, ChangeSortingPayload } from '../../types';
+import { PureReducer } from '@devexpress/dx-core';
 
-interface ChangeSortingParams {
-  columnName: string;
-  direction: string;
-  keepOther: boolean | string[];
-  sortIndex: number | undefined;
-}
-
-export const changeColumnSorting = (state: { sorting: Sorting[] }, {
+export const changeColumnSorting: PureReducer<ColumnSortingState, ChangeSortingPayload> = (
+  state, {
   columnName, direction, keepOther, sortIndex,
-}: ChangeSortingParams) => {
+}) => {
   const { sorting } = state;
 
   let nextSorting: any[] = [];

@@ -1,4 +1,4 @@
-import { SearchFilterExpressionFn, FilterExpression } from "../../types";
+import { SearchFilterExpressionFn, FilterExpression } from '../../types';
 
 export const searchFilterExpression: SearchFilterExpressionFn = (
   searchValue, columns, filterExpression,
