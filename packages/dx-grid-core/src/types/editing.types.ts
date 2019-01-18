@@ -1,4 +1,5 @@
 import { Row, RowId } from './grid-core.types';
+import { PureComputed } from '@devexpress/dx-core';
 
 export interface EditingColumnExtension {
   /** The name of a column to extend. */
@@ -11,7 +12,7 @@ export interface EditingColumnExtension {
   createRowChange?: (row: any, value: any, columnName: string) => any;
 }
 
-export type CreateRowChangeFn = (row: Row, value: any, columnName: string) => any;
+export type CreateRowChangeFn = PureComputed<[Row, any, string], any>;
 
 export type RowIdsPayload = { rowIds: RowId[]; };
 export type RowPayload = { row: Row };

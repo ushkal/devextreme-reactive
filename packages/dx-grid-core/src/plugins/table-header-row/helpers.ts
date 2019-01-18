@@ -1,21 +1,11 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_HEADING_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import {
-  IsSpecificCellFn, IsSpecificRowFn, TableColumns, TableColumn, TableRows,
-  HeaderColumnChainRows, HeaderColumnChainRow, HeaderColumnChain, ShouldSplitChainFn,
+  IsSpecificCellFn, IsSpecificRowFn, TableColumn, TableRow,
+  HeaderColumnChainRows, HeaderColumnChainRow, HeaderColumnChain,
+  ShouldSplitChainFn, ExtendColumnChainFn,
 } from '../../types';
-
-type GenerateChainsFn = (rows: TableRows, columns: TableColumns) => HeaderColumnChainRows;
-
-type FindChainByIndexFn = (
-  chains: HeaderColumnChainRow, columnIndex: number,
-) => HeaderColumnChain | undefined;
-
-type SplitHeaderChainsFn = (
-  tableColumnChains: HeaderColumnChainRows, tableColumns: TableColumns,
-  shouldSplitChain: ShouldSplitChainFn,
-  extendChainProps: (column: TableColumn) => object,
-) => HeaderColumnChainRows;
 
 export const isHeadingTableCell: IsSpecificCellFn = (
   tableRow, tableColumn,
@@ -25,13 +15,18 @@ export const isHeadingTableRow: IsSpecificRowFn = tableRow => (
   tableRow.type === TABLE_HEADING_TYPE
 );
 
-export const findChainByColumnIndex: FindChainByIndexFn = (chains, columnIndex) => (
+export const findChainByColumnIndex: PureComputed<
+  [HeaderColumnChainRow, number],
+  HeaderColumnChain
+> = (chains, columnIndex) => (
   chains.find(chain => (
     chain.start <= columnIndex && columnIndex < chain.start + chain.columns.length
-  ))
+  ))!
 );
 
-export const splitHeaderColumnChains: SplitHeaderChainsFn = (
+export const splitHeaderColumnChains: PureComputed<
+  [HeaderColumnChainRows, TableColumn[], ShouldSplitChainFn, ExtendColumnChainFn]
+> = (
   tableColumnChains, tableColumns, shouldSplitChain, extendChainProps,
 ) => (
   tableColumnChains.map((row, rowIndex) => row
@@ -62,7 +57,9 @@ export const splitHeaderColumnChains: SplitHeaderChainsFn = (
     }, [] as HeaderColumnChain[]))
 );
 
-export const generateSimpleChains: GenerateChainsFn = (rows, columns) => (
+export const generateSimpleChains: PureComputed<
+  [TableRow[], TableColumn[]], HeaderColumnChainRows
+> = (rows, columns) => (
   rows.map(() => ([{
     start: 0,
     columns,

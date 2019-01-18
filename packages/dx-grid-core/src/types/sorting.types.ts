@@ -11,9 +11,10 @@ export interface Sorting {
 export type SortingDirection = 'asc' | 'desc';
 export type SortingColumnExtension = ColumnExtension & { sortingEnabled?: boolean };
 export type ColumnSortingState = { sorting: Sorting[] };
+export type SortingKeepOther = boolean | string[];
 export type ChangeSortingPayload = {
   columnName: string;
   direction: string;
-  keepOther: boolean | string[];
+  keepOther: SortingKeepOther;
   sortIndex: number | undefined;
 };

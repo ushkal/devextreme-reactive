@@ -4,12 +4,13 @@ import { PureComputed } from '@devexpress/dx-core';
 export const filterExpression: PureComputed<
   [Filter[], FilterExpression], FilterExpression
 > = (filters, expression) => {
-  const selfFilterExpr = { filters, operator: 'and' as 'and' };
+  // tslint:disable-next-line: no-object-literal-type-assertion
+  const selfFilterExpr = { filters, operator: 'and' as 'and' } as FilterExpression;
   if (!expression) {
     return selfFilterExpr;
   }
   return {
     operator: 'and' as 'and',
-    filters: [expression, selfFilterExpr],
+    filters: [expression, selfFilterExpr] as FilterExpression[],
   };
 };

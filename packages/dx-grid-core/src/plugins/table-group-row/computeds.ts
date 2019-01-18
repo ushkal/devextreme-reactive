@@ -2,18 +2,14 @@ import { TABLE_DATA_TYPE } from '../table/constants';
 import { TABLE_GROUP_TYPE } from './constants';
 import { PureComputed } from '@devexpress/dx-core';
 import {
-  TableColumns, Groupings, TableColumn, Columns, TableRows, CellColSpanGetter,
+  TableColumns, Grouping, TableColumn, Column, TableRow, CellColSpanGetter, IsSpecificRowFn,
 } from '../../types';
 
 type ShowColumnWhenGroupedFn = (name: string) => boolean;
-type TableColumnsWithGroupingComputed = (
-  tableColumns: TableColumns,
-  grouping: Groupings,
-  draftGrouping: Groupings,
-  showColumnWhenGrouped: ShowColumnWhenGroupedFn,
-) => TableColumns;
 
-const tableColumnsWithDraftGrouping: TableColumnsWithGroupingComputed = (
+const tableColumnsWithDraftGrouping: PureComputed<
+  [TableColumn[], Grouping[], Grouping[], ShowColumnWhenGroupedFn]
+> = (
   tableColumns, grouping, draftGrouping, showColumnWhenGrouped,
 ) => tableColumns
   .reduce((acc, tableColumn) => {
@@ -43,7 +39,7 @@ const tableColumnsWithDraftGrouping: TableColumnsWithGroupingComputed = (
   }, [] as Array<TableColumn & { draft?: boolean }>);
 
 export const tableColumnsWithGrouping: PureComputed<
-  [TableColumns, Columns, Groupings, Groupings, number, ShowColumnWhenGroupedFn]
+  [TableColumns, Column[], Grouping[], Grouping[], number, ShowColumnWhenGroupedFn]
 > = (
   tableColumns, columns, grouping, draftGrouping, indentColumnWidth, showColumnWhenGrouped,
 ) => [
@@ -59,8 +55,8 @@ export const tableColumnsWithGrouping: PureComputed<
   ...tableColumnsWithDraftGrouping(tableColumns, grouping, draftGrouping, showColumnWhenGrouped),
 ];
 
-export const tableRowsWithGrouping = (
-  tableRows: TableRows, isGroupRow: (row: any) => boolean,
+export const tableRowsWithGrouping: PureComputed<[TableRow[], IsSpecificRowFn]> = (
+  tableRows, isGroupRow,
 ) => tableRows.map((tableRow) => {
   if (tableRow.type !== TABLE_DATA_TYPE || !isGroupRow(tableRow.row)) {
     return tableRow;

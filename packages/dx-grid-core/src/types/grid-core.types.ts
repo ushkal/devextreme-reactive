@@ -15,16 +15,16 @@ export interface Column {
 export type Row = any;
 
 export type RowId = number | string;
-export type GetRowIdFn = (row: any) => RowId;
+export type GetRowIdFn = PureComputed<[Row], RowId>;
 
 type ToggleRowsPayload = { state?: boolean };
 export type ToggleRowsFieldReducer = PureReducer<RowId[], ToggleRowsPayload & { rowIds: RowId[] }>;
 export type ToggleRowFieldReducer = PureReducer<RowId[], ToggleRowsPayload & { rowId: RowId }>;
 
 /** Specifies the function used to get a cell's value. */
-export type GetCellValueFn = (row: any, columnName: string) => any;
-export type GetRowLevelKeyFn = (row?: any) => string;
-export type GetCollapsedRowsFn = (row: any) => Row[];
+export type GetCellValueFn = PureComputed<[Row, string], any>;
+export type GetRowLevelKeyFn = PureComputed<[Row?], string>;
+export type GetCollapsedRowsFn = PureComputed<[Row], Row[]>;
 export type IsSpecificRowFn = PureComputed<[Row], boolean>;
 // tslint:disable-next-line:max-line-length
 export type IsSpecificCellFn<P0 = TableRow, P1 = TableColumn, P2 = any> = PureComputed<[P0, P1, P2], boolean>;

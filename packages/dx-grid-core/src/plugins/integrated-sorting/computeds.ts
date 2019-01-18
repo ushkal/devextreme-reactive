@@ -2,7 +2,7 @@ import { PureComputed } from '@devexpress/dx-core';
 import mergeSort from '../../utils/merge-sort';
 import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierarchical-data';
 import {
-  Sortings, Row, GetCellValueFn, GetRowLevelKeyFn, IsSpecificRowFn, CompareFn, Sorting,
+  Row, GetCellValueFn, GetRowLevelKeyFn, IsSpecificRowFn, CompareFn, Sorting,
 } from '../../types';
 
 const defaultCompare = (a: any, b: any) => {
@@ -22,10 +22,11 @@ const defaultCompare = (a: any, b: any) => {
 
 type GetColumnCompareFn = (name: string) => (a: any, b: any) => number;
 
-const createCompare: (...args: any[]) => CompareFn = (
-  sorting: Sortings,
-  getColumnCompare: GetColumnCompareFn,
-  getComparableValue: (row: Row, columnName: string) => any,
+const createCompare: PureComputed<
+  [Sorting[], GetColumnCompareFn, (...args: [Row, string]) => any],
+  CompareFn
+> = (
+  sorting, getColumnCompare, getComparableValue,
 ) => sorting.slice()
   .reverse()
   .reduce(

@@ -2,7 +2,10 @@ import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { FIXED_COLUMN_LEFT_SIDE, FIXED_COLUMN_RIGHT_SIDE, TABLE_FIXED_TYPE } from './constants';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
-import { FixedColumnName, TableColumns, FixedColumnSide, TableRows, HeaderColumnChainRows, ShouldSplitChainFn, TableColumn } from '../../types';
+import {
+  FixedColumnName, TableColumns, FixedColumnSide, TableRows, HeaderColumnChainRows,
+  ShouldSplitChainFn, TableColumn,
+} from '../../types';
 
 export const tableColumnsWithFixed: PureComputed<
   [TableColumns, FixedColumnName[], FixedColumnName[]]

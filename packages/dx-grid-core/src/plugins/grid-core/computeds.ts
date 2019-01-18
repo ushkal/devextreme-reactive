@@ -2,7 +2,7 @@ import { GRID_GROUP_CHECK } from '../integrated-grouping/constants';
 import { GetRowIdFn, Row, RowId, GetCellValueFn, Column } from '../../types';
 import { PureComputed } from '@devexpress/dx-core';
 
-const warnIfRowIdUndefined = (getRowId: GetRowIdFn) => (row: Row) => {
+const warnIfRowIdUndefined: PureComputed<[GetRowIdFn]> = getRowId => (row) => {
   const result = getRowId(row);
   if (!row[GRID_GROUP_CHECK] && result === undefined) {
     // tslint:disable-next-line: no-console
@@ -39,5 +39,5 @@ export const cellValueGetter: PureComputed<
 
   return (row, columnName) => (map[columnName]
     ? map[columnName](row, columnName)
-    : getCellValue(row, columnName)) as GetCellValueFn;
+    : getCellValue(row, columnName));
 };

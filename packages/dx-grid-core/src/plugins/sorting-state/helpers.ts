@@ -1,5 +1,5 @@
 import { PureComputed } from '@devexpress/dx-core';
-import { Sorting, SortingDirection, SortingColumnExtension } from '../../types';
+import { Sorting, SortingDirection, SortingColumnExtension, SortingKeepOther } from '../../types';
 
 const unique = (arr: any[]) => [...Array.from(new Set(arr))];
 
@@ -27,15 +27,14 @@ export const getPersistentSortedColumns: PureComputed<
   return acc;
 }, [] as string[]);
 
-type KeepOther = boolean | string[];
 export const calculateKeepOther: PureComputed<
-  [Sorting[], KeepOther, string[]],
-  KeepOther
+  [Sorting[], SortingKeepOther, string[]],
+  SortingKeepOther
 > = (
   sorting, keepOther, persistentSortedColumns = [],
 ) => {
-  if (!persistentSortedColumns.length) return keepOther as KeepOther;
-  if (!keepOther) return persistentSortedColumns as KeepOther;
+  if (!persistentSortedColumns.length) return keepOther as SortingKeepOther;
+  if (!keepOther) return persistentSortedColumns as SortingKeepOther;
 
   return Array.isArray(keepOther)
     ? unique([...keepOther, ...persistentSortedColumns])

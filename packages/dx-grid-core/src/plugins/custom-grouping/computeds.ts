@@ -6,10 +6,10 @@ import {
   GRID_GROUP_CHECK,
   GRID_GROUP_LEVEL_KEY,
 } from '../integrated-grouping/constants';
-import { TableRow, GetRowIdFn, Rows, Row } from '../../types';
+import { GetRowIdFn, Row, RowId } from '../../types';
 
 export const customGroupedRows: PureComputed<
-  [TableRow[], Grouping[], GetChildGroupsFn, TableRow[], string]
+  [Row[], Grouping[], GetChildGroupsFn, Row[], string]
 > = (
   currentRows, grouping, getChildGroups, rootRows = currentRows, keyPrefix = '',
 ) => {
@@ -37,18 +37,18 @@ export const customGroupedRows: PureComputed<
         `${compoundKey}${GROUP_KEY_SEPARATOR}`,
       ));
       return acc;
-    }, [] as any[]);
+    }, [] as Row[]);
 };
 
-export const customGroupingRowIdGetter = (getRowId: GetRowIdFn, rows: Rows) => {
+export const customGroupingRowIdGetter: PureComputed<[GetRowIdFn, Row[]]> = (getRowId, rows) => {
   const firstRow = rows.find(row => !row[GRID_GROUP_CHECK]);
   if (!firstRow || getRowId(firstRow) !== undefined) {
     return getRowId;
   }
 
-  const map = new Map(rows
+  const map = new Map<Row, RowId>(rows
     .filter(row => !row[GRID_GROUP_CHECK])
-    .map((row, rowIndex) => [row, rowIndex]) as [any, any]);
+    .map((row, rowIndex) => [row, rowIndex]) as [Row, RowId]);
 
-  return (row: Row) => map.get(row);
+  return row => map.get(row)!;
 };

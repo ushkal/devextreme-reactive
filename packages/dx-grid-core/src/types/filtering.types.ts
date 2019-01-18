@@ -23,7 +23,7 @@ export interface FilterExpression {
  * Built-in operations: `contains`, `notContains`, `startsWith`, `endsWith`, `equal`, `notEqual`,
  * `greaterThan`, `graterThenOrEqual`, `lessThan`, `lessThanOrEqual` */
 export type FilterOperation = string;
-export type GetAvailableFilterOperationsFn = (columnName: string) => FilterOperation[] | undefined;
+export type GetAvailableFilterOperationsFn = PureComputed<[string], FilterOperation[] | undefined>;
 
 export type FilterPredicate = PureComputed<[any, Filter, Row?], boolean>;
 

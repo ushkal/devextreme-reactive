@@ -1,17 +1,9 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_FILTER_TYPE, DEFAULT_FILTER_OPERATIONS } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import {
   IsSpecificCellFn, IsSpecificRowFn, FilterOperation, Filter, GetAvailableFilterOperationsFn,
 } from '../../types';
-
-type GetFilterOperationsFn = (
-  getAvailableFilterOperations: GetAvailableFilterOperationsFn,
-  columnName: string,
-) => FilterOperation[];
-type GetSelectedFilterOperationFn = (
-  filterOperations: FilterOperation[], columnName: string,
-  columnFilter: Filter, columnFilterOperations: FilterOperation[],
-) => FilterOperation;
 
 export const isFilterTableCell: IsSpecificCellFn = (
   tableRow, tableColumn,
@@ -19,14 +11,20 @@ export const isFilterTableCell: IsSpecificCellFn = (
 
 export const isFilterTableRow: IsSpecificRowFn = tableRow => tableRow.type === TABLE_FILTER_TYPE;
 
-export const getColumnFilterOperations: GetFilterOperationsFn = (
+export const getColumnFilterOperations: PureComputed<
+  [GetAvailableFilterOperationsFn, string],
+  FilterOperation[]
+> = (
   getAvailableFilterOperations, columnName,
 ) => (getAvailableFilterOperations && getAvailableFilterOperations(columnName))
   || DEFAULT_FILTER_OPERATIONS;
 
 export const isFilterValueEmpty = (value: any) => value === undefined || !String(value).length;
 
-export const getSelectedFilterOperation: GetSelectedFilterOperationFn = (
+export const getSelectedFilterOperation: PureComputed<
+  [FilterOperation[], string, Filter, FilterOperation[]],
+  FilterOperation
+> = (
   filterOperations, columnName, columnFilter, columnFilterOperations,
 ) => {
   if (filterOperations[columnName]) {

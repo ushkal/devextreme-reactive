@@ -1,4 +1,5 @@
 import { Row, GetRowLevelKeyFn, TableRows } from '../types';
+import { PureComputed, Mutable } from '@devexpress/dx-core';
 
 export const NODE_CHECK = Symbol('node');
 
@@ -7,8 +8,8 @@ export type TreeNode = {
   root?: Row;
   children: TreeNode[];
 };
-type RowsToTreeFn = (...args: [TableRows, GetRowLevelKeyFn]) => TreeNode[];
-type TreeToRowsFn = (...args: [TreeNode[], TreeNode[]?]) => TreeNode[];
+type RowsToTreeFn = PureComputed<[TableRows, GetRowLevelKeyFn], TreeNode[]>;
+type TreeToRowsFn = PureComputed<[TreeNode[], Mutable<TreeNode[]>?]>;
 
 export const rowsToTree: RowsToTreeFn = (rows, getRowLevelKey) => {
   if (!rows.length) return rows;

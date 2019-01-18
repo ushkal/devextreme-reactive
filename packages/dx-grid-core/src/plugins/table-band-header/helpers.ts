@@ -7,14 +7,9 @@ import { findChainByColumnIndex } from '../table-header-row/helpers';
 import {
   IsSpecificRowFn, TableColumn, TableRow, ColumnBands, TableRows, TableColumns,
   HeaderColumnChainRows,
+  GetColumnBandMetaFn,
 } from '../../types';
 
-type ColumnBandMeta = { level: number, title: string | null };
-
-type GetColumnBandMetaFn = (
-  columnName: string, bands: ColumnBands[], tableRowLevel: number,
-  level?: number, title?: string | null | undefined, result?: ColumnBandMeta | null,
-) => ColumnBandMeta;
 type GetBandComponentFn = (
   params: { tableColumn: TableColumn, tableRow: TableRow & { level: number }, rowSpan: number },
   tableHeaderRows: TableRows,

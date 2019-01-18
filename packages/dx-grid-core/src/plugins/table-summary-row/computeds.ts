@@ -8,7 +8,7 @@ import {
   TableRows, GetRowLevelKeyFn, IsSpecificRowFn, GetRowIdFn, Row, TableRow,
 } from '../../types';
 
-type RowLevel = { levelKey: number, row: Row, opened: boolean };
+type RowLevel = { levelKey: string, row: Row, opened: boolean };
 
 export const tableRowsWithTotalSummaries: PureComputed<[TableRows]> = footerRows => [
   { key: TABLE_TOTAL_SUMMARY_TYPE.toString(), type: TABLE_TOTAL_SUMMARY_TYPE },
@@ -42,7 +42,7 @@ export const tableRowsWithSummaries: PureComputed<
     }
   };
 
-  let levels: any[] = [];
+  let levels: RowLevel[] = [];
   tableRows.forEach((tableRow) => {
     const { row } = tableRow;
     const levelKey = getRowLevelKey(row);

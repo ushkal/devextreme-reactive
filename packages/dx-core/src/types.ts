@@ -2,32 +2,47 @@
 
 // makes all types in tuple readonly except functions
 // MakeReadonly<[object, Function, string[]]> = [Readonly<object>, Function, ReadonlyArray<string>]
-type MakeReadonly<T> = { readonly [K in keyof T]:
-  T[K] extends (infer P)[] ? ReadonlyArray<P> :
-  // T[K] extends [infer P1] ? ReadonlyArray<P1> :
-  T[K] extends Function ? T[K] :
-  T[K] extends object ? ReadonlyObject<T[K]> :
-  Readonly<T[K]>
-};
+type ReadonlyTuple<T> = { readonly [K in keyof T]: Immutable<T[K]> };
 
-type ReadonlyObject<T> = { readonly [K in keyof T]: MakeReadonly<T[K]>; };
+export interface Mutable<T> {};
+
+type Immutable<T> =
+  // T extends Mutable<T> ? T :
+  T extends (infer P)[] ? ReadonlyArray<P> :
+  T extends Map<infer TKey, infer TValue> ? ReadonlyMap<TKey, TValue> :
+  // T extends Array<(infer S)> ? ReadonlyArray<S> :
+  T extends Function ? T :
+  T extends object ? ReadonlyObject<T> :
+  Readonly<T>;
+
+type ReadonlyObject<T> = { readonly [K in keyof T]: Immutable<T[K]>; };
 
 type TupleHead<T> = T extends [infer U, ...any[]] ? U : never;
 
-export type PureReducer<S, P, R = S> = (...args: MakeReadonly<[S, P]>) => R;
+export type PureReducer<S, P, R = S> = (...args: ReadonlyTuple<[S, P]>) => Immutable<R>;
 
 export type PureComputed<T extends any[], TReturn = TupleHead<T>> =
-  (...args: MakeReadonly<T>) => TReturn;
+  (...args: ReadonlyTuple<T>) => Immutable<TReturn>;
 
 type Person = { name: string };
-type SomeObject = { a: { b: any[]} };
+type Group = { people?: Person[] };
 
-const test: PureComputed<[string[], Person[], SomeObject, () => number]> = (
+const pr: PureReducer<Group, Person> = ({ people }, p) => {
+  p.name = '';
+  return ({ people })
+}
+
+const test: PureComputed<[string[], Person[], Person, () => number]> = (
   strings, aPerson, anyv, afun,
 ) => {
   const { a } = anyv;
   const c = a.b;
-  a.b.push(0);
+
+  const { d } = a;
+  const { g } = d;
+  g.push('');
+
+  c.push(0);
   const b = afun();
   strings[0] = '';
 };

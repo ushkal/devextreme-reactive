@@ -3,7 +3,7 @@ import {
   GetRowIdFn, IsSpecificRowFn, RowsWithSelection, Row, UnwrapRowsComputed, RowId,
 } from '../../types';
 
-type IRowsSelected = PureComputed<[RowsWithSelection, RowId[]], boolean>;
+type RowsSelectedFn = PureComputed<[RowsWithSelection, RowId[]], boolean>;
 
 export const rowsWithAvailableToSelect: PureComputed<
   [Row[], GetRowIdFn, IsSpecificRowFn],
@@ -18,7 +18,7 @@ export const rowsWithAvailableToSelect: PureComputed<
   return { rows, availableToSelect: dataRows.map(row => getRowId(row)) };
 };
 
-export const someSelected: IRowsSelected = ({ availableToSelect }, selection) => {
+export const someSelected: RowsSelectedFn = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);
 
   return availableToSelect.length !== 0 && selectionSet.size !== 0
@@ -26,7 +26,7 @@ export const someSelected: IRowsSelected = ({ availableToSelect }, selection) =>
     && availableToSelect.some(elem => !selectionSet.has(elem));
 };
 
-export const allSelected: IRowsSelected = ({ availableToSelect }, selection) => {
+export const allSelected: RowsSelectedFn = ({ availableToSelect }, selection) => {
   const selectionSet = new Set(selection);
 
   return selectionSet.size !== 0 && availableToSelect.length !== 0

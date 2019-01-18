@@ -1,6 +1,7 @@
-import { Row, GetRowIdFn, RowIds, IsSpecificRowFn } from './grid-core.types';
+import { Row, GetRowIdFn, RowId, IsSpecificRowFn } from './grid-core.types';
+import { PureComputed } from '@devexpress/dx-core';
 
-export type GetTreeChildRowsFn = (currentRow: any | null, rootRows: Row[]) => Row[] | null;
+export type GetTreeChildRowsFn = PureComputed<[Row | null, Row[]], Row[] | null>;
 
 export type TreeMeta = { level: number, leaf: boolean };
 
@@ -11,7 +12,7 @@ export type RowsWithCollapsedRowsMetaMap = RowsWithTreeMetaMap
   & { collapsedRowsMeta: Map<Row, Row[]> };
 
 export type ExpandedTreeRowsComputed = (
-  rows: RowsWithTreeMetaMap, getRowId: GetRowIdFn, expandedRowIds: RowIds,
+  rows: RowsWithTreeMetaMap, getRowId: GetRowIdFn, expandedRowIds: RowId[],
 ) => RowsWithCollapsedRowsMetaMap;
 
 export type GetCustomTreeRowsFn = (
@@ -25,4 +26,4 @@ export type CustomTreeRowsWithMetaComputed = (
   getChildRows: GetTreeChildRowsFn,
 ) => RowsWithTreeMetaMap;
 
-export type IsSpecificTreeRowGetter = (params: { treeMeta: Map<Row, TreeMeta> }) => IsSpecificRowFn;
+export type IsSpecificTreeRowGetter = PureComputed<[RowsWithTreeMetaMap], IsSpecificRowFn>;

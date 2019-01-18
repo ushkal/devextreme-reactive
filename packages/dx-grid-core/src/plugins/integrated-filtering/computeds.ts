@@ -2,7 +2,8 @@ import { NODE_CHECK, rowsToTree, treeToRows, TreeNode } from '../../utils/hierar
 import { PureComputed } from '@devexpress/dx-core';
 import {
   Row, Filter, FilterPredicate, GetRowLevelKeyFn,
-  FilterExpression, GetCellValueFn, GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap, UnwrapRowsComputed,
+  FilterExpression, GetCellValueFn, GetCollapsedRowsFn, RowsWithCollapsedRowsMetaMap,
+  UnwrapRowsComputed,
 } from '../../types';
 
 type GetColumnPredicateFn = (columnName: string) => FilterPredicate;
@@ -49,7 +50,7 @@ export const defaultFilterPredicate: FilterPredicate = (value, filter) => {
 const filterTree: PureComputed<[TreeNode[], CompiledPredicate]> = (tree, predicate) => tree.reduce(
   (acc, node) => {
     if (node[NODE_CHECK]) {
-      const filteredChildren = filterTree(node.children, predicate);
+      const filteredChildren = filterTree(node.children, predicate) as TreeNode[];
       if (filteredChildren.length > 0) {
         acc.push({
           ...node,

@@ -2,7 +2,8 @@ import { PureComputed } from '@devexpress/dx-core';
 import { GRID_TREE_NODE_TYPE } from './constants';
 import {
   RowsWithTreeMetaMap, RowsWithCollapsedRowsMetaMap, IsSpecificTreeRowGetter, GetRowIdFn,
-  GetRowLevelKeyFn, GetCollapsedRowsFn, Row, GetTreeChildRowsFn, RowsWithTreeMeta, RowId, UnwrapRowsComputed,
+  GetRowLevelKeyFn, GetCollapsedRowsFn, Row, GetTreeChildRowsFn, RowsWithTreeMeta, RowId,
+  UnwrapRowsComputed,
 } from '../../types';
 
 const customTreeRows: PureComputed<

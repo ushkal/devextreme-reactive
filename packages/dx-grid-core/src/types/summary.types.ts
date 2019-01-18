@@ -13,10 +13,11 @@ export interface SummaryItem {
 export type SummaryType = string;
 
 type GetRowValueFn = (row: Row) => any;
-export type GetColumnSummariesFn = (...args: [
-  SummaryItem[], string, SummaryValue[]
-// tslint:disable-next-line:prefer-array-literal
-]) => Array<{ type: SummaryType, value: SummaryValue }>;
+export type GetColumnSummariesFn = PureComputed<
+  [SummaryItem[], string, SummaryValue[]],
+  // tslint:disable-next-line: prefer-array-literal
+  Array<{ type: SummaryType, value: SummaryValue }>
+>;
 
 type DefaultSummaryCalulator = PureComputed<[Row[], GetRowValueFn], SummaryValue>;
 export type DefaultSummaryCalculators = { [key: string]: DefaultSummaryCalulator };

@@ -1,10 +1,8 @@
-import { TABLE_FILTER_TYPE } from './constants';
-import { TableRows } from '../../types';
 import { PureComputed } from '@devexpress/dx-core';
+import { TABLE_FILTER_TYPE } from './constants';
+import { TableRow } from '../../types';
 
-// type RowsWithFilterComputed = (headerRows: TableRows, rowHeight: number) => TableRows;
-
-export const tableHeaderRowsWithFilter: PureComputed<[TableRows, number]> = (
+export const tableHeaderRowsWithFilter: PureComputed<[TableRow[], number]> = (
   headerRows, rowHeight,
 ) => [
   ...headerRows,

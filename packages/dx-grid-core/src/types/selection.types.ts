@@ -1,8 +1,8 @@
-import { Rows, RowId, RowIds } from './grid-core.types';
+import { RowId, Row } from './grid-core.types';
 
-export type IToggleSelection = (
-  selection: RowIds,
-  payload: { rowIds: RowIds, state: boolean },
+export type ToggleSelectionFn = (
+  selection: RowId[],
+  payload: { rowIds: RowId[], state: boolean },
 ) => void;
 
-export type RowsWithSelection = { rows: Rows, availableToSelect: RowId[] };
+export type RowsWithSelection = { rows: Row[], availableToSelect: RowId[] };

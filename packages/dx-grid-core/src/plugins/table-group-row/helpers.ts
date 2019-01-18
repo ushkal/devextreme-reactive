@@ -1,17 +1,15 @@
+import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_GROUP_TYPE } from './constants';
-import { TableRow, TableColumn, Groupings } from '../../types';
+import { TableRow, TableColumn, IsSpecificCellFn, Grouping } from '../../types';
 
-export const isGroupTableCell = (
-  tableRow: TableRow,
-  tableColumn: TableColumn,
-) => tableRow.type === TABLE_GROUP_TYPE && tableColumn.type === TABLE_GROUP_TYPE
+export const isGroupTableCell: IsSpecificCellFn = (
+  tableRow, tableColumn,
+) => !!(tableRow.type === TABLE_GROUP_TYPE && tableColumn.type === TABLE_GROUP_TYPE
   && tableColumn.column
-  && tableColumn.column.name === tableRow.row.groupedBy;
+  && tableColumn.column.name === tableRow.row.groupedBy);
 
-export const isGroupIndentTableCell = (
-  tableRow: TableRow,
-  tableColumn: TableColumn,
-  grouping: Groupings,
+export const isGroupIndentTableCell: PureComputed<[TableRow, TableColumn, Grouping[]], boolean> = (
+  tableRow, tableColumn, grouping,
 ) => {
   if (tableRow.type !== TABLE_GROUP_TYPE || tableColumn.type !== TABLE_GROUP_TYPE) return false;
   if (tableColumn.column && tableRow.row.groupedBy === tableColumn.column.name) return false;

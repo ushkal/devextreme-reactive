@@ -5,11 +5,8 @@ import { getColumnMeta } from './helpers';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
 import {
   ColumnBands, TableColumns, TableRows, GetHeaderColumnChainsFn, ShouldSplitChainFn,
+  GetMaxNestedLevelFn,
 } from '../../types';
-
-type GetMaxNestedLevelFn = (
-  bands: ColumnBands[], level?: number, result?: { level: number } | null,
-) => { level: number };
 
 export const tableRowsWithBands: PureComputed<
   [TableRows, ColumnBands[], TableColumns]

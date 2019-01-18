@@ -6,3 +6,14 @@ export interface ColumnBands {
   /** Nested bands and columns. */
   children?: ColumnBands[];
 }
+
+export type GetMaxNestedLevelFn = (
+  bands: ColumnBands[], level?: number, result?: { level: number } | null,
+) => { level: number };
+
+type ColumnBandMeta = { level: number, title: string | null };
+
+export type GetColumnBandMetaFn = (
+  columnName: string, bands: ReadonlyArray<ColumnBands>, tableRowLevel: number,
+  level?: number, title?: string | null | undefined, result?: ColumnBandMeta | null,
+) => ColumnBandMeta;
