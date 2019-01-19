@@ -23,7 +23,7 @@ const defaultCompare = (a: any, b: any) => {
 type GetColumnCompareFn = (name: string) => (a: any, b: any) => number;
 
 const createCompare: PureComputed<
-  [Sorting[], GetColumnCompareFn, (...args: [Row, string]) => any],
+  [Sorting[], GetColumnCompareFn | undefined, (...args: [Row, string]) => any],
   CompareFn
 > = (
   sorting, getColumnCompare, getComparableValue,
@@ -76,7 +76,7 @@ const sortHierarchicalRows: PureComputed<[Row[], CompareFn, GetRowLevelKeyFn]> =
 };
 
 export const sortedRows: PureComputed<
-  [Row[], Sorting[], GetCellValueFn, GetColumnCompareFn, IsSpecificRowFn, GetRowLevelKeyFn]
+  [Row[], Sorting[], GetCellValueFn, GetColumnCompareFn?, IsSpecificRowFn?, GetRowLevelKeyFn?]
 > = (
   rows, sorting, getCellValue, getColumnCompare, isGroupRow, getRowLevelKey,
 ) => {

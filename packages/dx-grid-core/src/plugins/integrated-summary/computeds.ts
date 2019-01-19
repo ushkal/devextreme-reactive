@@ -1,6 +1,5 @@
-
 import {
-  SummaryValue, TableRows, SummaryItem, GetCellValueFn, SummaryCalculator,
+  SummaryValue, SummaryCalculator,
   DefaultSummaryCalculators,
   Row,
   TotalSummaryValuesFn,
@@ -8,7 +7,6 @@ import {
   TreeSummaryValuesFn,
   RowsSummaryValuesFn,
 } from '../../types';
-import { PureComputed } from '@devexpress/dx-core';
 
 const defaultSummaryCalculators: DefaultSummaryCalculators = {
   count: rows => rows.length,

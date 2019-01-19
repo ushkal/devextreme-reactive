@@ -14,7 +14,7 @@ export type ColumnSortingState = { sorting: Sorting[] };
 export type SortingKeepOther = boolean | string[];
 export type ChangeSortingPayload = {
   columnName: string;
-  direction: string;
-  keepOther: SortingKeepOther;
-  sortIndex: number | undefined;
+  direction?: string;
+  keepOther?: SortingKeepOther;
+  sortIndex?: number | undefined;
 };

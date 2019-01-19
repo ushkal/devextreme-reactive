@@ -26,4 +26,6 @@ export type CustomTreeRowsWithMetaComputed = (
   getChildRows: GetTreeChildRowsFn,
 ) => RowsWithTreeMetaMap;
 
+export type TreeRowLevelGetter = PureComputed<[Row], number>;
+export type GetTreeRowLevelGetter = PureComputed<[RowsWithTreeMetaMap], TreeRowLevelGetter>;
 export type IsSpecificTreeRowGetter = PureComputed<[RowsWithTreeMetaMap], IsSpecificRowFn>;

@@ -3,8 +3,12 @@ import {
   getPersistentSortedColumns,
   calculateKeepOther,
 } from './helpers';
+import { Sorting } from '../../types';
 
 describe('SortingState helpers', () => {
+  // tslint:disable-next-line:no-object-literal-type-assertion
+  const defaultDirection = { direction: 'asc' } as { direction: 'asc' };
+
   describe('#getColumnSortingDirection', () => {
     it('returns sorting direction', () => {
       const sorting = [{ columnName: 'test', direction: 'testDirection' }];
@@ -24,8 +28,8 @@ describe('SortingState helpers', () => {
   describe('#getPersistentSortedColumns', () => {
     it('should calculate persistent sorted columns', () => {
       const sorting = [
-        { columnName: 'a' },
-        { columnName: 'b' },
+        { columnName: 'a', ...defaultDirection },
+        { columnName: 'b', ...defaultDirection },
       ];
       const columnExtensions = [
         { columnName: 'b', sortingEnabled: false },
@@ -55,7 +59,10 @@ describe('SortingState helpers', () => {
     });
 
     it('should merge sorting and persistent sorted columns if keepOther is true', () => {
-      const sorting = [{ columnName: 'a' }, { columnName: 'b' }];
+      const sorting: ReadonlyArray<Sorting> = [
+        { columnName: 'a', ...defaultDirection },
+        { columnName: 'b', ...defaultDirection },
+      ];
       const keepOther = calculateKeepOther(sorting, true, ['b', 'c']);
       expect(keepOther).toEqual(['a', 'b', 'c']);
     });

@@ -1,12 +1,14 @@
+import { ReadonlyObject } from '@devexpress/dx-core';
 import { changeColumnSorting } from './reducers';
+import { ColumnSortingState, ChangeSortingPayload } from '../../types';
 
 describe('SortingState reducers', () => {
   describe('#changeColumnSorting', () => {
     it('can initiate sorting', () => {
-      const state = {
+      const state: ReadonlyObject<ColumnSortingState> = {
         sorting: [],
       };
-      const payload = { columnName: 'test' };
+      const payload: ReadonlyObject<ChangeSortingPayload> = { columnName: 'test' };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -15,10 +17,12 @@ describe('SortingState reducers', () => {
     });
 
     it('can initiate sorting with direction', () => {
-      const state = {
+      const state: ReadonlyObject<ColumnSortingState> = {
         sorting: [],
       };
-      const payload = { columnName: 'test', direction: 'desc' };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test', direction: 'desc',
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -27,10 +31,10 @@ describe('SortingState reducers', () => {
     });
 
     it('can toggle sorting', () => {
-      const state = {
+      const state: ReadonlyObject<ColumnSortingState> = {
         sorting: [{ columnName: 'test', direction: 'asc' }],
       };
-      const payload = { columnName: 'test' };
+      const payload: ReadonlyObject<ChangeSortingPayload> = { columnName: 'test' };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -39,10 +43,10 @@ describe('SortingState reducers', () => {
     });
 
     it('should reset sorting if no keepOther is specified', () => {
-      const state = {
+      const state: ReadonlyObject<ColumnSortingState> = {
         sorting: [{ columnName: 'test', direction: 'asc' }],
       };
-      const payload = { columnName: 'test2' };
+      const payload: ReadonlyObject<ChangeSortingPayload> = { columnName: 'test2' };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -51,46 +55,72 @@ describe('SortingState reducers', () => {
     });
 
     it('can initiate multi-column sorting by keepOther option', () => {
-      const state = {
+      const state: ReadonlyObject<ColumnSortingState> = {
         sorting: [{ columnName: 'test', direction: 'asc' }],
       };
-      const payload = { columnName: 'test2', keepOther: true };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test2', keepOther: true,
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
-          sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test2', direction: 'asc' }],
+          sorting: [
+            { columnName: 'test', direction: 'asc' },
+            { columnName: 'test2', direction: 'asc' },
+          ],
         });
     });
 
     it('can initiate multi-column sorting by keepOther option with array', () => {
-      const state = {
-        sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test1', direction: 'asc' }],
+      const state: ReadonlyObject<ColumnSortingState> = {
+        sorting: [
+          { columnName: 'test', direction: 'asc' },
+          { columnName: 'test1', direction: 'asc' },
+        ],
       };
-      const payload = { columnName: 'test2', keepOther: ['test'] };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test2', keepOther: ['test'],
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
-          sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test2', direction: 'asc' }],
+          sorting: [
+            { columnName: 'test', direction: 'asc' },
+            { columnName: 'test2', direction: 'asc' },
+          ],
         });
     });
 
     it('can toggle multi-column sorting', () => {
-      const state = {
-        sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test2', direction: 'asc' }],
+      const state: ReadonlyObject<ColumnSortingState> = {
+        sorting: [
+          { columnName: 'test', direction: 'asc' },
+          { columnName: 'test2', direction: 'asc' },
+        ],
       };
-      const payload = { columnName: 'test', keepOther: true };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test', keepOther: true,
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
-          sorting: [{ columnName: 'test', direction: 'desc' }, { columnName: 'test2', direction: 'asc' }],
+          sorting: [
+            { columnName: 'test', direction: 'desc' },
+            { columnName: 'test2', direction: 'asc' },
+          ],
         });
     });
 
     it('should cancel sorting by column if directions is set to null', () => {
-      const state = {
-        sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test2', direction: 'asc' }],
+      const state: ReadonlyObject<ColumnSortingState> = {
+        sorting: [
+          { columnName: 'test', direction: 'asc' },
+          { columnName: 'test2', direction: 'asc' },
+        ],
       };
-      const payload = { columnName: 'test2', keepOther: true, direction: null };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test2', keepOther: true, direction: null,
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -99,10 +129,15 @@ describe('SortingState reducers', () => {
     });
 
     it('should clear sorting if direction is null and keepOther is not specified', () => {
-      const state = {
-        sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test2', direction: 'asc' }],
+      const state: ReadonlyObject<ColumnSortingState> = {
+        sorting: [
+          { columnName: 'test', direction: 'asc' },
+          { columnName: 'test2', direction: 'asc' },
+        ],
       };
-      const payload = { columnName: 'test2', direction: null };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test2', direction: null,
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({
@@ -111,10 +146,15 @@ describe('SortingState reducers', () => {
     });
 
     it('should set correct sorting if sortIndex is specified', () => {
-      const state = {
-        sorting: [{ columnName: 'test', direction: 'asc' }, { columnName: 'test1', direction: 'asc' }],
+      const state: ReadonlyObject<ColumnSortingState> = {
+        sorting: [
+          { columnName: 'test', direction: 'asc' },
+          { columnName: 'test1', direction: 'asc' },
+        ],
       };
-      const payload = { columnName: 'test2', keepOther: true, sortIndex: 0 };
+      const payload: ReadonlyObject<ChangeSortingPayload> = {
+        columnName: 'test2', keepOther: true, sortIndex: 0,
+      };
 
       expect(changeColumnSorting(state, payload))
         .toEqual({

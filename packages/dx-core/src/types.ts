@@ -15,7 +15,7 @@ type Immutable<T> =
   T extends object ? ReadonlyObject<T> :
   Readonly<T>;
 
-type ReadonlyObject<T> = { readonly [K in keyof T]: Immutable<T[K]>; };
+export type ReadonlyObject<T> = { readonly [K in keyof T]: Immutable<T[K]>; };
 
 type TupleHead<T> = T extends [infer U, ...any[]] ? U : never;
 

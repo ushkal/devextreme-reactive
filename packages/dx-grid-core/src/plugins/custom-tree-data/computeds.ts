@@ -4,6 +4,7 @@ import {
   RowsWithTreeMetaMap, RowsWithCollapsedRowsMetaMap, IsSpecificTreeRowGetter, GetRowIdFn,
   GetRowLevelKeyFn, GetCollapsedRowsFn, Row, GetTreeChildRowsFn, RowsWithTreeMeta, RowId,
   UnwrapRowsComputed,
+  GetTreeRowLevelGetter,
 } from '../../types';
 
 const customTreeRows: PureComputed<
@@ -110,12 +111,12 @@ export const collapsedTreeRowsGetter: PureComputed<
 
 export const isTreeRowLeafGetter: IsSpecificTreeRowGetter = ({ treeMeta }) => (row) => {
   const rowMeta = treeMeta.get(row);
-  return !!rowMeta && rowMeta.leaf;
+  return rowMeta && rowMeta.leaf;
 };
 
-export const getTreeRowLevelGetter: IsSpecificTreeRowGetter = ({ treeMeta }) => (row) => {
+export const getTreeRowLevelGetter: GetTreeRowLevelGetter = ({ treeMeta }) => (row) => {
   const rowMeta = treeMeta.get(row);
-  return !!(rowMeta && rowMeta.level);
+  return (rowMeta && rowMeta.level) as number;
 };
 
 export const unwrappedCustomTreeRows: UnwrapRowsComputed = ({ rows }) => rows;

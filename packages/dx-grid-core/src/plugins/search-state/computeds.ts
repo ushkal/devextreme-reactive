@@ -10,6 +10,6 @@ export const searchFilterExpression: SearchFilterExpressionFn = (
   }
   return {
     operator: 'and',
-    filters: [filterExpression, selfFilterExpression],
+    filters: [filterExpression as FilterExpression, selfFilterExpression],
   };
 };

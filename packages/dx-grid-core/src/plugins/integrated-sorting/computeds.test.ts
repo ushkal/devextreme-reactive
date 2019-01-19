@@ -1,4 +1,5 @@
 import { sortedRows } from './computeds';
+import { Sorting } from '../../types';
 
 describe('IntegratedSorting computeds', () => {
   describe('#sortedRows', () => {
@@ -13,14 +14,14 @@ describe('IntegratedSorting computeds', () => {
       ];
 
       it('does not mutate grid rows if no sorting specified', () => {
-        const sorting = [];
+        const sorting: ReadonlyArray<Sorting> = [];
 
         const sorted = sortedRows(rows, sorting, getCellValue);
         expect(sorted).toBe(rows);
       });
 
       it('can sort ascending by one column', () => {
-        const sorting = [{ columnName: 'a', direction: 'asc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'a', direction: 'asc' }];
 
         const sorted = sortedRows(rows, sorting, getCellValue);
         expect(sorted).toEqual([
@@ -32,7 +33,7 @@ describe('IntegratedSorting computeds', () => {
       });
 
       it('can sort descending by one column', () => {
-        const sorting = [{ columnName: 'a', direction: 'desc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'a', direction: 'desc' }];
 
         const sorted = sortedRows(rows, sorting, getCellValue);
         expect(sorted).toEqual([
@@ -44,7 +45,10 @@ describe('IntegratedSorting computeds', () => {
       });
 
       it('can sort by several columns', () => {
-        const sorting = [{ columnName: 'a', direction: 'asc' }, { columnName: 'b', direction: 'asc' }];
+        const sorting: ReadonlyArray<Sorting> = [
+          { columnName: 'a', direction: 'asc' },
+          { columnName: 'b', direction: 'asc' },
+        ];
 
         const sorted = sortedRows(rows, sorting, getCellValue);
         expect(sorted).toEqual([
@@ -56,7 +60,10 @@ describe('IntegratedSorting computeds', () => {
       });
 
       it('can sort by several columns with different directions', () => {
-        const sorting = [{ columnName: 'a', direction: 'asc' }, { columnName: 'b', direction: 'desc' }];
+        const sorting: ReadonlyArray<Sorting> = [
+          { columnName: 'a', direction: 'asc' },
+          { columnName: 'b', direction: 'desc' },
+        ];
 
         const sorted = sortedRows(rows, sorting, getCellValue);
         expect(sorted).toEqual([
@@ -76,7 +83,7 @@ describe('IntegratedSorting computeds', () => {
           }
           return a < b ? 1 : -1;
         });
-        const sorting = [{ columnName: 'a', direction: 'desc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'a', direction: 'desc' }];
         const sorted = sortedRows(rows, sorting, getCellValue, getColumnCompare);
 
         expect(getColumnCompare).toBeCalledWith(sorting[0].columnName);
@@ -90,7 +97,7 @@ describe('IntegratedSorting computeds', () => {
 
       it('should use default compare if custom compare returns nothing', () => {
         const getColumnCompare = () => undefined;
-        const sorting = [{ columnName: 'a', direction: 'desc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'a', direction: 'desc' }];
         const sorted = sortedRows(rows, sorting, getCellValue, getColumnCompare);
 
         expect(sorted).toEqual([
@@ -109,7 +116,7 @@ describe('IntegratedSorting computeds', () => {
           { a: 4 },
         ];
         const getColumnCompare = () => undefined;
-        const sorting = [{ columnName: 'b', direction: 'asc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'b', direction: 'asc' }];
         const sorted = sortedRows(spacedRows, sorting, getCellValue, getColumnCompare);
 
         expect(sorted).toEqual([
@@ -128,7 +135,7 @@ describe('IntegratedSorting computeds', () => {
           { a: 4, b: null },
         ];
         const getColumnCompare = () => undefined;
-        const sorting = [{ columnName: 'b', direction: 'asc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'b', direction: 'asc' }];
         const sorted = sortedRows(spacedRows, sorting, getCellValue, getColumnCompare);
 
         expect(sorted).toEqual([
@@ -149,7 +156,7 @@ describe('IntegratedSorting computeds', () => {
           { a: 6, b: null },
         ];
         const getColumnCompare = () => undefined;
-        const sorting = [{ columnName: 'b', direction: 'asc' }];
+        const sorting: ReadonlyArray<Sorting> = [{ columnName: 'b', direction: 'asc' }];
         const sorted = sortedRows(spacedRows, sorting, getCellValue, getColumnCompare);
 
         expect(sorted).toEqual([
@@ -184,7 +191,7 @@ describe('IntegratedSorting computeds', () => {
           groupRow({ groupedBy: 'a', value: 2 }),
         ];
         /* eslint-enable indent */
-        const sorting = [
+        const sorting: ReadonlyArray<Sorting> = [
           { columnName: 'a', direction: 'desc' },
           { columnName: 'b', direction: 'desc' },
           { columnName: 'c', direction: 'desc' },
@@ -230,7 +237,7 @@ describe('IntegratedSorting computeds', () => {
           rowNode({ level: 0, a: 2 }),
         ];
         /* eslint-enabke indent */
-        const sorting = [
+        const sorting: ReadonlyArray<Sorting> = [
           { columnName: 'a', direction: 'desc' },
           { columnName: 'b', direction: 'desc' },
           { columnName: 'c', direction: 'desc' },

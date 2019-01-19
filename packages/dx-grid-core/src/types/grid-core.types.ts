@@ -25,7 +25,7 @@ export type ToggleRowFieldReducer = PureReducer<RowId[], ToggleRowsPayload & { r
 export type GetCellValueFn = PureComputed<[Row, string], any>;
 export type GetRowLevelKeyFn = PureComputed<[Row?], string>;
 export type GetCollapsedRowsFn = PureComputed<[Row], Row[]>;
-export type IsSpecificRowFn = PureComputed<[Row], boolean>;
+export type IsSpecificRowFn = PureComputed<[Row], boolean | undefined>;
 // tslint:disable-next-line:max-line-length
 export type IsSpecificCellFn<P0 = TableRow, P1 = TableColumn, P2 = any> = PureComputed<[P0, P1, P2], boolean>;
 
