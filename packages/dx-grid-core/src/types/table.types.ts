@@ -1,6 +1,7 @@
 import { Column } from './grid-core.types';
 import { Style } from 'jss/css';
 import { PureComputed } from '@devexpress/dx-core';
+import { IntegratedFiltering } from '@devexpress/dx-react-grid';
 
 /** Describes properties of a table row that the Table plugin renders. */
 export interface TableRow {
@@ -34,7 +35,7 @@ export interface TableColumn {
   fixed?: 'left' | 'right';
 }
 
-export interface ColumnExtension {
+export type GridColumnExtension = {
   /** The name of the column to extend. */
   columnName: string;
   /** The table column width in pixels. */
@@ -43,7 +44,12 @@ export interface ColumnExtension {
   align?: 'left' | 'right' | 'center';
   /** Specifies whether word wrap is enabled in a column's cells. */
   wordWrapEnabled?: boolean;
-}
+} & IntegratedFiltering.ColumnExtension;
+
+export type GetColumnExtensionFn = PureComputed<[string], GridColumnExtension>;
+export type GetColumnExtensionValueGetterFn = PureComputed<
+  [GridColumnExtension[], string, any], GetColumnExtensionFn
+>;
 
 export type TableColumns = ReadonlyArray<TableColumn>;
 export type TableRows = ReadonlyArray<TableRow>;

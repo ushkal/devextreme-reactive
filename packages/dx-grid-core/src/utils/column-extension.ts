@@ -1,19 +1,19 @@
-import { ColumnExtension } from '../types';
+import { PureComputed } from '@devexpress/dx-core';
+import {
+  GridColumnExtension, GetColumnExtensionValueGetterFn,
+} from '../types';
 
-type GetColumnExtensionFn = (...args: [ColumnExtension[], string]) => ColumnExtension;
-type GetColumnExtensionValueGetterFn = (...args: [
-  ColumnExtension[], string, any
-]) => (columnName: string) => any;
-
-export const getColumnExtension: GetColumnExtensionFn = (columnExtensions, columnName) => {
+export const getColumnExtension: PureComputed<
+  [GridColumnExtension[] | undefined, string], GridColumnExtension
+> = (columnExtensions, columnName) => {
   if (!columnExtensions) {
     // tslint:disable-next-line:no-object-literal-type-assertion
-    return {} as ColumnExtension;
+    return {} as GridColumnExtension;
   }
   const columnExtension = columnExtensions.find(extension => extension.columnName === columnName);
   if (!columnExtension) {
     // tslint:disable-next-line:no-object-literal-type-assertion
-    return {} as ColumnExtension;
+    return {} as GridColumnExtension;
   }
   return columnExtension;
 };

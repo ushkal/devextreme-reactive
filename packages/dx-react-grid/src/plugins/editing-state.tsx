@@ -1,7 +1,6 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import {
-  Getter, Action, Plugin, createStateHelper,
+  Getter, Action, Plugin, createStateHelper, StateHelper,
 } from '@devexpress/dx-react-core';
 import {
   createRowChangeGetter,
@@ -19,9 +18,84 @@ import {
   getColumnExtensionValueGetter,
 } from '@devexpress/dx-grid-core';
 
-const columnExtensionValueGetter = (columnExtensions, defaultValue) => getColumnExtensionValueGetter(columnExtensions, 'editingEnabled', defaultValue);
+// tslint:disable-next-line:no-namespace
+export namespace EditingState {
+  /** Describes additional column properties that the plugin can handle. */
+  export interface ColumnExtension {
+    /** The name of a column to extend. */
+    columnName: string;
+    /** Specifies whether editing is enabled for a column. */
+    editingEnabled?: boolean;
+    // tslint:disable-next-line:max-line-length
+    /** A function that returns a value specifying row changes depending on the columns' editor values for the current row. This function is called each time the editor's value changes. */
+    createRowChange?: (row: any, value: any, columnName: string) => any;
+  }
+}
+/** Describes uncommitted changes made to the grid data. */
+export interface ChangeSet {
+  /** An array of rows to be created. */
+  added?: ReadonlyArray<any>;
+  // tslint:disable-next-line:max-line-length
+  /** An associative array that stores changes made to existing data. Each array item specifies changes made to a row. The item's key specifies the associated row's ID. */
+  changed?: { [key: string]: any };
+  /** An array of IDs representing rows to be deleted. */
+  deleted?: ReadonlyArray<number | string>;
+}
+export interface EditingStateProps {
+  // tslint:disable-next-line:max-line-length
+  /** A function that returns a row change object depending on row editor values. This function is called each time the row editor's value changes. */
+  createRowChange?: (row: any, value: string | number, columnName: string) => any;
+  /** Specifies whether editing is enabled for all columns. */
+  columnEditingEnabled?: boolean;
+  /** Additional column properties that the plugin can handle. */
+  columnExtensions?: Array<EditingState.ColumnExtension>;
+  /** IDs of the rows being edited. */
+  editingRowIds?: Array<number | string>;
+  /** IDs of the rows initially added to the `editingRowIds` array in uncontrolled mode. */
+  defaultEditingRowIds?: Array<number | string>;
+  /** Handles adding or removing a row to/from the `editingRowIds` array. */
+  onEditingRowIdsChange?: (editingRowIds: Array<number | string>) => void;
+  onDeletedRowIdsChange?: (deletedRowIds: Array<number | string>) => void;
+  /** Created but not committed rows. */
+  addedRows?: Array<any>;
+  /** Rows initially added to the `addedRows` array in uncontrolled mode. */
+  defaultAddedRows?: Array<any>;
+  /** Handles adding or removing a row to/from the `addedRows` array. */
+  onAddedRowsChange?: (addedRows: Array<any>) => void;
+  /** Not committed row changes. */
+  rowChanges?: { [key: string]: any };
+  /** Row changes initially added to the `rowChanges` array in uncontrolled mode. */
+  defaultRowChanges?: { [key: string]: any };
+  /** Handles adding or removing a row changes to/from the `rowChanges` array. */
+  onRowChangesChange?: (rowChanges: { [key: string]: any }) => void;
+  /** Handles row changes committing. */
+  onCommitChanges: (changes: ChangeSet) => void;
+}
+interface EditingStateState {
+  editingRowIds: Array<number | string>;
+  addedRows: Array<any>;
+  rowChanges: { [key: string]: any };
+  deletedRowIds: Array<number | string>;
+}
 
-export class EditingState extends React.PureComponent {
+const columnExtensionValueGetter = (
+  columnExtensions, defaultValue,
+) => getColumnExtensionValueGetter(columnExtensions, 'editingEnabled', defaultValue);
+
+export class EditingState extends React.PureComponent<EditingStateProps, EditingStateState> {
+  startEditRows: (payload: any) => void;
+  stopEditRows: (payload: any) => void;
+  changeRow: (payload: any) => void;
+  cancelChangedRows: (payload: any) => void;
+  commitChangedRows: ({ rowIds }: { rowIds: any; }) => void;
+  addRow: (payload: any) => void;
+  changeAddedRow: (payload: any) => void;
+  cancelAddedRows: (payload: any) => void;
+  commitAddedRows: ({ rowIds }: { rowIds: any; }) => void;
+  deleteRows: (payload: any) => void;
+  cancelDeletedRows: (payload: any) => void;
+  commitDeletedRows: ({ rowIds }: { rowIds: any; }) => void;
+
   constructor(props) {
     super(props);
     const rowChanges = props.rowChanges || props.defaultRowChanges;
@@ -42,7 +116,7 @@ export class EditingState extends React.PureComponent {
       deletedRowIds: props.deletedRowIds || props.defaultDeletedRowIds,
     };
 
-    const stateHelper = createStateHelper(
+    const stateHelper: StateHelper = createStateHelper(
       this,
       {
         editingRowIds: () => {
@@ -165,49 +239,3 @@ export class EditingState extends React.PureComponent {
     );
   }
 }
-
-EditingState.propTypes = {
-  createRowChange: PropTypes.func,
-  columnEditingEnabled: PropTypes.bool,
-  columnExtensions: PropTypes.array,
-
-  editingRowIds: PropTypes.array,
-  defaultEditingRowIds: PropTypes.array,
-  onEditingRowIdsChange: PropTypes.func,
-
-  addedRows: PropTypes.array,
-  defaultAddedRows: PropTypes.array,
-  onAddedRowsChange: PropTypes.func,
-
-  rowChanges: PropTypes.object,
-  defaultRowChanges: PropTypes.object,
-  onRowChangesChange: PropTypes.func,
-
-  deletedRowIds: PropTypes.array,
-  defaultDeletedRowIds: PropTypes.array,
-  onDeletedRowIdsChange: PropTypes.func,
-
-  onCommitChanges: PropTypes.func.isRequired,
-};
-
-EditingState.defaultProps = {
-  createRowChange: undefined,
-  columnEditingEnabled: true,
-  columnExtensions: undefined,
-
-  editingRowIds: undefined,
-  defaultEditingRowIds: [],
-  onEditingRowIdsChange: undefined,
-
-  rowChanges: undefined,
-  defaultRowChanges: {},
-  onRowChangesChange: undefined,
-
-  addedRows: undefined,
-  defaultAddedRows: [],
-  onAddedRowsChange: undefined,
-
-  deletedRowIds: undefined,
-  defaultDeletedRowIds: [],
-  onDeletedRowIdsChange: undefined,
-};

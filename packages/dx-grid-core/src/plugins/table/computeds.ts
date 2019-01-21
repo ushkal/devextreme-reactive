@@ -1,14 +1,14 @@
 import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_DATA_TYPE, TABLE_NODATA_TYPE } from './constants';
 import { getColumnExtension } from '../../utils/column-extension';
-import { ColumnExtension, GetCellColSpanFn } from './../../types/table.types';
+import { GridColumnExtension, GetCellColSpanFn } from './../../types/table.types';
 import { Row, GetRowIdFn } from '../../types';
 
-export const tableColumnsWithDataRows: PureComputed<[any[], ColumnExtension[]]> = (
+export const tableColumnsWithDataRows: PureComputed<[any[], GridColumnExtension[]]> = (
   columns, columnExtensions,
 ) => columns.map((column) => {
   const { name } = column;
-  const columnExtension = getColumnExtension(columnExtensions as ColumnExtension[], name);
+  const columnExtension = getColumnExtension(columnExtensions as GridColumnExtension[], name);
   return {
     column,
     key: `${TABLE_DATA_TYPE.toString()}_${name}`,

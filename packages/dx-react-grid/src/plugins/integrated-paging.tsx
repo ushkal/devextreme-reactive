@@ -1,26 +1,30 @@
 import * as React from 'react';
-import { Getter, Plugin } from '@devexpress/dx-react-core';
+import { Getter, Plugin, Getters, Actions } from '@devexpress/dx-react-core';
 import {
   paginatedRows, rowsWithPageHeaders, rowCount, currentPage,
 } from '@devexpress/dx-grid-core';
+
+// tslint:disable-next-line:no-empty-interface
+export interface IntegratedPagingProps {
+}
 
 const pluginDependencies = [
   { name: 'PagingState' },
 ];
 
 const rowsWithHeadersComputed = (
-  { rows, pageSize, getRowLevelKey },
+  { rows, pageSize, getRowLevelKey }: Getters,
 ) => rowsWithPageHeaders(rows, pageSize, getRowLevelKey);
-const totalCountComputed = ({ rows }) => rowCount(rows);
+const totalCountComputed = ({ rows }: Getters) => rowCount(rows);
 const paginatedRowsComputed = (
-  { rows, pageSize, currentPage: page },
+  { rows, pageSize, currentPage: page }: Getters,
 ) => paginatedRows(rows, pageSize, page);
 const currentPageComputed = (
-  { currentPage: page, totalCount, pageSize }, { setCurrentPage },
+  { currentPage: page, totalCount, pageSize }: Getters, { setCurrentPage }: Actions,
 ) => currentPage(page, totalCount, pageSize, setCurrentPage);
 
 // eslint-disable-next-line react/prefer-stateless-function
-export class IntegratedPaging extends React.PureComponent {
+export class IntegratedPaging extends React.PureComponent<IntegratedPagingProps> {
   render() {
     return (
       <Plugin

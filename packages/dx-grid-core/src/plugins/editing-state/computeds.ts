@@ -25,7 +25,9 @@ export const addedRowsByIds: PureComputed<[Row[], RowId[]]> = (addedRows, rowIds
 const defaultCreateRowChange: CreateRowChangeFn = (row, value, columnName) => (
   { [columnName]: value }
 );
-export const createRowChangeGetter: PureComputed<[CreateRowChangeFn, EditingColumnExtension[]?]> = (
+export const createRowChangeGetter: PureComputed<
+  [CreateRowChangeFn | undefined, EditingColumnExtension[]?]
+> = (
   createRowChange = defaultCreateRowChange,
   columnExtensions = [],
 ) => {

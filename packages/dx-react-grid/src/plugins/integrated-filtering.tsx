@@ -6,8 +6,10 @@ import {
   unwrappedFilteredRows,
   getColumnExtension,
   defaultFilterPredicate,
+  FilterPredicate,
 } from '@devexpress/dx-grid-core';
 import { Filter } from './filtering-state';
+import { PureComputed } from '@devexpress/dx-core';
 
 // tslint:disable-next-line:no-namespace
 export namespace IntegratedFiltering {
@@ -40,9 +42,11 @@ export class IntegratedFiltering extends React.PureComponent<IntegratedFiltering
 
   render() {
     const { columnExtensions } = this.props;
-    const getColumnPredicate = columnName => getColumnExtension(
+    const getColumnPredicate: PureComputed<
+      [string], FilterPredicate
+    > = columnName => getColumnExtension(
       columnExtensions, columnName,
-    ).predicate;
+    ).predicate!;
 
     const rowsComputed = ({
       rows,

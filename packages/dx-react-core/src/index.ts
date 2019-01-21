@@ -33,3 +33,6 @@ export {
 } from './utils/with-components';
 
 export { RefType } from './utils/ref-type';
+
+/** @internal */
+export * from './types';

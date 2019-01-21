@@ -1,12 +1,16 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import { Getter, Plugin } from '@devexpress/dx-react-core';
+
+export interface CustomPagingProps {
+  /** The total row count. */
+  totalCount?: number;
+}
 
 const pluginDependencies = [
   { name: 'PagingState' },
 ];
 
-export class CustomPaging extends React.PureComponent {
+export class CustomPaging extends React.PureComponent<CustomPagingProps> {
   render() {
     const { totalCount } = this.props;
 
@@ -20,11 +24,3 @@ export class CustomPaging extends React.PureComponent {
     );
   }
 }
-
-CustomPaging.propTypes = {
-  totalCount: PropTypes.number,
-};
-
-CustomPaging.defaultProps = {
-  totalCount: 0,
-};

@@ -1,4 +1,4 @@
-import { ColumnExtension } from './table.types';
+import { GridColumnExtension } from './table.types';
 
 /** Describes the sorting applied to a column */
 export interface Sorting {
@@ -9,7 +9,7 @@ export interface Sorting {
 }
 
 export type SortingDirection = 'asc' | 'desc';
-export type SortingColumnExtension = ColumnExtension & { sortingEnabled?: boolean };
+export type SortingColumnExtension = GridColumnExtension & { sortingEnabled?: boolean };
 export type ColumnSortingState = { sorting: Sorting[] };
 export type SortingKeepOther = boolean | string[];
 export type ChangeSortingPayload = {

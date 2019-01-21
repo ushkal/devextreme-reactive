@@ -9,7 +9,6 @@ import {
 type GetColumnPredicateFn = (columnName: string) => FilterPredicate;
 type CompiledPredicate = (row: any, ...args: any[]) => boolean;
 
-
 const operators = {
   or: (predicates: CompiledPredicate[]) => (row: Row) => (
     predicates.reduce((acc, predicate) => acc || predicate(row), false)

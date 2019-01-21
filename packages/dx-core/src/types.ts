@@ -19,7 +19,9 @@ export type ReadonlyObject<T> = { readonly [K in keyof T]: Immutable<T[K]>; };
 
 type TupleHead<T> = T extends [infer U, ...any[]] ? U : never;
 
-export type PureReducer<S, P, R = S> = (...args: ReadonlyTuple<[S, P]>) => Immutable<R>;
+export type PureReducer<S = any, P = any, R = S> = (
+  ...args: ReadonlyTuple<[S, P]>
+) => Immutable<R>;
 
 export type PureComputed<T extends any[], TReturn = TupleHead<T>> =
   (...args: ReadonlyTuple<T>) => Immutable<TReturn>;
