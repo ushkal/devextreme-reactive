@@ -2,11 +2,12 @@ import {
   GetVisibleBoundaryWithFixedFn, VisibleBoundary, GetVisibleBoundaryFn, GetSpanBoundaryFn,
   CollapseBoundariesFn, GetColumnsSizeFn, GetCollapsedColumnsFn, CollapsedColumn,
   GetCollapsedAndStubRowsFn, GetCollapsedCellsFn, GetCollapsedGridFn, GetColumnWidthFn,
-  GetRowHeightFn,
+  TableColumn, TableRow,
   CollapsedCell,
 } from '../types';
 
 export const TABLE_STUB_TYPE = Symbol('stub');
+import { PureComputed } from '@devexpress/dx-core';
 
 export const getVisibleBoundaryWithFixed: GetVisibleBoundaryWithFixedFn = (
   visibleBoundary, items,
@@ -57,23 +58,39 @@ export const getVisibleBoundary: GetVisibleBoundaryFn = (
   return [start, end];
 };
 
+export const getColumnsVisibleBoundary: PureComputed<
+  [TableColumn[], number, number, GetColumnWidthFn], VisibleBoundary[]
+> = (columns, left, width, getColumnWidth) => (
+  getVisibleBoundaryWithFixed(
+    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
+    columns,
+  )
+);
+export const getRowsVisibleBoundary: PureComputed<
+[TableRow[], number, number, GetColumnWidthFn], VisibleBoundary
+> = (rows, top, height, getRowHeight) => {
+  // debugger
+  return (
+    getVisibleBoundary(rows, top, height, getRowHeight, 3)
+  );
+};
+
 export const getSpanBoundary: GetSpanBoundaryFn = (
   items, visibleBoundaries, getItemSpan,
 ) => visibleBoundaries
-      .map((visibleBoundary) => {
-        let [start, end] = visibleBoundary;
-
-        for (let index = 0; index <= visibleBoundary[1]; index += 1) {
-          const span = getItemSpan(items[index]);
-          if (index < visibleBoundary[0] && index + span > visibleBoundary[0]) {
-            start = index;
-          }
-          if (index + (span - 1) > visibleBoundary[1]) {
-            end = index + (span - 1);
-          }
-        }
-        return [start, end] as VisibleBoundary;
-      });
+  .map((visibleBoundary) => {
+    let [start, end] = visibleBoundary;
+    for (let index = 0; index <= visibleBoundary[1]; index += 1) {
+      const span = getItemSpan(items[index]);
+      if (index < visibleBoundary[0] && index + span > visibleBoundary[0]) {
+        start = index;
+      }
+      if (index + (span - 1) > visibleBoundary[1]) {
+        end = index + (span - 1);
+      }
+    }
+    return [start, end] as VisibleBoundary;
+  });
 
 export const collapseBoundaries: CollapseBoundariesFn = (
   itemsCount, visibleBoundaries, spanBoundaries,
@@ -231,13 +248,11 @@ export const getCollapsedCells: GetCollapsedCellsFn = (
 export const getCollapsedGrid: GetCollapsedGridFn = ({
   rows,
   columns,
-  top,
-  height,
-  left,
-  width,
-  getColumnWidth = (column => column.width) as GetColumnWidthFn,
-  getRowHeight = (row => row.height) as GetRowHeightFn,
-  getColSpan = (...args: any[]) => 1,
+  rowsVisibleBoundary,
+  columnsVisibleBoundary,
+  getColumnWidth = (column: any) => column.width,
+  getRowHeight = (row: any) => row.height,
+  getColSpan = () => 1,
 }) => {
   if (!rows.length || !columns.length) {
     return {
@@ -245,12 +260,7 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
       rows: [],
     };
   }
-  const rowsVisibleBoundary = getVisibleBoundary(rows, top, height, getRowHeight, 3);
-  const columnsVisibleBoundary = getVisibleBoundaryWithFixed(
-    getVisibleBoundary(columns, left, width, getColumnWidth, 1),
-    columns,
-  );
-
+// console.log(columnsVisibleBoundary, rowsVisibleBoundary)
   const rowSpanBoundaries = rows
     .slice(rowsVisibleBoundary[0], rowsVisibleBoundary[1])
     .map(row => getSpanBoundary(

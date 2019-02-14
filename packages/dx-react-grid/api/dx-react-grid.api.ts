@@ -154,6 +154,7 @@ interface DragDropProviderProps {
 // @public (undocumented)
 interface EditingColumnExtension {
   columnName: string;
+  // (undocumented)
   createRowChange?: (row: any, value: any, columnName: string) => any;
   editingEnabled?: boolean;
 }
@@ -425,6 +426,12 @@ interface RowDetailStateProps {
   defaultExpandedRowIds?: Array<number | string>;
   expandedRowIds?: Array<number | string>;
   onExpandedRowIdsChange?: (expandedRowIds: Array<number | string>) => void;
+}
+
+// @public (undocumented)
+interface RowDetailStateState {
+  // (undocumented)
+  expandedRowIds?: RowId[];
 }
 
 // @public (undocumented)
@@ -838,8 +845,9 @@ module TableHeaderRow {
     children: React.ReactNode;
     column: Column;
     draggingEnabled: boolean;
+    getMessage: (messageKey: string) => string;
     groupingEnabled: boolean;
-    onGroup(): void;
+    onGroup: () => void;
     onSort: (parameters: {
           direction?: 'asc' | 'desc' | null;
           keepOther?: boolean;
@@ -850,7 +858,7 @@ module TableHeaderRow {
     onWidthDraft: (parameters: {
           shift: number;
         }) => void;
-    onWidthDraftCancel(): void;
+    onWidthDraftCancel: () => void;
     resizingEnabled: boolean;
     showGroupingControls: boolean;
     showSortingControls: boolean;
@@ -866,7 +874,7 @@ module TableHeaderRow {
 
   interface GroupButtonProps {
     disabled: boolean;
-    onGroup(): void;
+    onGroup: () => void;
   }
 
   // (undocumented)
@@ -959,7 +967,7 @@ module TableRowDetail {
 // @public (undocumented)
 interface TableRowDetailProps {
   cellComponent: React.ComponentType<TableRowDetail.CellProps>;
-  contentComponent?: React.ComponentType<TableRowDetail.ContentProps>;
+  contentComponent: React.ComponentType<TableRowDetail.ContentProps>;
   rowComponent: React.ComponentType<TableRowDetail.RowProps>;
   rowHeight?: number;
   toggleCellComponent: React.ComponentType<TableRowDetail.ToggleCellProps>;
@@ -985,7 +993,7 @@ module TableSelection {
   // (undocumented)
   interface RowProps extends Table.RowProps {
     // (undocumented)
-    onToggle(): void;
+    onToggle: () => void;
     // (undocumented)
     selectByRowClick?: boolean;
     // (undocumented)
@@ -1122,6 +1130,18 @@ interface TreeDataStateProps {
 }
 
 // @public (undocumented)
+interface VirtualTableLayoutProps extends TableLayoutProps {
+  // (undocumented)
+  estimatedRowHeight: number;
+  // (undocumented)
+  footerTableComponent: React.ComponentType<object>;
+  // (undocumented)
+  headTableComponent: React.ComponentType<object>;
+  // (undocumented)
+  height: number | 'auto';
+}
+
+// @public (undocumented)
 interface VirtualTableProps {
   bodyComponent: React.ComponentType<object>;
   cellComponent: React.ComponentType<Table.DataCellProps>;
@@ -1157,7 +1177,6 @@ interface VirtualTableProps {
 // WARNING: Unsupported export: SummaryState
 // WARNING: Unsupported export: IntegratedSummary
 // WARNING: Unsupported export: CustomSummary
-// WARNING: Unsupported export: VirtualTable
 // WARNING: Unsupported export: IntegratedFilteringProps
 // WARNING: Unsupported export: TreeDataStateState
 // WARNING: Unsupported export: Row
