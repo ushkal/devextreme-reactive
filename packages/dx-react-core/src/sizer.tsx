@@ -56,6 +56,7 @@ type SizerProps = {
   onScroll?: (e) => void;
   containerComponent?: any;
   style?: object;
+  scrollTop?: number;
 };
 
 /** @internal */
@@ -92,6 +93,10 @@ export class Sizer extends React.PureComponent<SizerProps> {
   componentWillUnmount() {
     this.expandTrigger.removeEventListener('scroll', this.setupListeners);
     this.contractTrigger.removeEventListener('scroll', this.setupListeners);
+  }
+
+  componentDidUpdate() {
+    // this.rootNode.scrollTop = this.props.scrollTop;
   }
 
   setupListeners() {
@@ -139,6 +144,7 @@ export class Sizer extends React.PureComponent<SizerProps> {
       onSizeChange,
       containerComponent: Container,
       style,
+      scrollTop,
       ...restProps
     } = this.props;
 
