@@ -23,8 +23,8 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       minWidth,
       // rowComponent: Row,
       // cellComponent: Cell,
-      // blockRefsHandler = () => {},
-      // rowRefsHandler = () => {},
+      blockRefsHandler = () => {},
+      rowRefsHandler = () => {},
     } = this.props;
     const Row = this.props.rowComponent as React.ComponentType<any>;
     const Cell = this.props.cellComponent as React.ComponentType<any>;
@@ -33,7 +33,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
 
     return (
       <RefHolder
-        // ref={ref => blockRefsHandler(name, ref)}
+        ref={ref => blockRefsHandler(name, ref)}
       >
         <Table
           tableRef={tableRef}
@@ -51,7 +51,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
               return (
                 <RefHolder
                   key={row.key}
-                  // ref={ref => rowRefsHandler(row, ref)}
+                  ref={ref => rowRefsHandler(row, ref)}
                 >
                   <Row
                     tableRow={row}
@@ -98,6 +98,8 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       bodyComponent: Body,
       footerComponent: Footer, // ^ Table component
       visibleBoundaries,//: rwb,
+      totalRowCount,
+      loadedRowsStart,
       getRowHeight,
       getColumnWidth,
       headerHeight,
@@ -117,7 +119,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
     const getColSpan = (
       tableRow, tableColumn,
     ) => getCellColSpan!({ tableRow, tableColumn, tableColumns: columns });
-    const getCollapsedGridBlock = (rows, rowsVisibleBoundary) => getCollapsedGrid({
+    const getCollapsedGridBlock = (rows, rowsVisibleBoundary, rowCount = rows.length, offset = 0) => getCollapsedGrid({
       rows,
       columns,
       rowsVisibleBoundary,
@@ -125,12 +127,19 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       getColumnWidth,
       getRowHeight,
       getColSpan,
+      totalRowCount: rowCount,
+      offset,
     });
     // console.log(headerRows)
-    const collapsedHeaderGrid = getCollapsedGridBlock(headerRows || [], visibleBoundaries.headerRows);
+    const collapsedHeaderGrid = getCollapsedGridBlock(headerRows || [], null);// visibleBoundaries.headerRows);
     // debugger
-    const collapsedBodyGrid = getCollapsedGridBlock(bodyRows || [], visibleBoundaries.bodyRows);
-    const collapsedFooterGrid = getCollapsedGridBlock(footerRows || [], visibleBoundaries.footerRows);
+    // console.log('get grid, rows =', loadedRowsStart, bodyRows)
+    //const bRows =  Array.from({ length: loadedRowsStart }).concat(bodyRows || []);
+    const bRows = bodyRows;
+    const collapsedBodyGrid = getCollapsedGridBlock(
+      bRows || [], visibleBoundaries.bodyRows, totalRowCount, loadedRowsStart,
+    );
+    const collapsedFooterGrid = getCollapsedGridBlock(footerRows || [], null);//visibleBoundaries.footerRows);
     const bodyBottomMargin = Math.max(0, containerHeight - headerHeight - bodyHeight - footerHeight);
     // console.log(containerHeight, headerHeight, bodyHeight, footerHeight);
     // console.log('body grid', collapsedBodyGrid)
