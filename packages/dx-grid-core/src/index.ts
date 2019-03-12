@@ -193,6 +193,7 @@ export {
   TABLE_STUB_TYPE,
 } from './utils/virtual-table';
 
+export * from './plugins/virtual-table-state/computeds';
 export * from './plugins/virtual-table-state/utils';
 export * from './plugins/virtual-table-state/helpers';
 
