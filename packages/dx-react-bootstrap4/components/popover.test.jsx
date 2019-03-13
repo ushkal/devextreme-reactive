@@ -119,7 +119,11 @@ describe('BS4 Popover', () => {
       clickHandler = popoverTree.instance().handleClick;
     };
     const expectHandlersDetached = () => {
-      expect(handlers).toEqual({});
+      expect(document.removeEventListener)
+        .toHaveBeenCalledWith('touchstart', clickHandler, true);
+      expect(document.removeEventListener)
+        .toBe('click', clickHandler, true);
+      // expect(handlers).toEqual({});
     };
 
     it('should handle a click event if popover is isOpen', () => {

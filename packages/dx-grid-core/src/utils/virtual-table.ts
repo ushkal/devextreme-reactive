@@ -61,12 +61,15 @@ export const getVisibleBoundary: GetVisibleBoundaryFn = (
   const viewportEnd = viewportStart + viewportSize;
   let index = 0;
   let beforePosition = offset * itemSize;
-  if (beforePosition + items.length * itemSize < viewportStart) {
+  if (beforePosition + items.length * itemSize < viewportStart || beforePosition > viewportStart) {
     beforePosition = viewportStart;
     index = items.length;
     start = Math.round(viewportStart / itemSize) - offset;
     end = start;// + items.length;
   }
+  // if (beforePosition > viewportStart) {
+  //   start =
+  // }
 
   while (end === null && index < items.length) {
     const item = items[index];
@@ -311,6 +314,7 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
 
   const boundaries = rowsVisibleBoundary || [0, rows.length];
 
+  console.log('rows length', rows.length, 'boundaries', boundaries)
   const rowSpanBoundaries = rows
     .slice(boundaries[0], boundaries[1])
     .map(row => getSpanBoundary(
@@ -326,6 +330,12 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
   );
 
   const rowBoundaries = collapseBoundaries(totalRowCount!, [boundaries], [], offset);
+
+  console.log(
+    'collapse grid rows bounds', rowBoundaries,
+    'rowSpanBounds', rowSpanBoundaries,
+    'rowsVisibleBoundary', rowsVisibleBoundary,
+  )
 
   return {
     columns: getCollapsedColumns(
