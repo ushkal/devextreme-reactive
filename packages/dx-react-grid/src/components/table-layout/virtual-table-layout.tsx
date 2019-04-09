@@ -93,7 +93,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       headComponent: Head,
       bodyComponent: Body,
       footerComponent: Footer,
-      visibleRowBoundaries,
+      renderRowBoundaries,
       totalRowCount,
       loadedRowsStart,
       getRowHeight,
@@ -133,7 +133,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
     });
 
     const adjustedInterval = intervalUtil.intersect(
-      { start: visibleRowBoundaries[0], end: visibleRowBoundaries[1] },
+      { start: renderRowBoundaries[0], end: renderRowBoundaries[1] },
       { start: loadedRowsStart, end: loadedRowsStart + bodyRows.length },
     );
     const adjustedBounds = [adjustedInterval.start, adjustedInterval.end];
