@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { RefHolder } from '@devexpress/dx-react-core';
+import { MemoizedFunction, memoize } from '@devexpress/dx-core';
 import {
-  getCollapsedGrid, intervalUtil, getColumnsRenderBoundary, getColumnsVisibleBoundary,
+  getCollapsedGrid, intervalUtil, getColumnsRenderBoundary,
+  getColumnsVisibleBoundary, TableColumn, GetColumnWidthFn, getColumnWidthGetter,
 } from '@devexpress/dx-grid-core';
 import { ColumnGroup } from './column-group';
 import { VirtualTableLayoutProps, VirtualTableLayoutState } from '../../types';
@@ -9,6 +11,18 @@ import { VirtualTableLayoutProps, VirtualTableLayoutState } from '../../types';
 /** @internal */
 /* tslint:disable max-line-length */
 export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutProps, VirtualTableLayoutState> {
+  getColumnWidthGetter: MemoizedFunction<[TableColumn[], number, number], GetColumnWidthFn>;
+
+  constructor(props) {
+    super(props);
+
+    this.getColumnWidthGetter = memoize(
+      (tableColumns, tableWidth, minColumnWidth) => (
+        getColumnWidthGetter(tableColumns, tableWidth, minColumnWidth)
+      ),
+    );
+  }
+
   componentDidMount() {
     const { onUpdate } = this.props;
     onUpdate();
@@ -88,6 +102,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       footerRows,
       columns,
       getCellColSpan,
+      getRowHeight,
       headTableComponent: HeadTable,
       footerTableComponent: FootTable,
       tableComponent: Table,
@@ -97,22 +112,21 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       renderRowBoundaries,
       totalRowCount,
       loadedRowsStart,
-      getRowHeight,
-      getColumnWidth,
       headerHeight,
       bodyHeight,
       footerHeight,
       containerHeight,
       containerWidth,
+      minColumnWidth,
       viewportLeft,
       tableRef,
     } = this.props;
 
+    const getColumnWidth = this.getColumnWidthGetter(columns, containerWidth, minColumnWidth!);
     const getColSpan = (
       tableRow, tableColumn,
-    ) => getCellColSpan!({
-      tableRow, tableColumn, tableColumns: columns,
-    });
+    ) => getCellColSpan!({ tableRow, tableColumn, tableColumns: columns });
+
     const visibleColumnBoundaries = [
       getColumnsRenderBoundary(
         columns.length,
