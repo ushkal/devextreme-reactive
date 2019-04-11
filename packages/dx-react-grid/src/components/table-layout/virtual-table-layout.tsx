@@ -6,6 +6,7 @@ import {
 import { ColumnGroup } from './column-group';
 import { VirtualTableLayoutProps, VirtualTableLayoutState } from '../../types';
 
+/** @internal */
 /* tslint:disable max-line-length */
 export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutProps, VirtualTableLayoutState> {
   componentDidMount() {
