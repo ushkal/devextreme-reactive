@@ -10,7 +10,7 @@ import {
   GetCollapsedGridsFn,
   CollapsedGrid,
 } from '../types';
-import { TABLE_FLEX_TYPE, intervalUtil } from '..';
+import { TABLE_FLEX_TYPE, intervalUtil, getVisibleRowsBounds } from '..';
 
 export const TABLE_STUB_TYPE = Symbol('stub');
 
@@ -337,39 +337,37 @@ export const getColumnWidthGetter: GetColumnWidthGetterFn = (
     : column.width || autoColWidth);
 };
 
+export const getRowsRenderBondaries = (
+  viewportTop, getRowHeight, estimatedRowHeight, bodyHeight,
+  loadedRowsStart, bodyRows,
+) => {
+  const visibleBounds = getRowsVisibleBoundary(
+    bodyRows, viewportTop, bodyHeight,
+    getRowHeight, loadedRowsStart, estimatedRowHeight,
+  );
+  return getRowsRenderBoundary(
+    loadedRowsStart + bodyRows.length,
+    [visibleBounds.start, visibleBounds.end],
+  );
+};
+
 export const getCollapsedGrids: GetCollapsedGridsFn = ({
-    headerRows,
-    bodyRows,
-    footerRows,
-    columns,
-    loadedRowsStart,
-    totalRowCount,
-    getCellColSpan,
-  }, {
-    viewportLeft,
-    containerWidth,
-  },
-  visibleRowBoundaries,
+  headerRows,
+  bodyRows,
+  footerRows,
+  columns,
+  loadedRowsStart,
+  totalRowCount,
+  getCellColSpan,
+  renderRowBoundaries,
+  renderColumnBoundaries,
   getColumnWidth,
   getRowHeight,
-) => {
-  const renderRowBoundaries = getRowsRenderBoundary(
-    loadedRowsStart + bodyRows.length,
-    [visibleRowBoundaries.start, visibleRowBoundaries.end],
-  );
-
+}) => {
   const getColSpan = (
     tableRow: any, tableColumn: any,
   ) => getCellColSpan!({ tableRow, tableColumn, tableColumns: columns });
 
-  const visibleColumnBoundaries = [
-    getColumnsRenderBoundary(
-      columns.length,
-      getColumnsVisibleBoundary(
-        columns, viewportLeft, containerWidth, getColumnWidth,
-      )[0],
-    ),
-  ];
   const getCollapsedGridBlock: PureComputed<
     [any[], any[]?, number?, number?], CollapsedGrid
   > = (
@@ -378,7 +376,7 @@ export const getCollapsedGrids: GetCollapsedGridsFn = ({
     rows,
     columns,
     rowsVisibleBoundary,
-    columnsVisibleBoundary: visibleColumnBoundaries,
+    columnsVisibleBoundary: renderColumnBoundaries,
     getColumnWidth,
     getRowHeight,
     getColSpan,

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Sizer } from '@devexpress/dx-react-core';
-import { MemoizedFunction, memoize, isEdgeBrowser } from '@devexpress/dx-core';
+import { MemoizedFunction, memoize, isEdgeBrowser, shallowEqual } from '@devexpress/dx-core';
 import {
   TableColumn, GetColumnWidthFn, getCollapsedGrids,
   getColumnWidthGetter, TABLE_STUB_TYPE, getVisibleRowsBounds,
+  getColumnsRenderBoundary, getColumnsVisibleBoundary, intervalUtil,
 } from '@devexpress/dx-grid-core';
 import { VirtualTableLayoutState, VirtualTableLayoutProps } from '../../types';
 import { findDOMNode } from 'react-dom';
@@ -24,8 +25,8 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
 
     this.state = {
       rowHeights: new Map(),
-      viewportTop: 0,
-      viewportLeft: 0,
+      rowsBoundaries: intervalUtil.empty,
+      columnsBoundaries: intervalUtil.empty,
       containerWidth: 800,
       containerHeight: 600,
       height: 0,
@@ -126,24 +127,44 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
     }
   }
 
-  updateViewport = (e, visibleRowBoundaries, ensureNextVirtualPage) => {
+  updateViewport = (e) => {
     const node = e.target;
 
     if (this.shouldSkipScrollEvent(e)) {
       return;
     }
 
-    const { estimatedRowHeight } = this.props;
+    const { scrollTop, scrollLeft } = node;
+    const {
+      rowsBoundaries: stateRowBoundaries,
+      columnsBoundaries: stateColumnsBoundaries,
+    } = this.state;
+    const rowsBoundaries = this.getRowsRenderBoundaries(scrollTop);
+    const columnsBoundaries = this.getColumnsRenderBoundaries(scrollLeft);
+
+    if (shallowEqual(rowsBoundaries, stateRowBoundaries) &&
+        shallowEqual(columnsBoundaries, stateColumnsBoundaries)) {
+      return;
+    }
+
+    this.ensureNextVirtualPage(rowsBoundaries, scrollTop);
+
+    this.setState({
+      rowsBoundaries,
+      columnsBoundaries,
+    });
+  }
+
+  ensureNextVirtualPage(visibleRowBoundaries, viewportTop) {
+    const {
+      estimatedRowHeight,
+      ensureNextVirtualPage,
+    } = this.props;
     ensureNextVirtualPage({
       estimatedRowHeight,
       visibleRowBoundaries,
-      viewportTop: node.scrollTop,
+      viewportTop,
       containerHeight: this.state.containerHeight,
-    });
-
-    this.setState({
-      viewportTop: node.scrollTop,
-      viewportLeft: node.scrollLeft,
     });
   }
 
@@ -172,31 +193,64 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
     return false;
   }
 
-  getVisibleBoundaries() {
+  getRowsRenderBoundaries(viewportTop) {
     const {
       loadedRowsStart,
-      bodyRows: tableBodyRows,
+      bodyRows,
       estimatedRowHeight,
     } = this.props;
+    const {
+      bodyHeight,
+    } = this.state;
 
     return getVisibleRowsBounds(
-      this.state, { loadedRowsStart, tableBodyRows },
-      estimatedRowHeight, this.getRowHeight,
+      viewportTop, this.getRowHeight, estimatedRowHeight,
+      bodyHeight, loadedRowsStart, bodyRows,
     );
   }
 
-  getCollapsedGrids(visibleRowBoundaries) {
+  getColumnsRenderBoundaries(viewportLeft) {
     const { columns, minColumnWidth } = this.props;
     const { containerWidth } = this.state;
     const getColumnWidth = this.getColumnWidthGetter(columns, containerWidth, minColumnWidth!);
 
-    return getCollapsedGrids(
-      this.props,
-      this.state,
+    return getColumnsRenderBoundary(
+      columns.length,
+      getColumnsVisibleBoundary(
+        columns, viewportLeft, containerWidth, getColumnWidth,
+      )[0],
+    );
+  }
+
+  getCollapsedGrids(visibleRowBoundaries) {
+    const {
+      headerRows,
+      bodyRows,
+      footerRows,
+      columns,
+      loadedRowsStart,
+      totalRowCount,
+      getCellColSpan,
+      minColumnWidth,
+    } = this.props;
+    const {
+      containerWidth,
+    } = this.state;
+    const getColumnWidth = this.getColumnWidthGetter(columns, containerWidth, minColumnWidth!);
+
+    return getCollapsedGrids({
+      headerRows,
+      bodyRows,
+      footerRows,
+      columns,
+      loadedRowsStart,
+      totalRowCount,
+      getCellColSpan,
+      containerWidth,
       visibleRowBoundaries,
       getColumnWidth,
-      this.getRowHeight,
-    );
+      getRowHeight: this.getRowHeight,
+    });
   }
 
   render() {
@@ -212,7 +266,6 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       height,
       headerRows,
       footerRows,
-      ensureNextVirtualPage,
       minWidth,
       cellComponent,
       rowComponent,
@@ -224,8 +277,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
       footerHeight,
     } = this.state;
 
-    const visibleRowBoundaries = this.getVisibleBoundaries();
-    const collapsedGrids = this.getCollapsedGrids(visibleRowBoundaries);
+    const collapsedGrids = this.getCollapsedGrids();
 
     const commonProps = { cellComponent, rowComponent, minWidth };
 
@@ -236,9 +288,7 @@ export class VirtualTableLayout extends React.PureComponent<VirtualTableLayoutPr
         style={{
           ...(height === AUTO_HEIGHT ? null : { height }),
         }}
-        onScroll={
-          e => this.updateViewport(e, visibleRowBoundaries, ensureNextVirtualPage)
-        }
+        onScroll={this.updateViewport}
       >
         {
           (!!headerRows.length) && (

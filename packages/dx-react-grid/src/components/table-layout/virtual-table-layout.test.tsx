@@ -81,9 +81,7 @@ const defaultProps = {
     { key: 9 },
   ],
   containerComponent: props => <div {...props} />,
-  // eslint-disable-next-line react/prop-types
   headTableComponent: ({ tableRef, ...props }) => <table {...props} />,
-  // eslint-disable-next-line react/prop-types
   tableComponent: ({ tableRef, ...props }) => <table {...props} />,
   headComponent: props => <thead {...props} />,
   bodyComponent: props => <tbody {...props} />,
@@ -169,7 +167,7 @@ describe('VirtualTableLayout', () => {
   });
 
   describe('viewport', () => {
-    it('should pass correct viewport at startup', () => {
+    fit('should pass correct viewport at startup', () => {
       const tree = mount((
         <VirtualTableLayout
           {...defaultProps}

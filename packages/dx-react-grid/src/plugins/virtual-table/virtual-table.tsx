@@ -81,7 +81,6 @@ export const makeVirtualTable: (...args: any) => any = (Table, {
                     { availableRowCount, loadedRowsStart, tableBodyRows },
                     { ensureNextVirtualPage },
                   ) => {
-
                     const totalRowCount = availableRowCount || tableBodyRows.length;
 
                     return (

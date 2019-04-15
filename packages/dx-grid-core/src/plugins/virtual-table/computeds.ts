@@ -1,25 +1,5 @@
 import { Getters } from '@devexpress/dx-react-core';
-import {
-  getRowsVisibleBoundary,
-} from '../../utils/virtual-table';
-import { RowsVisibleBoundaryFn } from '../../types';
 import { pageTriggersMeta } from './helpers';
-
-export const getVisibleRowsBounds: RowsVisibleBoundaryFn = (
-  state, getters, estimatedRowHeight, getRowHeight,
-) => {
-  const {
-    viewportTop, containerHeight, headerHeight, footerHeight,
-  } = state;
-  const {
-    loadedRowsStart, tableBodyRows,
-  } = getters;
-
-  return getRowsVisibleBoundary(
-    tableBodyRows, viewportTop, containerHeight - headerHeight - footerHeight,
-    getRowHeight, loadedRowsStart, estimatedRowHeight,
-  );
-};
 
 export const nextPageReferenceIndex = (
   payload: any,

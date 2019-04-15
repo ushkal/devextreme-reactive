@@ -1,6 +1,7 @@
 import {
   TableRow, TableColumn, ColumnAnimationStyleMap, GetCellColSpanFn, TableProps,
 } from '../index';
+import { RowsVisibleBoundary } from '@devexpress/dx-grid-core';
 
 type tableLayoutComponents = 'containerComponent' | 'tableComponent'
   | 'headComponent' | 'bodyComponent' | 'footerComponent';
@@ -48,8 +49,8 @@ export interface VirtualTableLayoutProps extends TableLayoutProps {
 /** @internal */
 export type VirtualTableLayoutState = {
   rowHeights: Map<any, number>,
-  viewportTop: number,
-  viewportLeft: number,
+  rowsBoundaries: RowsVisibleBoundary,
+  columnsBoundaries: RowsVisibleBoundary,
   height: number,
   headerHeight: number,
   bodyHeight: number,
