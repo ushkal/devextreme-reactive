@@ -65,7 +65,7 @@ export type GetCollapsedColumnsFn = PureComputed<
 /** @internal */
 export type GetCollapsedAndStubRowsFn = PureComputed<
 // tslint:disable-next-line: max-line-length
-  [TableRow[], VisibleBoundary, VisibleBoundary[], GetRowHeightFn, (r: TableRow) => ReadonlyArray<any>, number],
+  [TableRow[], VisibleBoundary, VisibleBoundary[], GetRowHeightFn, (r: TableRow) => ReadonlyArray<any>, number, number],
   CollapsedRow[]
 >;
 
@@ -84,6 +84,8 @@ export type GetCollapsedGridFn = PureComputed<
     getColSpan: GetColSpanFn,
     totalRowCount: number,
     offset: number,
+    estimatedRowHeight: number,
+    maxContentHeight: number,
   }],
   { columns: CollapsedColumn[], rows: CollapsedRow[] }
 >;
@@ -105,6 +107,8 @@ export type GetCollapsedGridsFn = PureComputed<
     visibleRowBoundaries: GridRowsBoundaries,
     getColumnWidth: GetColumnWidthFn,
     getRowHeight: GetRowHeightFn,
+    estimatedRowHeight: number,
+    maxContentHeight: number,
   }],
   {
     headerGrid: CollapsedGrid,
@@ -121,7 +125,7 @@ export type GetColumnWidthGetterFn = PureComputed<
 
 /** @internal */
 export type RowsVisibleBoundaryFn = PureComputed<
-  [any, Getters, number, GetRowHeightFn], GridRowsBoundaries
+  [any, Getters, number, GetRowHeightFn, number], GridRowsBoundaries
 >;
 
 /** @internal */

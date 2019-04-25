@@ -6,17 +6,19 @@ import { RowsVisibleBoundaryFn } from '../../types';
 import { pageTriggersMeta } from './helpers';
 
 export const getVisibleRowsBounds: RowsVisibleBoundaryFn = (
-  state, getters, estimatedRowHeight, getRowHeight,
+  state, getters, estimatedRowHeight, getRowHeight, maxContentHeight,
 ) => {
   const {
     viewportTop, containerHeight, headerHeight, footerHeight,
   } = state;
   const {
     loadedRowsStart,
+    totalRowCount,
     bodyRows,
     headerRows = [],
     footerRows = [],
   } = getters;
+  const sizeRatio = Math.min(maxContentHeight / (totalRowCount * estimatedRowHeight), 1);
 
   return {
     viewportTop,
@@ -25,7 +27,7 @@ export const getVisibleRowsBounds: RowsVisibleBoundaryFn = (
       getRowHeight, 0, estimatedRowHeight,
     ),
     body: getRowsVisibleBoundary(
-      bodyRows, viewportTop, containerHeight - headerHeight - footerHeight,
+      bodyRows, viewportTop * sizeRatio, containerHeight - headerHeight - footerHeight,
       getRowHeight, loadedRowsStart, estimatedRowHeight,
     ),
     footer: getRowsVisibleBoundary(

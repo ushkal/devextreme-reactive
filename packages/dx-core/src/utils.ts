@@ -52,3 +52,10 @@ export const slice = arr => Array.prototype.slice.call(arr); // slice can be ren
 /* globals window:true */
 /** @internal */
 export const isEdgeBrowser = () => /Edge/.test(window.navigator.userAgent);
+
+/** @internal */
+export const getMaximumContentHeight = () => (
+  isEdgeBrowser()
+    ? 4900000
+    : 16700000 / window.devicePixelRatio
+);

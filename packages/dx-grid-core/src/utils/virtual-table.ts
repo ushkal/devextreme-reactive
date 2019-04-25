@@ -196,7 +196,7 @@ export const getCollapsedColumns: GetCollapsedColumnsFn = (
 };
 
 export const getCollapsedRows: GetCollapsedAndStubRowsFn = (
-  rows, visibleBoundary, boundaries, getRowHeight, getCells, offset,
+  rows, visibleBoundary, boundaries, getRowHeight, getCells, offset, rowHeightRatio,
 ) => {
   const collapsedRows: any[] = [];
   boundaries.forEach((boundary) => {
@@ -213,7 +213,7 @@ export const getCollapsedRows: GetCollapsedAndStubRowsFn = (
         row: {
           key: `${TABLE_STUB_TYPE.toString()}_${boundary[0]}_${boundary[1]}`,
           type: TABLE_STUB_TYPE,
-          height: getColumnsSize(rows, boundary[0], boundary[1], getRowHeight),
+          height: getColumnsSize(rows, boundary[0], boundary[1], getRowHeight) * rowHeightRatio,
         },
         cells: getCells(row),
       });
@@ -269,6 +269,8 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
   getColSpan = () => 1,
   totalRowCount,
   offset,
+  estimatedRowHeight,
+  maxContentHeight,
 }) => {
   if (!columns.length) {
     return {
@@ -294,6 +296,7 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
   );
 
   const rowBoundaries = collapseBoundaries(totalRowCount!, [boundaries], [], offset);
+  const rowHeightRatio = Math.min(maxContentHeight / (totalRowCount * estimatedRowHeight), 1);
 
   return {
     columns: getCollapsedColumns(
@@ -318,6 +321,7 @@ export const getCollapsedGrid: GetCollapsedGridFn = ({
         column => getColSpan(row, column),
       ),
       offset,
+      rowHeightRatio,
     ),
   };
 };
@@ -348,6 +352,8 @@ export const getCollapsedGrids: GetCollapsedGridsFn = ({
     visibleRowBoundaries,
     getColumnWidth,
     getRowHeight,
+    estimatedRowHeight,
+    maxContentHeight,
   },
 ) => {
   const getColSpan = (
@@ -376,6 +382,8 @@ export const getCollapsedGrids: GetCollapsedGridsFn = ({
     getColSpan,
     totalRowCount: rowCount,
     offset,
+    estimatedRowHeight,
+    maxContentHeight,
   });
 
   const headerGrid = getCollapsedGridBlock(

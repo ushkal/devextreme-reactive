@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Sizer } from '@devexpress/dx-react-core';
-import { MemoizedFunction, memoize, isEdgeBrowser } from '@devexpress/dx-core';
+import { MemoizedFunction, memoize, isEdgeBrowser, getMaximumContentHeight } from '@devexpress/dx-core';
 import {
   TableColumn, GetColumnWidthFn, getCollapsedGrids,
   getColumnWidthGetter, TABLE_STUB_TYPE, getVisibleRowsBounds, GridRowsBoundaries,
@@ -30,6 +30,7 @@ export class VirtualTableLayout extends React.PureComponent<PropsType, VirtualTa
   rowRefs = new Map();
   blockRefs = new Map();
   isEdgeBrowser = false;
+  maxContentHeight = Number.POSITIVE_INFINITY;
 
   constructor(props) {
     super(props);
@@ -66,6 +67,7 @@ export class VirtualTableLayout extends React.PureComponent<PropsType, VirtualTa
 
   componentDidMount() {
     this.isEdgeBrowser = isEdgeBrowser();
+    this.maxContentHeight = getMaximumContentHeight();
 
     this.storeRowHeights();
     this.storeBlockHeights();
@@ -219,11 +221,12 @@ export class VirtualTableLayout extends React.PureComponent<PropsType, VirtualTa
       headerRows,
       footerRows,
       estimatedRowHeight,
+      totalRowCount,
     } = this.props;
 
     return getVisibleRowsBounds(
-      this.state, { loadedRowsStart, bodyRows, headerRows, footerRows },
-      estimatedRowHeight, this.getRowHeight,
+      this.state, { loadedRowsStart, bodyRows, headerRows, footerRows, totalRowCount },
+      estimatedRowHeight, this.getRowHeight, this.maxContentHeight,
     );
   }
 
@@ -232,7 +235,7 @@ export class VirtualTableLayout extends React.PureComponent<PropsType, VirtualTa
     const {
       headerRows, bodyRows, footerRows,
       columns, loadedRowsStart, totalRowCount,
-      getCellColSpan, minColumnWidth,
+      getCellColSpan, minColumnWidth, estimatedRowHeight,
     } = this.props;
     const getColumnWidth = this.getColumnWidthGetter(columns, containerWidth, minColumnWidth!);
 
@@ -249,6 +252,8 @@ export class VirtualTableLayout extends React.PureComponent<PropsType, VirtualTa
       visibleRowBoundaries,
       getColumnWidth,
       getRowHeight: this.getRowHeight,
+      estimatedRowHeight,
+      maxContentHeight: this.maxContentHeight,
     });
   }
 
