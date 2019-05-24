@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { shallow, mount } from 'enzyme';
 import { FixedCell } from './table-fixed-cell';
-import { ThemeColors } from './layout';
+import { StyleContext } from './layout';
 
 const defaultProps = {
   column: { name: 'Test' },
@@ -28,9 +28,9 @@ describe('FixedCell', () => {
 
   it('should apply left border if left divider exists', () => {
     const tree = mount((
-      <ThemeColors.Provider value={themeColors}>
+      <StyleContext.Provider value={themeColors}>
         <FixedCell {...defaultProps} showLeftDivider />
-      </ThemeColors.Provider>
+      </StyleContext.Provider>
     ));
 
     expect(tree.childAt(0).prop('style')).toMatchObject({
@@ -40,9 +40,9 @@ describe('FixedCell', () => {
 
   it('should apply right border if right divider exists', () => {
     const tree = mount((
-      <ThemeColors.Provider value={themeColors}>
+      <StyleContext.Provider value={themeColors}>
         <FixedCell {...defaultProps} showRightDivider />
-      </ThemeColors.Provider>
+      </StyleContext.Provider>
     ));
 
     expect(tree.childAt(0).prop('style')).toMatchObject({
@@ -73,9 +73,9 @@ describe('FixedCell', () => {
 
   it('should apply background color', () => {
     const tree = mount((
-      <ThemeColors.Provider value={themeColors}>
+      <StyleContext.Provider value={themeColors}>
         <FixedCell {...defaultProps} />
-      </ThemeColors.Provider>
+      </StyleContext.Provider>
     ));
 
     expect(tree.childAt(0).prop('style')).toMatchObject({

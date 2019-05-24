@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-export const Cell = ({
+export const Cell = React.memo(({
   style, colSpan, row, column,
   expanded, onToggle,
   children, tableRow, tableColumn,
@@ -35,7 +35,7 @@ export const Cell = ({
       </Content>
     </Container>
   </td>
-);
+));
 
 Cell.propTypes = {
   style: PropTypes.object,
