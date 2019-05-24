@@ -1,8 +1,12 @@
+import { PureComputed } from '@devexpress/dx-core';
 import {
   TABLE_TOTAL_SUMMARY_TYPE, TABLE_GROUP_SUMMARY_TYPE, TABLE_TREE_SUMMARY_TYPE,
 } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
-import { GetColumnSummariesFn, IsSpecificCellFn, IsSpecificRowFn, SummaryItem } from '../../types';
+import {
+  GetColumnSummariesFn, IsSpecificCellFn, IsSpecificRowFn, SummaryItem,
+  GetGroupInlineSummariesFn, InlineSummary,
+} from '../../types';
 
 export const isTotalSummaryTableCell: IsSpecificCellFn = (
   tableRow, tableColumn,
@@ -24,11 +28,39 @@ export const isTreeSummaryTableRow: IsSpecificRowFn = tableRow => (
 );
 
 export const getColumnSummaries: GetColumnSummariesFn = (
-  summaryItems, columnName, summaryValues,
+  summaryItems, columnName, summaryValues, predicate = () => true,
 ) => summaryItems
   .map((item, index) => [item, index] as [SummaryItem, number])
-  .filter(([item]) => item.columnName === columnName)
+  .filter(([item]) => item.columnName === columnName && predicate(item))
   .map(([item, index]) => ({
     type: item.type,
     value: summaryValues[index],
   }));
+
+// TODO: any
+const isInlineGroupSummary: PureComputed<[any], boolean> = summaryItem => (
+  summaryItem.showInGroupCaption || summaryItem.showInGroupRow
+);
+
+export const getGroupInlineSummaries: GetGroupInlineSummariesFn = (
+  summaryItems, tableColumns, summaryValues,
+) => {
+  if (!summaryItems.some(isInlineGroupSummary)) {
+    return [];
+  }
+
+  return tableColumns.reduce((acc, col) => {
+    const colName = col.column!.name;
+    const summaries = getColumnSummaries(
+      summaryItems, colName, summaryValues, item => (item as any).showInGroupCaption,
+    );
+    if (summaries.length) {
+      acc.push({
+        column: col.column!,
+        summaries,
+      });
+    }
+
+    return acc;
+  }, [] as InlineSummary[]);
+};

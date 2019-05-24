@@ -1,7 +1,7 @@
 import {
-  GetRowLevelKeyFn, IsSpecificRowFn, GetCollapsedRowsFn, GetRowIdFn, Row, GetCellValueFn,
+  GetRowLevelKeyFn, IsSpecificRowFn, GetCollapsedRowsFn, GetRowIdFn, Row, GetCellValueFn, Column,
 } from './grid-core.types';
-import { TableRow } from './table.types';
+import { TableRow, TableColumn } from './table.types';
 import { PureComputed, CustomFunction } from '@devexpress/dx-core';
 
 /** Describes the summary item associated with a column. */
@@ -22,7 +22,7 @@ type GetRowValueFn = PureComputed<[Row], any>;
 export type ColumnSummary = { type: SummaryType, value: SummaryValue };
 /** @internal */
 export type GetColumnSummariesFn = PureComputed<
-  [SummaryItem[], string, SummaryValue[]],
+  [SummaryItem[], string, SummaryValue[], (item: SummaryItem) => boolean],
   ColumnSummary[]
 >;
 
@@ -74,4 +74,15 @@ export type TreeSummaryValuesFn = PureComputed<[
 export type ExpandRowsFn = PureComputed<
   [TableRow[], GetRowLevelKeyFn, GetCollapsedRowsFn, IsSpecificRowFn, boolean?],
   TableRow[]
+>;
+
+/** @internal */
+export type InlineSummary = {
+  column: Column,
+  summaries: ReadonlyArray<ColumnSummary>,
+};
+
+/** @internal */
+export type GetGroupInlineSummariesFn = PureComputed<
+  [SummaryItem[], TableColumn[], SummaryValue[]], InlineSummary[]
 >;

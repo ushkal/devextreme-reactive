@@ -7,6 +7,7 @@ import {
   TableColumnsWithGroupingFn,
   GroupCellColSpanGetter,
   GroupSummaryChainsFn,
+  SummaryItem,
 } from '../../types';
 
 const tableColumnsWithDraftGrouping: TableColumnsWithDraftGroupingFn = (
@@ -66,16 +67,17 @@ export const tableRowsWithGrouping: PureComputed<[TableRow[], IsSpecificRowFn]> 
   };
 });
 
-const isRowLevelSummary = (groupSummaryItems, colName) => (
-  groupSummaryItems.find(item => item.showInGroupRow && item.columnName === colName)
+const isRowLevelSummary: PureComputed<[SummaryItem[], string], boolean> = (
+  groupSummaryItems, colName,
+) => (
+  !!groupSummaryItems.find((item: any) => item.showInGroupRow && item.columnName === colName)
 );
 
-
-const groupSummaryChains = (tableRow, tableColumns, groupSummaryItems) => {
+const groupSummaryChains: GroupSummaryChainsFn = (tableRow, tableColumns, groupSummaryItems) => {
   let captionStarted = false;
   return tableColumns
     .reduce((acc, col) => {
-      const colName = col.column && col.column.name;
+      const colName = (col.column && col.column.name) as string;
       const isStartOfGroupCaption = col.type === TABLE_GROUP_TYPE
         && tableRow.row.groupedBy === colName;
       const isIndentColumn = col.type === TABLE_GROUP_TYPE
@@ -94,8 +96,8 @@ const groupSummaryChains = (tableRow, tableColumns, groupSummaryItems) => {
         acc[acc.length - 1].push(colName);
       }
       return acc;
-    }, [[]] as string[][])
-);
+    }, [[]] as string[][]);
+};
 
 export const tableGroupCellColSpanGetter: GroupCellColSpanGetter = (
   getTableCellColSpan, groupSummaryItems,
