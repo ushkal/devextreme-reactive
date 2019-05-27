@@ -22,7 +22,7 @@ type GetRowValueFn = PureComputed<[Row], any>;
 export type ColumnSummary = { type: SummaryType, value: SummaryValue };
 /** @internal */
 export type GetColumnSummariesFn = PureComputed<
-  [SummaryItem[], string, SummaryValue[], (item: SummaryItem) => boolean],
+  [SummaryItem[], string, SummaryValue[], ((item: SummaryItem) => boolean)?],
   ColumnSummary[]
 >;
 

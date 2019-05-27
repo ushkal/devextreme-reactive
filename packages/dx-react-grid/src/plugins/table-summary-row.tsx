@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { getMessagesFormatter } from '@devexpress/dx-core';
 import {
   Getter,
   Template,
   Plugin,
   TemplateConnector,
-  TemplatePlaceholder,
   Getters,
 } from '@devexpress/dx-react-core';
 import {
@@ -21,9 +19,9 @@ import {
   TABLE_TREE_SUMMARY_TYPE,
   TABLE_GROUP_SUMMARY_TYPE,
   TABLE_TOTAL_SUMMARY_TYPE,
-  ColumnSummary,
 } from '@devexpress/dx-grid-core';
-import { TableCellProps, TableRowProps, SummaryItemProps, TableSummaryRowProps } from '../types';
+import { TableCellProps, TableRowProps, TableSummaryRowProps } from '../types';
+import { TableSummaryContent } from '../components/table-summary-content';
 
 const dependencies = [
   { name: 'DataTypeProvider', optional: true },
@@ -44,7 +42,7 @@ const tableFooterRowsComputed = ({
   tableFooterRows,
 }: Getters) => tableRowsWithTotalSummaries(tableFooterRows);
 
-export class TableSummaryRow extends React.PureComponent {
+export class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProps> {
   static TREE_ROW_TYPE = TABLE_TREE_SUMMARY_TYPE;
   static GROUP_ROW_TYPE = TABLE_GROUP_SUMMARY_TYPE;
   static TOTAL_ROW_TYPE = TABLE_TOTAL_SUMMARY_TYPE;
@@ -142,7 +140,9 @@ export class TableSummaryRow extends React.PureComponent {
                   groupSummaryItems,
                   params.tableColumn.column!.name,
                   groupSummaryValues[params.tableRow.row.compoundKey],
-                  summaryItem => !(summaryItem.showInGroupRow || summaryItem.showInGroupCaption),
+                  summaryItem => !(
+                    (summaryItem as any).showInGroupRow ||
+                    (summaryItem as any).showInGroupCaption),
                 );
                 return (
                   <GroupCell
@@ -158,7 +158,9 @@ export class TableSummaryRow extends React.PureComponent {
         </Template>
         <Template
           name="tableCell"
-          predicate={({ tableRow, tableColumn }) => isTreeSummaryTableCell(tableRow, tableColumn)}
+          predicate={(
+            { tableRow, tableColumn }: any,
+          ) => isTreeSummaryTableCell(tableRow, tableColumn)}
         >
           {(params: TableCellProps) => (
             <TemplateConnector>

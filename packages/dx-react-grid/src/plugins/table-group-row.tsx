@@ -18,6 +18,7 @@ import {
 import {
   TableGroupRowProps, ShowColumnWhenGroupedGetterFn, TableCellProps, TableRowProps,
 } from '../types';
+import { TableSummaryContent } from '../components/table-summary-content';
 
 const pluginDependencies = [
   { name: 'GroupingState' },
@@ -43,7 +44,7 @@ const tableBodyRowsComputed = (
   { tableBodyRows, isGroupRow }: Getters,
 ) => tableRowsWithGrouping(tableBodyRows, isGroupRow);
 const getCellColSpanComputed = (
-  { getTableCellColSpan, groupSummaryItems },
+  { getTableCellColSpan, groupSummaryItems }: Getters,
 ) => tableGroupCellColSpanGetter(getTableCellColSpan, groupSummaryItems);
 
 const showColumnWhenGroupedGetter: ShowColumnWhenGroupedGetterFn = (
@@ -117,7 +118,6 @@ const flattenGroupInlineSummaries = (
     ]))
     .reduce((acc, summaries) => acc.concat(summaries), [])
 );
-
 
 class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
   static ROW_TYPE = TABLE_GROUP_TYPE;
@@ -248,9 +248,9 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
           name="tableCell"
           predicate={({
             tableRow, tableColumn,
-          }) => (isGroupRowOrdinaryCell(tableRow, tableColumn))}
+          }: any) => (isGroupRowOrdinaryCell(tableRow, tableColumn))}
         >
-          {params => (
+          {(params: TableCellProps) => (
             <TemplateConnector>
               {(
                 {
@@ -264,9 +264,9 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                 if (isRowSummaryCell(tableRow, tableColumn, grouping, groupSummaryItems)) {
                   const columnSummaries = getColumnSummaries(
                     groupSummaryItems,
-                    tableColumn.column.name,
+                    tableColumn.column!.name,
                     groupSummaryValues[tableRow.row.compoundKey],
-                    summaryItem => summaryItem.showInGroupRow,
+                    summaryItem => (summaryItem as any).showInGroupRow,
                   );
 
                   return (

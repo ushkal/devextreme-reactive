@@ -26,6 +26,10 @@ export namespace TableGroupRow {
     contentComponent: React.ComponentType<ContentProps>;
     /** @internal */
     iconComponent: React.ComponentType<IconProps>;
+    inlineSummaries: any;
+    inlineSummaryComponent: React.ComponentType<any>;
+    inlineSummaryItemComponent: React.ComponentType<any>;
+    getMessage: (string) => string;
   }
 
   /** Describes properties passed to a component that renders a group row. */
@@ -83,10 +87,17 @@ export interface TableGroupRowProps {
   contentComponent: React.ComponentType<TableGroupRow.ContentProps>;
   /** A component that renders a group expand icon. */
   iconComponent: React.ComponentType<TableGroupRow.IconProps>;
+  inlineSummaryItemComponent: React.ComponentType<any>;
+  inlineSummaryComponent: React.ComponentType<any>;
+  rowSummaryCellComponent: React.ComponentType<any>;
+  rowSummaryItemComponent: React.ComponentType<any>;
+  stubCellComponent: React.ComponentType<any>;
   /** A component that renders a group indent cell. */
   indentCellComponent?: React.ComponentType<TableGroupRow.IndentCellProps>;
   /** The group indent column's width. */
   indentColumnWidth: number;
+  messages: object;
+  formatlessSummaryTypes: string[];
 }
 
 /** @internal */
