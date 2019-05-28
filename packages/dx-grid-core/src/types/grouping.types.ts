@@ -2,7 +2,6 @@ import { PureComputed, CustomFunction } from '@devexpress/dx-core';
 import { Column, Row, GetCellValueFn } from './grid-core.types';
 import { TableColumn, TargetColumnGeometry, GetCellColSpanFn, TableRow } from './table.types';
 import { SummaryItem } from '.';
-import { ColumnSummary, SummaryValue } from './summary.types';
 
 /** Describes grouping options. */
 export interface Grouping {

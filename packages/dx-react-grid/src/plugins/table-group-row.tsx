@@ -124,6 +124,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
   static COLUMN_TYPE = TABLE_GROUP_TYPE;
   static defaultProps = {
     showColumnsWhenGrouped: false,
+    formatlessSummaryTypes: [],
   };
   static components = {
     rowComponent: 'Row',
@@ -132,7 +133,9 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
     iconComponent: 'Icon',
     inlineSummaryComponent: 'InlineSummary',
     inlineSummaryItemComponent: 'InlineSummaryItem',
+    rowSummaryCellComponent: 'RowSummaryCell',
     rowSummaryItemComponent: 'RowSummaryItem',
+    stubCellComponent: 'StubCell',
   };
 
   render() {
