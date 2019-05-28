@@ -14,9 +14,13 @@ import {
   getGroupInlineSummaries,
   getColumnSummaries,
   defaultFormatlessSummaries,
+  isPreviousCellContainSummary,
+  isRowSummaryCell,
+  isGroupRowOrdinaryCell,
 } from '@devexpress/dx-grid-core';
 import {
   TableGroupRowProps, ShowColumnWhenGroupedGetterFn, TableCellProps, TableRowProps,
+  FlattenGroupInlineSummariesFn, GetInlineSummaryComponent,
 } from '../types';
 import { TableSummaryContent } from '../components/table-summary-content';
 
@@ -58,31 +62,9 @@ const showColumnWhenGroupedGetter: ShowColumnWhenGroupedGetterFn = (
   return columnName => map[columnName] || showColumnsWhenGrouped;
 };
 
-const columnHasGroupRowSummary = (tableColumn, groupSummaryItems) => (
-  groupSummaryItems
-    .find(summaryItem => (
-      summaryItem.showInGroupRow
-        && summaryItem.columnName === (tableColumn.column && tableColumn.column.name)
-    ))
-);
-const isRowSummaryCell = (tableRow, tableColumn, grouping, groupSummaryItems) => (
-  !isGroupIndentTableCell(tableRow, tableColumn, grouping)
-  && columnHasGroupRowSummary(tableColumn, groupSummaryItems)
-);
-const isGroupRowOrdinaryCell = (tableRow, tableColumn) => (
-  isGroupTableRow(tableRow) && !isGroupTableCell(tableRow, tableColumn)
-);
-
-const isPreviousCellContainsSummary = (
-  tableRow, tableColumn, tableColumns, grouping, groupSummaryItems,
-) => {
-  const columnIndex = tableColumns.indexOf(tableColumn);
-  return columnIndex > 0 && isRowSummaryCell(
-    tableRow, tableColumns[columnIndex - 1], grouping, groupSummaryItems,
-  );
-};
-
-const getInlineSummaryComponent = (column, summary, formatlessSummaries) => () => (
+const getInlineSummaryComponent: GetInlineSummaryComponent = (
+  column, summary, formatlessSummaries,
+) => () => (
   (summary.value === null || formatlessSummaries.includes(summary.type))
     ? summary.value
     : (
@@ -99,8 +81,9 @@ const getInlineSummaryComponent = (column, summary, formatlessSummaries) => () =
     )
 );
 
-const flattenGroupInlineSummaries = (
-  tableColumns, tableRow, groupSummaryItems, groupSummaryValues, formatlessSummaries,
+const flattenGroupInlineSummaries: FlattenGroupInlineSummariesFn = (
+  tableColumns, tableRow, groupSummaryItems, groupSummaryValues,
+  formatlessSummaries,
 ) => (
   getGroupInlineSummaries(
     groupSummaryItems, tableColumns,
@@ -280,7 +263,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                       onToggle={onToggle}
                     >
                       <TableSummaryContent
-                        column={tableColumn.column}
+                        column={tableColumn.column!}
                         columnSummaries={columnSummaries}
                         formatlessSummaryTypes={formatlessSummaryTypes}
                         itemComponent={RowSummaryItem}
@@ -290,7 +273,8 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                   );
                 }
 
-                if (isPreviousCellContainsSummary(
+                // NOTE: ensure that right-aligned summary will fit into a column
+                if (isPreviousCellContainSummary(
                   tableRow, tableColumn, tableColumns, grouping, groupSummaryItems,
                 )) {
                   return <StubCell {...params} onToggle={onToggle} />;

@@ -1,5 +1,6 @@
 import { PureComputed } from '@devexpress/dx-core';
-import { Table, Column } from '../index';
+import { GroupSummaryItem, GroupSummaryValue, ColumnSummary } from '@devexpress/dx-grid-core';
+import { Table, Column, TableColumn, TableRow } from '../index';
 
 // tslint:disable-next-line: no-namespace
 export namespace TableGroupRow {
@@ -103,4 +104,20 @@ export interface TableGroupRowProps {
 /** @internal */
 export type ShowColumnWhenGroupedGetterFn = PureComputed<
   [boolean, TableGroupRow.ColumnExtension[] | undefined], (name: string) => boolean
+>;
+
+/** @internal */
+export type GetInlineSummaryComponent = PureComputed<
+  [Column, ColumnSummary, string[]],
+  () => React.ReactNode
+>;
+
+/** @internal */
+export type FlattenGroupInlineSummariesFn = PureComputed<
+  [TableColumn[], TableRow, GroupSummaryItem[], GroupSummaryValue, string[]],
+  Array<ColumnSummary & {
+    columnTitle: string | undefined;
+    messageKey: string;
+    component: React.ReactNode;
+  }>
 >;

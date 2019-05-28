@@ -83,14 +83,13 @@ export const groupSummaryValues: GroupSummaryValuesFn = (
 ) => {
   let levels: any[] = [];
   const summaries = {};
-  let expandedRows = rows;
 
   const anyRowLevelSummaryExist = summaryItems.some(item => (
     (item as any).showInGroupCaption || (item as any).showInGroupRow
   ));
-  if (anyRowLevelSummaryExist) {
-    expandedRows = expandRows(rows, getRowLevelKey, getCollapsedRows, isGroupRow, true);
-  }
+  const expandedRows = anyRowLevelSummaryExist
+    ? expandRows(rows, getRowLevelKey, getCollapsedRows, isGroupRow, true)
+    : rows;
 
   expandedRows.forEach((row) => {
     const levelKey = getRowLevelKey(row);

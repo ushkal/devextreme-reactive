@@ -76,7 +76,7 @@ export class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProp
         columnSummaries={columnSummaries}
         formatlessSummaryTypes={formatlessSummaryTypes}
         itemComponent={Item}
-        messages={messages}
+        messages={messages!}
       />
     );
   }

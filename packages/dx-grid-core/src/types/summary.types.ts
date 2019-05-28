@@ -11,6 +11,10 @@ export interface SummaryItem {
   /** A summary type. */
   type: SummaryType;
 }
+export interface GroupSummaryItem extends SummaryItem {
+  showInGroupRow: boolean;
+  showInGroupCaption: boolean;
+}
 export type SummaryType = string;
 
 /** @internal */
@@ -38,7 +42,7 @@ export type DefaultSummaryCalculators = { [key: string]: DefaultSummaryCalulator
 /** @internal */
 export type SummaryValue = number | null;
 /** @internal */
-type GroupSummaryValue = { [key: string]: SummaryValue[] };
+export type GroupSummaryValue = { [key: string]: SummaryValue[] };
 /** @internal */
 type TreeSummaryValue = { [key: number]: SummaryValue[] };
 

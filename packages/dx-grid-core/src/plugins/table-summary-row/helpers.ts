@@ -41,6 +41,9 @@ export const getColumnSummaries: GetColumnSummariesFn = (
 const isInlineGroupSummary: PureComputed<[any], boolean> = summaryItem => (
   summaryItem.showInGroupCaption || summaryItem.showInGroupRow
 );
+const isInlineGroupCaptionSummary: PureComputed<[any], boolean> = summaryItem => (
+  summaryItem.showInGroupCaption
+);
 
 export const getGroupInlineSummaries: GetGroupInlineSummariesFn = (
   summaryItems, tableColumns, summaryValues,
@@ -52,7 +55,7 @@ export const getGroupInlineSummaries: GetGroupInlineSummariesFn = (
   return tableColumns.reduce((acc, col) => {
     const colName = col.column!.name;
     const summaries = getColumnSummaries(
-      summaryItems, colName, summaryValues, item => (item as any).showInGroupCaption,
+      summaryItems, colName, summaryValues, isInlineGroupCaptionSummary,
     );
     if (summaries.length) {
       acc.push({

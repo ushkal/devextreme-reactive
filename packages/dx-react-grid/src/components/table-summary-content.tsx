@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { getMessagesFormatter } from '@devexpress/dx-core';
-import { defaultFormatlessSummaries, ColumnSummary } from '@devexpress/dx-grid-core';
+import {
+  defaultFormatlessSummaries,
+} from '@devexpress/dx-grid-core';
 import { TemplatePlaceholder } from '@devexpress/dx-react-core';
+import { TableSummaryContentProps, SummaryItemProps } from '../types';
 
 export const defaultSummaryMessages = {
   sum: 'Sum',
@@ -11,11 +14,7 @@ export const defaultSummaryMessages = {
   count: 'Count',
 };
 
-type SummaryItemProps = {
-  summary: ColumnSummary;
-};
-
-export const TableSummaryContent = ({
+export const TableSummaryContent: React.SFC<TableSummaryContentProps> = ({
   column, columnSummaries, formatlessSummaryTypes,
   itemComponent: Item,
   messages,
