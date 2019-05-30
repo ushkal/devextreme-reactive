@@ -1,7 +1,6 @@
 import { PureComputed } from '@devexpress/dx-core';
 import { TABLE_GROUP_TYPE } from './constants';
 import { TableRow, TableColumn, IsSpecificCellFn, Grouping, GroupSummaryItem } from '../../types';
-import { getGroupInlineSummaries } from '../..';
 
 export const isGroupTableCell: IsSpecificCellFn = (
   tableRow, tableColumn,
@@ -24,7 +23,11 @@ export const isGroupIndentTableCell: PureComputed<[TableRow, TableColumn, Groupi
 };
 export const isGroupTableRow = (tableRow: TableRow) => tableRow.type === TABLE_GROUP_TYPE;
 
-export const columnHasGroupRowSummary: PureComputed<[TableColumn, GroupSummaryItem[]], boolean> = (
+export const isGroupRowOrdinaryCell: IsSpecificCellFn = (tableRow, tableColumn) => (
+  isGroupTableRow(tableRow) && !isGroupTableCell(tableRow, tableColumn)
+);
+
+const columnHasGroupRowSummary: PureComputed<[TableColumn, GroupSummaryItem[]], boolean> = (
   tableColumn, groupSummaryItems,
 ) => (
   !!groupSummaryItems
@@ -41,10 +44,6 @@ export const isRowSummaryCell: PureComputed<
 ) => (
   columnHasGroupRowSummary(tableColumn, groupSummaryItems)
   && !isGroupIndentTableCell(tableRow, tableColumn, grouping)
-);
-
-export const isGroupRowOrdinaryCell: IsSpecificCellFn = (tableRow, tableColumn) => (
-  isGroupTableRow(tableRow) && !isGroupTableCell(tableRow, tableColumn)
 );
 
 export const isPreviousCellContainSummary: PureComputed<

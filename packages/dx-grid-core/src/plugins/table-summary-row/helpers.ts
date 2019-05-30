@@ -5,7 +5,7 @@ import {
 import { TABLE_DATA_TYPE } from '../table/constants';
 import {
   GetColumnSummariesFn, IsSpecificCellFn, IsSpecificRowFn, SummaryItem,
-  GetGroupInlineSummariesFn, InlineSummary,
+  GetGroupInlineSummariesFn, InlineSummary, GroupSummaryItem,
 } from '../../types';
 
 export const isTotalSummaryTableCell: IsSpecificCellFn = (
@@ -37,18 +37,18 @@ export const getColumnSummaries: GetColumnSummariesFn = (
     value: summaryValues[index],
   }));
 
-// TODO: any
-const isInlineGroupSummary: PureComputed<[any], boolean> = summaryItem => (
-  summaryItem.showInGroupCaption || summaryItem.showInGroupRow
+export const isInlineGroupSummary: PureComputed<[SummaryItem], boolean> = summaryItem => (
+  (summaryItem as GroupSummaryItem).showInGroupCaption ||
+  (summaryItem as GroupSummaryItem).showInGroupRow
 );
-const isInlineGroupCaptionSummary: PureComputed<[any], boolean> = summaryItem => (
-  summaryItem.showInGroupCaption
+export const isInlineGroupCaptionSummary: PureComputed<[SummaryItem], boolean> = summaryItem => (
+  (summaryItem as GroupSummaryItem).showInGroupCaption
 );
 
 export const getGroupInlineSummaries: GetGroupInlineSummariesFn = (
   summaryItems, tableColumns, summaryValues,
 ) => {
-  if (!summaryItems.some(isInlineGroupSummary)) {
+  if (!summaryItems.some(isInlineGroupCaptionSummary)) {
     return [];
   }
 

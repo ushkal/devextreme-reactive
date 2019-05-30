@@ -3,6 +3,9 @@ import {
   isGroupTableCell,
   isGroupIndentTableCell,
   isGroupTableRow,
+  isGroupRowOrdinaryCell,
+  isPreviousCellContainSummary,
+  isRowSummaryCell,
 } from './helpers';
 
 describe('TableRowDetail Plugin helpers', () => {
@@ -32,6 +35,7 @@ describe('TableRowDetail Plugin helpers', () => {
         .toBeFalsy();
     });
   });
+
   describe('#isGroupIndentTableCell', () => {
     it('should work', () => {
       expect(isGroupIndentTableCell(
@@ -66,10 +70,70 @@ describe('TableRowDetail Plugin helpers', () => {
         .toBeFalsy();
     });
   });
+
   describe('#isGroupTableRow', () => {
     it('should work', () => {
       expect(isGroupTableRow({ ...key, type: TABLE_GROUP_TYPE })).toBeTruthy();
       expect(isGroupTableRow({ ...key, type: Symbol('undefined') })).toBeFalsy();
+    });
+  });
+
+  describe('#isGroupRowOrdinaryCell', () => {
+    it('should work', () => {
+      expect(isGroupRowOrdinaryCell(
+        { ...key, type: Symbol('undefined'), row: { groupedBy: 'b' } },
+        { ...key, type: TABLE_GROUP_TYPE, column: { name: 'a' } },
+      ))
+        .toBeFalsy();
+      expect(isGroupRowOrdinaryCell(
+        { ...key, type: TABLE_GROUP_TYPE, row: { groupedBy: 'a' } },
+        { ...key, type: TABLE_GROUP_TYPE, column: { name: 'a' } },
+      ))
+        .toBeFalsy();
+      expect(isGroupRowOrdinaryCell(
+        { ...key, type: TABLE_GROUP_TYPE, row: { groupedBy: 'b' } },
+        { ...key, type: TABLE_GROUP_TYPE, column: { name: 'a' } },
+      ))
+        .toBeTruthy();
+    });
+  });
+
+  describe('Summary helpers', () => {
+    const tableRow = { ...key, type: TABLE_GROUP_TYPE, row: { groupedBy: 'a' } };
+    const tableColumns = ['g', 'a', 'b', 'c', 'd'].map(name => ({ column: { name } }));
+    const groupSummaryItems = [{ columnName: 'b', type: 'sum', showInGroupRow: true }];
+    const grouping = [{ columnName: 'g' }];
+
+    describe('#isRowSummaryCell', () => {
+      it('should work', () => {
+        expect(isRowSummaryCell(tableRow, tableColumns[1], grouping, groupSummaryItems))
+          .toBeFalsy();
+        expect(isRowSummaryCell(tableRow, tableColumns[2], grouping, groupSummaryItems))
+          .toBeTruthy();
+        expect(isRowSummaryCell(tableRow, tableColumns[3], grouping, groupSummaryItems))
+          .toBeFalsy();
+      });
+    });
+
+    describe('#isPreviousCellContainSummary', () => {
+      it('should work', () => {
+        expect(isPreviousCellContainSummary(
+          tableRow, tableColumns[1], tableColumns, grouping, groupSummaryItems,
+        ))
+          .toBeFalsy();
+        expect(isPreviousCellContainSummary(
+          tableRow, tableColumns[2], tableColumns, grouping, groupSummaryItems,
+        ))
+          .toBeFalsy();
+        expect(isPreviousCellContainSummary(
+          tableRow, tableColumns[3], tableColumns, grouping, groupSummaryItems,
+        ))
+          .toBeTruthy();
+        expect(isPreviousCellContainSummary(
+          tableRow, tableColumns[4], tableColumns, grouping, groupSummaryItems,
+        ))
+          .toBeFalsy();
+      });
     });
   });
 });
