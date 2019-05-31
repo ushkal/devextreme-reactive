@@ -9,16 +9,19 @@ import {
   isGroupTableCell,
   isGroupIndentTableCell,
   isGroupTableRow,
+  isGroupRowOrdinaryCell,
 } from '@devexpress/dx-grid-core';
 import { TableGroupRow } from './table-group-row';
 
 jest.mock('@devexpress/dx-grid-core', () => ({
+  ...require.requireActual('@devexpress/dx-grid-core'),
   tableColumnsWithGrouping: jest.fn(),
   tableRowsWithGrouping: jest.fn(),
   tableGroupCellColSpanGetter: jest.fn(),
   isGroupTableCell: jest.fn(),
   isGroupIndentTableCell: jest.fn(),
   isGroupTableRow: jest.fn(),
+  isGroupRowOrdinaryCell: jest.fn(),
 }));
 
 const defaultDeps = {
@@ -31,6 +34,8 @@ const defaultDeps = {
     expandedGroups: [],
     isGroupRow: () => false,
     getTableCellColSpan: () => 1,
+    groupSummaryItems: [],
+    groupSummaryValues: [],
   },
   action: {
     toggleGroupExpanded: jest.fn(),
@@ -134,7 +139,10 @@ describe('TableGroupRow', () => {
       expect(getComputedState(tree).getTableCellColSpan)
         .toBe('tableGroupCellColSpanGetter');
       expect(tableGroupCellColSpanGetter)
-        .toBeCalledWith(defaultDeps.getter.getTableCellColSpan);
+        .toBeCalledWith(
+          defaultDeps.getter.getTableCellColSpan,
+          defaultDeps.getter.groupSummaryItems,
+        );
     });
   });
 

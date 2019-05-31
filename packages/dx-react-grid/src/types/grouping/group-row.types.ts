@@ -97,8 +97,8 @@ export interface TableGroupRowProps {
   indentCellComponent?: React.ComponentType<TableGroupRow.IndentCellProps>;
   /** The group indent column's width. */
   indentColumnWidth: number;
-  messages: object;
-  formatlessSummaryTypes: string[];
+  messages?: object;
+  formatlessSummaryTypes?: string[];
 }
 
 /** @internal */

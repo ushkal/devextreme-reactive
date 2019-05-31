@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getMessagesFormatter } from '@devexpress/dx-core';
 import {
-  defaultFormatlessSummaries,
+  defaultFormatlessSummaries, ColumnSummary,
 } from '@devexpress/dx-grid-core';
 import { TemplatePlaceholder } from '@devexpress/dx-react-core';
 import { TableSummaryContentProps, SummaryItemProps } from '../types';
@@ -29,13 +29,16 @@ export const TableSummaryContent: React.SFC<TableSummaryContentProps> = ({
       {children || String(summary.value)}
     </Item>
   );
+  const isFormatlessSummary = (summary: ColumnSummary) => (
+    summary.value === null
+    || formatlessSummaryTypes.includes(summary.type)
+    || defaultFormatlessSummaries.includes(summary.type)
+  );
 
   return (
     <React.Fragment>
       {columnSummaries.map((summary) => {
-        if (summary.value === null
-          || formatlessSummaryTypes.includes(summary.type)
-          || defaultFormatlessSummaries.includes(summary.type)) {
+        if (isFormatlessSummary(summary)) {
           return <SummaryItem key={summary.type} summary={summary} />;
         }
         return (

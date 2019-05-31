@@ -200,6 +200,7 @@ describe('TableGroupRow Plugin computeds', () => {
         .map(name => ({ column: { name } }));
       const groupSummaryItems = [
         { columnName: 'b', type: 'sum', showInGroupRow: true },
+        { columnName: 'd', type: 'sum', showInGroupCaption: true },
         { columnName: 'e', type: 'sum', showInGroupRow: true },
       ];
       const tableRow = { type: TABLE_GROUP_TYPE, row: { groupedBy: 'a' } };

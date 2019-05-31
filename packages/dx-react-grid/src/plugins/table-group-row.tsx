@@ -176,7 +176,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
               ) => {
                 if (isGroupTableCell(params.tableRow, params.tableColumn)) {
                   const formatlessSummaries = defaultFormatlessSummaries
-                    .concat(formatlessSummaryTypes);
+                    .concat(formatlessSummaryTypes!);
 
                   const inlineSummaries = flattenGroupInlineSummaries(
                     tableColumns, params.tableRow, groupSummaryItems,
@@ -265,7 +265,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                       <TableSummaryContent
                         column={tableColumn.column!}
                         columnSummaries={columnSummaries}
-                        formatlessSummaryTypes={formatlessSummaryTypes}
+                        formatlessSummaryTypes={formatlessSummaryTypes!}
                         itemComponent={RowSummaryItem}
                         messages={messages}
                       />
