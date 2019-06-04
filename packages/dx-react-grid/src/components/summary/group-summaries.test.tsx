@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { pluginDepsToComponents, getComputedState, setupConsole } from '@devexpress/dx-testing';
 import { PluginHost } from '@devexpress/dx-react-core';
 import { TABLE_GROUP_TYPE } from '@devexpress/dx-grid-core';
 import { flattenGroupInlineSummaries } from './group-summaries';
-import { tsBooleanKeyword } from '@babel/types';
 
 describe('#flattenGroupInlineSummaries', () => {
   const key = { key: 'key' };
@@ -97,15 +95,15 @@ describe('#flattenGroupInlineSummaries', () => {
       expect(mount((
         <span>
           <Summary1 />
-        </span>)
-      ).html())
+        </span>))
+      .html())
         .toBe('<span>53</span>');
 
       expect(mount((
         <span>
           <Summary2 />
-        </span>)
-      ).html())
+        </span>))
+      .html())
         .toBe('<span>7</span>');
     });
   });

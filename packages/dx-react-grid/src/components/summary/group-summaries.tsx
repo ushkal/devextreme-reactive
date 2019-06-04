@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TemplatePlaceholder } from '@devexpress/dx-react-core';
 import { getGroupInlineSummaries } from '@devexpress/dx-grid-core';
-import { GetInlineSummaryComponent, FlattenGroupInlineSummariesFn } from '../types';
+import { GetInlineSummaryComponent, FlattenGroupInlineSummariesFn } from '../../types';
 
 const getInlineSummaryComponent: GetInlineSummaryComponent = (
   column, summary, formatlessSummaries,

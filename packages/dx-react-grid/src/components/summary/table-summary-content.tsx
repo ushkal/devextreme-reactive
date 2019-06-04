@@ -4,7 +4,7 @@ import {
   defaultFormatlessSummaries, ColumnSummary,
 } from '@devexpress/dx-grid-core';
 import { TemplatePlaceholder } from '@devexpress/dx-react-core';
-import { TableSummaryContentProps, SummaryItemProps } from '../types';
+import { TableSummaryContentProps, SummaryItemProps } from '../../types';
 
 export const defaultSummaryMessages = {
   sum: 'Sum',

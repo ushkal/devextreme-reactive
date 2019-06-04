@@ -20,8 +20,8 @@ import {
 import {
   TableGroupRowProps, ShowColumnWhenGroupedGetterFn, TableCellProps, TableRowProps,
 } from '../types';
-import { TableSummaryContent } from '../components/table-summary-content';
-import { flattenGroupInlineSummaries } from '../utils/group-summaries';
+import { TableSummaryContent } from '../components/summary/table-summary-content';
+import { flattenGroupInlineSummaries } from '../components/summary/group-summaries';
 
 const pluginDependencies = [
   { name: 'GroupingState' },
@@ -206,7 +206,6 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                 const { tableColumn, tableRow } = params;
                 const onToggle = () => toggleGroupExpanded({ groupKey: tableRow.row.compoundKey });
 
-                console.log(groupSummaryValues)
                 if (isRowSummaryCell(tableRow, tableColumn, grouping, groupSummaryItems)) {
                   const columnSummaries = getColumnSummaries(
                     groupSummaryItems,

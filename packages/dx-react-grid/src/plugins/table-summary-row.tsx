@@ -22,7 +22,7 @@ import {
   isInlineGroupSummary,
 } from '@devexpress/dx-grid-core';
 import { TableCellProps, TableRowProps, TableSummaryRowProps } from '../types';
-import { TableSummaryContent } from '../components/table-summary-content';
+import { TableSummaryContent } from '../components/summary/table-summary-content';
 
 const dependencies = [
   { name: 'DataTypeProvider', optional: true },
