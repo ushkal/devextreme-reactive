@@ -59,6 +59,7 @@ CaptionCell.propTypes = {
   ]),
   tableRow: PropTypes.object,
   tableColumn: PropTypes.object,
+  inlineSummaries: PropTypes.array,
 };
 
 CaptionCell.defaultProps = {

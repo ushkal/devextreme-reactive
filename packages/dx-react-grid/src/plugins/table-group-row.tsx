@@ -35,7 +35,7 @@ const pluginDependencies = [
   { name: 'TableSelection', optional: true },
 ];
 
-const defaultMessages = {
+export const defaultMessages = {
   countOf: 'Count: ',
   sumOf: 'Sum of {columnTitle} is ',
   maxOf: 'Max of {columnTitle} is ',

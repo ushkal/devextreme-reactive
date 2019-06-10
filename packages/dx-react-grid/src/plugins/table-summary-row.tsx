@@ -141,7 +141,7 @@ export class TableSummaryRowBase extends React.PureComponent<TableSummaryRowProp
                   groupSummaryItems,
                   params.tableColumn.column!.name,
                   groupSummaryValues[params.tableRow.row.compoundKey],
-                  summaryItem => !isInlineGroupSummary(summaryItem)
+                  summaryItem => !isInlineGroupSummary(summaryItem),
                 );
                 return (
                   <GroupCell

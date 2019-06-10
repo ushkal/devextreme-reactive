@@ -5,18 +5,17 @@ export const InlineSummary = ({
   inlineSummaries, getMessage, inlineSummaryItemComponent: InlineSummaryItem,
 }) => (
   <span className="ml-2">
-    <React.Fragment>
-      {'('}
-      {inlineSummaries.map(s => (
-        <InlineSummaryItem
-          summary={s}
-          getMessage={getMessage}
-        />
-      ))
-        .reduce((acc, summary) => acc.concat(summary, ', '), [])
-        .slice(0, -1)}
-      {')'}
-    </React.Fragment>
+    {'('}
+    {inlineSummaries.map(s => (
+      <InlineSummaryItem
+        key={s.type}
+        summary={s}
+        getMessage={getMessage}
+      />
+    ))
+      .reduce((acc, summary) => acc.concat(summary, ', '), [])
+      .slice(0, -1)}
+    {')'}
   </span>
 );
 
