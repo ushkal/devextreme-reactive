@@ -1,10 +1,13 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 export const InlineSummary = ({
-  inlineSummaries, getMessage, inlineSummaryItemComponent: InlineSummaryItem,
+  inlineSummaries, getMessage,
+  inlineSummaryItemComponent: InlineSummaryItem,
+  className, ...restProps
 }) => (
-  <span className="ml-2">
+  <span className={classNames('ml-2', className)} {...restProps}>
     {'('}
     {inlineSummaries.map(s => (
       <InlineSummaryItem
@@ -20,11 +23,13 @@ export const InlineSummary = ({
 );
 
 InlineSummary.propTypes = {
-  inlineSummaries: PropTypes.array,
+  className: PropTypes.string,
   getMessage: PropTypes.func.isRequired,
+  inlineSummaries: PropTypes.array,
   inlineSummaryItemComponent: PropTypes.func.isRequired,
 };
 
 InlineSummary.defaultProps = {
+  className: undefined,
   inlineSummaries: [],
 };

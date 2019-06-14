@@ -12,37 +12,33 @@ export const CaptionCell = ({
   inlineSummaries,
   getMessage,
   ...restProps
-}) => {
-  const handleClick = () => onToggle();
-
-  return (
-    <Cell
-      onToggle={handleClick}
-      {...restProps}
+}) => (
+  <Cell
+    onToggle={onToggle}
+    {...restProps}
+  >
+    <Icon
+      expanded={expanded}
+      onToggle={onToggle}
+      className="mr-2"
+    />
+    <Content
+      column={column}
+      row={row}
     >
-      <Icon
-        expanded={expanded}
-        onToggle={onToggle}
-        className="mr-2"
-      />
-      <Content
-        column={column}
-        row={row}
-      >
-        {children}
-      </Content>
-      {
-        inlineSummaries.length ? (
-          <InlineSummary
-            inlineSummaries={inlineSummaries}
-            getMessage={getMessage}
-            inlineSummaryItemComponent={InlineSummaryItem}
-          />
-        ) : null
-      }
-    </Cell>
-  );
-};
+      {children}
+    </Content>
+    {
+      inlineSummaries.length ? (
+        <InlineSummary
+          inlineSummaries={inlineSummaries}
+          getMessage={getMessage}
+          inlineSummaryItemComponent={InlineSummaryItem}
+        />
+      ) : null
+    }
+  </Cell>
+);
 
 CaptionCell.propTypes = {
   contentComponent: PropTypes.func.isRequired,

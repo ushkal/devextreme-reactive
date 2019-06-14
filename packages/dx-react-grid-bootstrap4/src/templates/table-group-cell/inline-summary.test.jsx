@@ -13,6 +13,32 @@ describe('InlineSummary component', () => {
     { type: 'count', value: 10 },
   ];
 
+  it('should pass classes to the root element', () => {
+    const tree = mount((
+      <InlineSummary
+        {...defaultProps}
+        className="custom"
+      />
+    ));
+
+    expect(tree.find('span').is('.ml-2.custom'))
+      .toBeTruthy();
+  });
+
+  it('should pass rest props to the span element', () => {
+    const tree = mount((
+      <InlineSummary
+        {...defaultProps}
+        data={{ a: 1 }}
+      />
+    ));
+
+    expect(tree.prop('data'))
+      .toEqual({
+        a: 1,
+      });
+  });
+
   it('should render summaries by using InlineSummaryItem component', () => {
     const tree = mount((
       <InlineSummary
@@ -45,7 +71,7 @@ describe('InlineSummary component', () => {
       />
     ));
 
-    expect(tree.text())
+    expect(tree.find('span').text())
       .toBe('(3, 10)');
   });
 });

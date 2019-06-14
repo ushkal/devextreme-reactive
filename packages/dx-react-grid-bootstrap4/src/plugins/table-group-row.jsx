@@ -7,7 +7,7 @@ import { ExpandButton as Icon } from '../templates/parts/expand-button';
 import { Row } from '../templates/table-group-cell/row';
 import { InlineSummary } from '../templates/table-group-cell/inline-summary';
 import { InlineSummaryItem } from '../templates/table-group-cell/inline-summary-item';
-import { RowSummaryCell } from '../templates/table-group-cell/summary-cell';
+import { Cell as RowSummaryCell } from '../templates/table-group-cell/cell';
 import { TableSummaryItem as RowSummaryItem } from '../templates/table-summary-item';
 
 const TableGroupRowWithIndent = props => <TableGroupRowBase indentColumnWidth={33} {...props} />;
