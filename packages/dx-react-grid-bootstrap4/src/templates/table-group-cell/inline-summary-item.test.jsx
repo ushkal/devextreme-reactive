@@ -7,7 +7,7 @@ describe('InlineSummaryItem', () => {
     summary: {
       messageKey: 'count',
       columnTitle: 'a',
-      component: () => <span className="test">|SummaryComponent</span>
+      component: () => <span className="test">|SummaryComponent</span>,
     },
     getMessage: jest.fn().mockReturnValue('getMessage'),
   };
@@ -20,14 +20,18 @@ describe('InlineSummaryItem', () => {
   });
 
   it('should use getMessage function', () => {
-    const tree = mount(<InlineSummaryItem {...defaultProps} />);
+    mount(<InlineSummaryItem {...defaultProps} />);
 
     expect(defaultProps.getMessage)
       .toBeCalledWith('count', { columnTitle: 'a' });
   });
 
   it('should render correct text', () => {
-    const tree = mount(<InlineSummaryItem {...defaultProps} />);
+    const tree = mount((
+      <span>
+        <InlineSummaryItem {...defaultProps} />
+      </span>
+    ));
 
     expect(tree.text())
       .toBe('getMessage|SummaryComponent');

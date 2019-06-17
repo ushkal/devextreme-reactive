@@ -25,12 +25,9 @@ describe('GroupRowCell', () => {
       .toBeTruthy();
   });
 
-
-
   it('should pass custom class to the root element', () => {
     const tree = shallow((
       <Cell
-        {...defaultProps}
         className="custom-class"
       />
     ));
