@@ -6,9 +6,12 @@ describe('GroupRowCell', () => {
   it('should assign onClick handler', () => {
     const onToggle = jest.fn();
     const tree = shallow(<Cell onToggle={onToggle} />);
+    const onClick = tree.prop('onClick');
 
-    expect(tree.prop('onClick'))
-      .toBe(onToggle);
+    onClick();
+
+    expect(onToggle)
+      .toBeCalled();
   });
 
   it('should render children', () => {
@@ -22,7 +25,21 @@ describe('GroupRowCell', () => {
       .toBeTruthy();
   });
 
-  it('should pass rest props tp the root element', () => {
+
+
+  it('should pass custom class to the root element', () => {
+    const tree = shallow((
+      <Cell
+        {...defaultProps}
+        className="custom-class"
+      />
+    ));
+
+    expect(tree.is('.dx-g-bs4-group-cell.custom-class'))
+      .toBeTruthy();
+  });
+
+  it('should pass rest props to the root element', () => {
     const tree = shallow((
       <Cell data={{ a: 1 }} />
     ));

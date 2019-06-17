@@ -26,7 +26,7 @@ describe('InlineSummaryItem', () => {
       .toBeCalledWith('count', { columnTitle: 'a' });
   });
 
-  it('should render correct message and summary', () => {
+  it('should render correct text', () => {
     const tree = mount(<InlineSummaryItem {...defaultProps} />);
 
     expect(tree.text())

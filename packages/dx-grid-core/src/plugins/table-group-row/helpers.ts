@@ -30,11 +30,11 @@ export const isGroupRowOrdinaryCell: IsSpecificCellFn = (tableRow, tableColumn) 
 const columnHasGroupRowSummary: PureComputed<[TableColumn, GroupSummaryItem[]], boolean> = (
   tableColumn, groupSummaryItems,
 ) => (
-  !!groupSummaryItems
+  !!(groupSummaryItems && groupSummaryItems
     .find(summaryItem => (
       summaryItem.showInGroupRow
         && summaryItem.columnName === (tableColumn.column && tableColumn.column.name)
-    ))
+    )))
 );
 
 export const isRowSummaryCell: PureComputed<

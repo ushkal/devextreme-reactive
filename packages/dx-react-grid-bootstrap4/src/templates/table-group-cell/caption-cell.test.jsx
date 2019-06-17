@@ -87,18 +87,6 @@ describe('TableGroupCell', () => {
       .toBeFalsy();
   });
 
-  it('should pass custom class to the root element', () => {
-    const tree = shallow((
-      <Cell
-        {...defaultProps}
-        className="custom-class"
-      />
-    ));
-
-    expect(tree.is('.dx-g-bs4-cursor-pointer.custom-class'))
-      .toBeTruthy();
-  });
-
   it('should pass rest props to the root element', () => {
     const tree = shallow((
       <Cell

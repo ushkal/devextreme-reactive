@@ -137,10 +137,11 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                   const formatlessSummaries = defaultFormatlessSummaries
                     .concat(formatlessSummaryTypes!);
 
-                  const inlineSummaries = flattenGroupInlineSummaries(
-                    tableColumns, params.tableRow, groupSummaryItems,
-                    groupSummaryValues, formatlessSummaries,
-                  );
+                  const inlineSummaries = groupSummaryItems
+                    ? flattenGroupInlineSummaries(
+                      tableColumns, params.tableRow, groupSummaryItems,
+                      groupSummaryValues, formatlessSummaries,
+                    ) : [];
 
                   return (
                     <TemplatePlaceholder

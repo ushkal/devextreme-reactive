@@ -89,7 +89,7 @@ const groupSummaryChains: GroupSummaryChainsFn = (tableRow, tableColumns, groupS
 
       if (isStartOfGroupCaption || isIndentColumn) {
         acc.push([colName]);
-      } else if (isRowLevelSummary(groupSummaryItems, colName)) {
+      } else if (groupSummaryItems && isRowLevelSummary(groupSummaryItems, colName)) {
         acc.push([colName]);
         acc.push([]);
       } else {
