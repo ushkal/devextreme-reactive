@@ -43,5 +43,5 @@ export type MemoizedComputed<TArg, T extends (...args: any[]) => any> =
 
 export type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
-export type GetMessageFn = (messageKey: string) => string;
+export type GetMessageFn = (messageKey: string, params?: object) => string;
 export type GetMessagesFormatterFn = PureComputed<[object], GetMessageFn>;

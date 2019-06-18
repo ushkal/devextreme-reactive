@@ -12,10 +12,15 @@ describe('TableGroupCell', () => {
   const defaultProps = {
     contentComponent: () => null,
     iconComponent: () => null,
+    inlineSummaryComponent: () => null,
+    inlineSummaryItemComponent: () => null,
     expanded: true,
     classes: {},
     column: {},
     row: {},
+    onToggle: jest.fn(),
+    getMessage: jest.fn(),
+    inlineSummaries: [],
   };
 
   beforeAll(() => {
@@ -68,6 +73,29 @@ describe('TableGroupCell', () => {
         column: defaultProps.column,
         row: defaultProps.row,
       });
+  });
+
+  it('should render inline summary if exists', () => {
+    const inlineSummaries = [{}, {}];
+    const tree = mount((
+      <TableGroupCell {...defaultProps} inlineSummaries={inlineSummaries} />
+    ));
+
+    expect(tree.find(defaultProps.inlineSummaryComponent).props())
+      .toEqual({
+        inlineSummaries,
+        getMessage: defaultProps.getMessage,
+        inlineSummaryItemComponent: defaultProps.inlineSummaryItemComponent,
+      });
+  });
+
+  it('should not render inline summary if not exists', () => {
+    const tree = mount((
+      <TableGroupCell {...defaultProps} />
+    ));
+
+    expect(tree.find(defaultProps.inlineSummaryComponent).exists())
+      .toBeFalsy();
   });
 
   it('should expand grouped row on click', () => {

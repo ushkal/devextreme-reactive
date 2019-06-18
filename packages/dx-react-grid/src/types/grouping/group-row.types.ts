@@ -109,15 +109,18 @@ export type ShowColumnWhenGroupedGetterFn = PureComputed<
 /** @internal */
 export type GetInlineSummaryComponent = PureComputed<
   [Column, ColumnSummary, string[]],
-  () => React.ReactNode
+  React.FunctionComponent<any>
 >;
+
+/** @internal */
+export type InlineSummary = ColumnSummary & {
+  columnTitle: string | undefined;
+  messageKey: string;
+  component: React.FunctionComponent<any>;
+};
 
 /** @internal */
 export type FlattenGroupInlineSummariesFn = PureComputed<
   [TableColumn[], TableRow, GroupSummaryItem[], GroupSummaryValue, string[]],
-  Array<ColumnSummary & {
-    columnTitle: string | undefined;
-    messageKey: string;
-    component: React.ReactNode;
-  }>
+  InlineSummary[]
 >;

@@ -51,7 +51,7 @@ CaptionCell.propTypes = {
   column: PropTypes.object,
   expanded: PropTypes.bool,
   onToggle: PropTypes.func,
-  getMessage: PropTypes.func,
+  getMessage: PropTypes.func.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),

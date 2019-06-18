@@ -7,7 +7,7 @@ const getInlineSummaryComponent: GetInlineSummaryComponent = (
   column, summary, formatlessSummaries,
 ) => () => (
   (summary.value === null || formatlessSummaries.includes(summary.type))
-    ? summary.value
+    ? <>{summary.value}</>
     : (
       <TemplatePlaceholder
         key={summary.type}
