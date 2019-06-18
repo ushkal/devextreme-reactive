@@ -90,8 +90,8 @@ export interface TableGroupRowProps {
   iconComponent: React.ComponentType<TableGroupRow.IconProps>;
   inlineSummaryItemComponent: React.ComponentType<any>;
   inlineSummaryComponent: React.ComponentType<any>;
-  rowSummaryCellComponent: React.ComponentType<any>;
-  rowSummaryItemComponent: React.ComponentType<any>;
+  summaryCellComponent: React.ComponentType<any>;
+  summaryItemComponent: React.ComponentType<any>;
   stubCellComponent: React.ComponentType<any>;
   /** A component that renders a group indent cell. */
   indentCellComponent?: React.ComponentType<TableGroupRow.IndentCellProps>;

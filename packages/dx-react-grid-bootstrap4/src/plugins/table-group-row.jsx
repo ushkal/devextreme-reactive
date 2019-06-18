@@ -7,13 +7,13 @@ import { ExpandButton as Icon } from '../templates/parts/expand-button';
 import { Row } from '../templates/table-group-cell/row';
 import { InlineSummary } from '../templates/table-group-cell/inline-summary';
 import { InlineSummaryItem } from '../templates/table-group-cell/inline-summary-item';
-import { Cell as RowSummaryCell } from '../templates/table-group-cell/cell';
-import { TableSummaryItem as RowSummaryItem } from '../templates/table-summary-item';
+import { SummaryCell } from '../templates/table-group-cell/summary-cell';
+import { TableSummaryItem as SummaryItem } from '../templates/table-summary-item';
 
 const TableGroupRowWithIndent = props => <TableGroupRowBase indentColumnWidth={33} {...props} />;
 TableGroupRowWithIndent.components = TableGroupRowBase.components;
 
-const StubCell = RowSummaryCell;
+const StubCell = SummaryCell; // TODO: ?
 
 export const TableGroupRow = withComponents({
   Row,
@@ -22,8 +22,8 @@ export const TableGroupRow = withComponents({
   Icon,
   InlineSummary,
   InlineSummaryItem,
-  RowSummaryCell,
-  RowSummaryItem,
+  SummaryCell,
+  SummaryItem,
   StubCell,
 })(TableGroupRowWithIndent);
 

@@ -20,7 +20,9 @@ export const CaptionCell = ({
     <Icon
       expanded={expanded}
       onToggle={onToggle}
-      className="mr-2"
+      style={{
+        marginRight: '8px',
+      }}
     />
     <Content
       column={column}
@@ -45,13 +47,12 @@ CaptionCell.propTypes = {
   iconComponent: PropTypes.func.isRequired,
   inlineSummaryComponent: PropTypes.func.isRequired,
   inlineSummaryItemComponent: PropTypes.func.isRequired,
-  className: PropTypes.string,
   colSpan: PropTypes.number,
   row: PropTypes.any,
   column: PropTypes.object,
   expanded: PropTypes.bool,
   onToggle: PropTypes.func,
-  getMessage: PropTypes.func,
+  getMessage: PropTypes.func.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
@@ -62,7 +63,6 @@ CaptionCell.propTypes = {
 };
 
 CaptionCell.defaultProps = {
-  className: undefined,
   colSpan: 1,
   row: {},
   column: {},

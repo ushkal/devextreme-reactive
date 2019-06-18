@@ -75,8 +75,8 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
     iconComponent: 'Icon',
     inlineSummaryComponent: 'InlineSummary',
     inlineSummaryItemComponent: 'InlineSummaryItem',
-    rowSummaryCellComponent: 'RowSummaryCell',
-    rowSummaryItemComponent: 'RowSummaryItem',
+    summaryCellComponent: 'SummaryCell',
+    summaryItemComponent: 'SummaryItem',
     stubCellComponent: 'StubCell',
   };
 
@@ -89,8 +89,8 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
       indentCellComponent: GroupIndentCell,
       inlineSummaryComponent: InlineSummary,
       inlineSummaryItemComponent: InlineSummaryItem,
-      rowSummaryCellComponent: RowSummaryCell,
-      rowSummaryItemComponent: RowSummaryItem,
+      summaryCellComponent: SummaryCell,
+      summaryItemComponent: SummaryItem,
       stubCellComponent: StubCell,
       indentColumnWidth,
       showColumnsWhenGrouped,
@@ -216,7 +216,7 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                   );
 
                   return (
-                    <RowSummaryCell
+                    <SummaryCell
                       {...params}
                       row={params.tableRow.row}
                       column={params.tableColumn.column}
@@ -226,10 +226,10 @@ class TableGroupRowBase extends React.PureComponent<TableGroupRowProps> {
                         column={tableColumn.column!}
                         columnSummaries={columnSummaries}
                         formatlessSummaryTypes={formatlessSummaryTypes!}
-                        itemComponent={RowSummaryItem}
+                        itemComponent={SummaryItem}
                         messages={messages!}
                       />
-                    </RowSummaryCell>
+                    </SummaryCell>
                   );
                 }
 

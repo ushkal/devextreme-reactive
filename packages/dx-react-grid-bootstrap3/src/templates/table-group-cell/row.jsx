@@ -1,19 +1,21 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { TableRow as RowBase } from '../table-row';
 
-export const Row = ({ className, ...props }) => (
+export const Row = ({ style, ...props }) => (
   <RowBase
     {...props}
-    className={classNames('dx-g-bs4-cursor-pointer', className)}
+    style={{
+      cursor: 'pointer',
+      ...style,
+    }}
   />
 );
 
 Row.propTypes = {
-  className: PropTypes.string,
+  style: PropTypes.object,
 };
 
 Row.defaultProps = {
-  className: undefined,
+  style: null,
 };

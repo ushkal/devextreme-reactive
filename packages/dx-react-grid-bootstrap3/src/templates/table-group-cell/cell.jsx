@@ -2,59 +2,52 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 export const Cell = ({
-  style, colSpan, row, column,
-  expanded, onToggle,
-  children, tableRow, tableColumn,
-  iconComponent: Icon, contentComponent: Content,
+  row, column,
+  tableRow, tableColumn,
+  onToggle, children, style,
   ...restProps
-}) => (
-  <td
-    colSpan={colSpan}
-    style={{
-      cursor: 'pointer',
-      ...style,
-    }}
-    onClick={onToggle}
-    {...restProps}
-  >
-    <Icon
-      expanded={expanded}
-      onToggle={onToggle}
+}) => {
+  const handleClick = () => onToggle();
+
+  return (
+    <td
       style={{
-        marginRight: '8px',
+        cursor: 'pointer',
+        // TOOD: extract to constant
+        whiteSpace: (tableColumn && tableColumn.wordWrapEnabled) ? 'normal' : 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        ...style,
       }}
-    />
-    <Content
-      column={column}
-      row={row}
+      onClick={handleClick}
+      {...restProps}
     >
       {children}
-    </Content>
-  </td>
-);
+    </td>
+  );
+};
 
 Cell.propTypes = {
-  style: PropTypes.object,
-  colSpan: PropTypes.number,
   row: PropTypes.any,
   column: PropTypes.object,
-  expanded: PropTypes.bool,
+  colSpan: PropTypes.number,
   onToggle: PropTypes.func,
-  children: PropTypes.node,
+  children: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
   tableRow: PropTypes.object,
   tableColumn: PropTypes.object,
-  iconComponent: PropTypes.func.isRequired,
-  contentComponent: PropTypes.func.isRequired,
+  style: PropTypes.object,
 };
 
 Cell.defaultProps = {
-  style: null,
-  colSpan: 1,
   row: {},
   column: {},
-  expanded: false,
+  colSpan: 1,
   onToggle: () => {},
   children: undefined,
   tableRow: undefined,
   tableColumn: undefined,
+  style: null,
 };

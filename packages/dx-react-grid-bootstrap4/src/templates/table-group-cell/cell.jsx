@@ -35,6 +35,8 @@ Cell.propTypes = {
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
+  tableRow: PropTypes.object,
+  tableColumn: PropTypes.object,
 };
 
 Cell.defaultProps = {
@@ -44,4 +46,6 @@ Cell.defaultProps = {
   colSpan: 1,
   onToggle: () => {},
   children: undefined,
+  tableRow: undefined,
+  tableColumn: undefined,
 };
