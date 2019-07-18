@@ -2,122 +2,104 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import Frame from 'react-frame-component';
 import {
-  Form, Button, FormGroup, InputGroup, InputGroupAddon, Input, Label,
+  FormGroup, ControlLabel, FormControl, InputGroup, Button,
 } from 'reactstrap';
 import { DemoRenderer } from './demo-renderer';
+import { EmbeddedDemoContext } from '../context';
+
+const Link = ({ link }) => (
+  <link rel="stylesheet" href={link} />
+);
+
+Link.propTypes = {
+  link: PropTypes.string,
+};
+Link.defaultProps = {
+  link: '',
+};
 
 class DemoFrameRenderer extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
 
     const {
+      themeSources,
+    } = this.context;
+    const {
       sectionName,
       demoName,
       themeName,
       variantName,
+      perfSamplesCount,
     } = props;
-    const { embeddedDemoOptions: { scriptPath, themeSources } } = this.context;
+
     const themeVariantOptions = themeSources
       .find(theme => theme.name === themeName).variants
       .find(variant => variant.name === variantName);
-    const frameUrl = `/demo/${sectionName}/${demoName}/${themeName}/${variantName}`;
-    const themeLinks = themeVariantOptions.links
-      ? themeVariantOptions.links.map(link => `<link rel="stylesheet" href="${link}">`).join('\n')
-      : '';
-    this.markup = link => `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        ${themeLinks}
-        ${link !== undefined ? `<link rel="stylesheet" href="${link}">` : ''}
-        <style>
-          body { margin: 8px; overflow: hidden; }
-          .panel { margin: 0; }
-        </style>
-      </head>
-      <body>
-        <div id="mountPoint"></div>
-        <div class="embedded-demo" data-options='{ "path": "${frameUrl}/clean", "frame": true }'>
-          <div style="min-height: 500px;">Loading...</div>
-        </div>
-        <script src="${scriptPath}"></script>
-      </body>
-      </html>`;
+
     this.state = {
       editableLink: themeVariantOptions.editableLink,
       frameHeight: 600,
     };
+    this.nodeRef = React.createRef();
   }
 
   componentDidMount() {
     this.updateFrameHeight();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { editableLink } = this.state;
-    if (editableLink !== prevState.editableLink) {
-      if (this.node) this.node.ownerDocument.location.reload();
-    }
-  }
-
   updateFrameHeight() {
     const { frameHeight } = this.state;
+    const node = this.nodeRef.current;
     setTimeout(this.updateFrameHeight.bind(this));
-    if (!this.node) return;
-    const height = this.node.ownerDocument.documentElement.offsetHeight;
+
+    if (!node) return;
+
+    const height = node.ownerDocument.documentElement.offsetHeight;
     if (height !== frameHeight) {
       this.setState({ frameHeight: height });
     }
   }
 
   render() {
-    const {
-      sectionName,
-      demoName,
-      themeName,
-      variantName,
-    } = this.props;
-    const { embeddedDemoOptions: { frame } } = this.context;
+    const { markup } = this.props;
+    const { frame } = this.context;
     const { editableLink, frameHeight } = this.state;
 
     return (
       <div>
         {!frame && !!editableLink ? (
-          <Form
+          <form
             style={{ marginBottom: '20px' }}
           >
-            <FormGroup>
-              <Label for="customLink">Custom theme link</Label>
+            <FormGroup controlId="customThemeLink">
+              <ControlLabel>
+                Custom theme link
+              </ControlLabel>
               <InputGroup>
-                <Input
+                <FormControl
                   type="text"
                   id="customLink"
                   innerRef={(node) => { this.customThemeLinkNode = node; }}
                   defaultValue={editableLink}
                 />
-                <InputGroupAddon addonType="append">
+                <InputGroup.Button>
                   <Button
-                    color="secondary"
                     onClick={() => {
                       this.setState({ editableLink: this.customThemeLinkNode.value });
                     }}
                   >
                     Apply
                   </Button>
-                </InputGroupAddon>
+                </InputGroup.Button>
               </InputGroup>
             </FormGroup>
-          </Form>
+          </form>
         ) : null}
 
         {frame
           ? (
-            <DemoRenderer
-              sectionName={sectionName}
-              demoName={demoName}
-              themeName={themeName}
-              variantName={variantName}
-            />
+            <DemoRenderer {...this.props} />
           )
           : (
             <div
@@ -133,11 +115,12 @@ class DemoFrameRenderer extends React.PureComponent {
                   height: `${frameHeight}px`,
                   marginBottom: '20px',
                 }}
-                initialContent={this.markup(editableLink)}
+                head={<Link link={editableLink} />}
+                initialContent={markup}
                 mountTarget="#mountPoint"
                 scrolling="no"
               >
-                <div ref={(node) => { this.node = node; }} />
+                <div ref={this.nodeRef} />
               </Frame>
             </div>
           )}
@@ -151,11 +134,14 @@ DemoFrameRenderer.propTypes = {
   demoName: PropTypes.string.isRequired,
   themeName: PropTypes.string.isRequired,
   variantName: PropTypes.string.isRequired,
+  perfSamplesCount: PropTypes.number,
 };
 
-DemoFrameRenderer.contextTypes = {
-  embeddedDemoOptions: PropTypes.object.isRequired,
+DemoFrameRenderer.defaultProps = {
+  perfSamplesCount: undefined,
 };
+
+DemoFrameRenderer.contextType = EmbeddedDemoContext;
 
 // eslint-disable-next-line react/no-multi-comp
 export class DemoFrame extends React.PureComponent {
