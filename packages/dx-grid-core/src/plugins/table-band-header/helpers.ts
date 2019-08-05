@@ -35,8 +35,9 @@ export const getColumnMeta: GetColumnBandMetaFn = (
 
 export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
-  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains,
+  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains, viewport,
 ) => {
+  // console.log(viewport.columns[0])
   if (rowSpan) return { type: BAND_DUPLICATE_RENDER, payload: null };
 
   const maxLevel = tableHeaderRows.filter(column => column.type === TABLE_BAND_TYPE).length + 1;
@@ -46,6 +47,11 @@ export const getBandComponent: GetBandComponentFn = (
   const currentColumnMeta = currentTableColumn.type === TABLE_DATA_TYPE
     ? getColumnMeta(currentTableColumn.column!.name, columnBands, currentRowLevel)
     : { level: 0, title: '' };
+
+    const __firstCols = currentTableColumn.column && ['7', '8'].indexOf(currentTableColumn.column!.name) > -1;
+    if (__firstCols) {
+      // console.log(currentTableColumn.column, currentColumnMeta, currentRowLevel);
+    }
 
   if (currentColumnMeta.level < currentRowLevel) return { type: BAND_EMPTY_CELL, payload: null };
   const currentColumnIndex = tableColumns
@@ -57,6 +63,8 @@ export const getBandComponent: GetBandComponentFn = (
     beforeBorder = true;
   }
   if (currentColumnMeta.level === currentRowLevel) {
+    if (__firstCols) console.log('>>> band header', currentTableColumn.column!.name, 'max level', maxLevel, 'current', currentRowLevel)
+    // console.log()
     return {
       type: BAND_HEADER_CELL,
       payload: {
@@ -71,14 +79,18 @@ export const getBandComponent: GetBandComponentFn = (
     tableHeaderColumnChains[currentRowLevel],
     currentColumnIndex,
   );
-  if (currentColumnChain!.start < currentColumnIndex) {
+  const bandStart = Math.max(viewport.columns[0][0], currentColumnChain.start);
+  if (bandStart < currentColumnIndex) {
+    // if (__firstCols) console.log('>>> null', currentTableColumn.column!.name)
     return { type: null, payload: null };
   }
 
+  // if (__firstCols) console.log('>>> group cell', currentTableColumn.column!.name)
+  const bandEnd = Math.min(viewport.columns[0][1], currentColumnChain.start + currentColumnChain.columns.length)
   return {
     type: BAND_GROUP_CELL,
     payload: {
-      colSpan: currentColumnChain!.columns.length,
+      colSpan: bandEnd - bandStart,
       value: currentColumnMeta.title!,
       column: currentColumnMeta,
       ...beforeBorder && { beforeBorder },

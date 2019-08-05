@@ -1,5 +1,6 @@
 import { TableColumn, TableRow } from './table.types';
 import { HeaderColumnChainRows } from './header-row.types';
+import { GridViewport } from './virtual-table.types';
 
 /** Describes properties of column bands that the TableBandHeader plugin renders. */
 export interface ColumnBands {
@@ -50,4 +51,5 @@ export type GetBandComponentFn = (
   tableColumns: TableColumn[],
   columnsBands: ColumnBands[],
   tableHeaderColumnChains: HeaderColumnChainRows,
+  viewport: GridViewport,
 ) => { type: string | null; payload: BandComponentPayload | null };
