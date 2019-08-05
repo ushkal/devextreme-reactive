@@ -37,7 +37,6 @@ export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
   tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains, viewport,
 ) => {
-  // console.log(viewport.columns[0])
   if (rowSpan) return { type: BAND_DUPLICATE_RENDER, payload: null };
 
   const maxLevel = tableHeaderRows.filter(column => column.type === TABLE_BAND_TYPE).length + 1;
@@ -79,14 +78,20 @@ export const getBandComponent: GetBandComponentFn = (
     tableHeaderColumnChains[currentRowLevel],
     currentColumnIndex,
   );
-  const bandStart = Math.max(viewport.columns[0][0], currentColumnChain.start);
+  const columnVisibleBoundary = viewport.columns
+    .find(bound => bound[0] <= currentColumnIndex && currentColumnIndex <= bound[1]);
+  const bandStart = Math.max(columnVisibleBoundary![0], currentColumnChain.start);
   if (bandStart < currentColumnIndex) {
     // if (__firstCols) console.log('>>> null', currentTableColumn.column!.name)
     return { type: null, payload: null };
   }
 
   // if (__firstCols) console.log('>>> group cell', currentTableColumn.column!.name)
-  const bandEnd = Math.min(viewport.columns[0][1], currentColumnChain.start + currentColumnChain.columns.length)
+  const bandEnd = Math.min(
+    columnVisibleBoundary![1],
+    currentColumnChain.start + currentColumnChain.columns.length,
+  );
+  console.log(viewport.columns, tableHeaderColumnChains, currentColumnChain, columnVisibleBoundary)
   return {
     type: BAND_GROUP_CELL,
     payload: {
