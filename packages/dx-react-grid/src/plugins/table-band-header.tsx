@@ -67,11 +67,12 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                 tableColumns,
                 tableHeaderRows,
                 tableHeaderColumnChains,
+                viewport,
               }) => {
                 const bandComponent = getBandComponent(
                   params,
                   tableHeaderRows, tableColumns,
-                  columnBands, tableHeaderColumnChains,
+                  columnBands, tableHeaderColumnChains, viewport,
                 );
                 switch (bandComponent.type) {
                   case BAND_DUPLICATE_RENDER:
