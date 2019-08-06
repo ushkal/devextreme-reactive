@@ -94,6 +94,8 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                         params={{ ...params, ...bandComponent.payload }}
                       />
                     );
+                  case 'fill_level_cell':
+                    return <Cell {...params} style={{ whiteSpace: 'pre' }}>{' '}</Cell>;
                   default:
                     return null;
                 }

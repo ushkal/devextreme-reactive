@@ -47,14 +47,38 @@ export const getBandComponent: GetBandComponentFn = (
     ? getColumnMeta(currentTableColumn.column!.name, columnBands, currentRowLevel)
     : { level: 0, title: '' };
 
-    const __firstCols = currentTableColumn.column && ['7', '8'].indexOf(currentTableColumn.column!.name) > -1;
-    if (__firstCols) {
+    // const __firstCols = currentTableColumn.column && ['7', '8'].indexOf(currentTableColumn.column!.name) > -1;
+    // if (__firstCols) {
       // console.log(currentTableColumn.column, currentColumnMeta, currentRowLevel);
-    }
+    // }
 
-  if (currentColumnMeta.level < currentRowLevel) return { type: BAND_EMPTY_CELL, payload: null };
   const currentColumnIndex = tableColumns
     .findIndex(column => column.key === currentTableColumn.key);
+  const columnVisibleBoundary = viewport.columns
+    .find(bound => bound[0] <= currentColumnIndex && currentColumnIndex <= bound[1])!;
+
+  const getLevelBandChains = (rowLevel: number) => columnVisibleBoundary
+    ? tableHeaderColumnChains[rowLevel]
+      .filter(ch => columnVisibleBoundary[0] <= ch.start
+      && ch.start + ch.columns.length <= columnVisibleBoundary[1])
+    : []
+  .filter(ch => (ch as any).bandTitle !== null);
+
+  const currentLevelBandChains = getLevelBandChains(currentRowLevel);
+  // console.log(currentLevelBandChains)
+
+  if (currentColumnMeta.level < currentRowLevel) {
+    const upperLevelBandChain = currentRowLevel > 0 && getLevelBandChains(currentRowLevel - 1);
+    const levelBandVisible = upperLevelBandChain && upperLevelBandChain.length > 0;
+
+    if (currentRowLevel > 0 && !levelBandVisible && columnVisibleBoundary && currentColumnIndex === columnVisibleBoundary![0]) {
+      console.log(viewport.columns, columnBands, tableHeaderColumnChains)
+      console.log('FILL LEVEL! ', currentRowLevel, 'band visible', upperLevelBandChain, maxLevel)
+      return { type: 'fill_level_cell', payload: null };
+    }
+    return { type: BAND_EMPTY_CELL, payload: null };
+  }
+
   const previousTableColumn = tableColumns[currentColumnIndex - 1];
   let beforeBorder = false;
   if (currentColumnIndex > 0 && currentTableColumn.type === TABLE_DATA_TYPE
@@ -62,13 +86,18 @@ export const getBandComponent: GetBandComponentFn = (
     beforeBorder = true;
   }
   if (currentColumnMeta.level === currentRowLevel) {
-    if (__firstCols) console.log('>>> band header', currentTableColumn.column!.name, 'max level', maxLevel, 'current', currentRowLevel)
+    // if (__firstCols) console.log('>>> band header', currentTableColumn.column!.name, 'max level', maxLevel, 'current', currentRowLevel)
     // console.log()
+    const spanCorrection = !!columnVisibleBoundary && currentLevelBandChains.length === 0 && currentColumnIndex === columnVisibleBoundary![0] ? 1 : 0;
+    console.log(maxLevel - currentRowLevel - spanCorrection, spanCorrection)
+    let rowSpan = maxLevel - currentRowLevel - spanCorrection;
+    if (rowSpan === 0) rowSpan = 1;
+
     return {
       type: BAND_HEADER_CELL,
       payload: {
         tableRow: tableHeaderRows.find(row => row.type === TABLE_HEADING_TYPE),
-        rowSpan: maxLevel - currentRowLevel,
+        rowSpan,
         ...beforeBorder && { beforeBorder },
       },
     };
@@ -78,8 +107,7 @@ export const getBandComponent: GetBandComponentFn = (
     tableHeaderColumnChains[currentRowLevel],
     currentColumnIndex,
   );
-  const columnVisibleBoundary = viewport.columns
-    .find(bound => bound[0] <= currentColumnIndex && currentColumnIndex <= bound[1]);
+
   const bandStart = Math.max(columnVisibleBoundary![0], currentColumnChain.start);
   if (bandStart < currentColumnIndex) {
     // if (__firstCols) console.log('>>> null', currentTableColumn.column!.name)
@@ -91,7 +119,7 @@ export const getBandComponent: GetBandComponentFn = (
     columnVisibleBoundary![1],
     currentColumnChain.start + currentColumnChain.columns.length,
   );
-  console.log(viewport.columns, tableHeaderColumnChains, currentColumnChain, columnVisibleBoundary)
+  // console.log(viewport.columns, tableHeaderColumnChains, currentColumnChain, columnVisibleBoundary)
   return {
     type: BAND_GROUP_CELL,
     payload: {
