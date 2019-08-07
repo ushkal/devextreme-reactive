@@ -76,7 +76,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                 );
                 switch (bandComponent.type) {
                   case BAND_DUPLICATE_RENDER:
-                    return <TemplatePlaceholder />;
+                    return <TemplatePlaceholder params={{ ...params, BAND_DUPLICATE_RENDER }} />;
                   case BAND_EMPTY_CELL:
                     return <InvisibleCell />;
                   case BAND_GROUP_CELL: {
@@ -91,11 +91,12 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                     return (
                       <TemplatePlaceholder
                         name="tableCell"
-                        params={{ ...params, ...bandComponent.payload }}
+                        params={{ ...params, ...bandComponent.payload, BAND_HEADER_CELL }}
                       />
                     );
                   case 'fill_level_cell':
-                    return <Cell {...params} style={{ whiteSpace: 'pre' }}>{' '}</Cell>;
+                  case 'band_spacer_cell':
+                    return <Cell {...params} {...bandComponent.payload} style={{ whiteSpace: 'pre' }}>{' '}</Cell>;
                   default:
                     return null;
                 }

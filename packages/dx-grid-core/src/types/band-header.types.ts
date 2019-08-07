@@ -43,6 +43,7 @@ type BandComponentPayload = {
   value?: string;
   column?: ColumnBandMeta;
   beforeBorder?: boolean;
+  [x: string]: any;
 };
 /** @internal */
 export type GetBandComponentFn = (
