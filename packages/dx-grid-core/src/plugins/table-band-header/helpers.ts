@@ -74,23 +74,24 @@ export const getBandComponent: GetBandComponentFn = (
   // viewport.columns
   //   .find(bound => bound[0] <= currentColumnIndex && currentColumnIndex <= bound[1])!;
 
-  const getLevelBandChains = (rowLevel: number) => columnVisibleBoundary
-    ? tableHeaderColumnChains[rowLevel]
-      .filter(ch => columnVisibleBoundary[0] <= ch.start
-      && ch.start + ch.columns.length <= columnVisibleBoundary[1])
-    : []
-  .filter(ch => (ch as any).bandTitle !== null);
+  // const getLevelBandChains = (rowLevel: number) => columnVisibleBoundary
+  //   ? tableHeaderColumnChains[rowLevel]
+  //     .filter(ch => columnVisibleBoundary[0] <= ch.start
+  //     && ch.start + ch.columns.length <= columnVisibleBoundary[1])
+  //   : []
+  // .filter(ch => (ch as any).bandTitle !== null);
 
   // const currentLevelBandChains = getLevelBandChains(currentRowLevel);
   // console.log(currentLevelBandChains)
 
   if (currentColumnMeta.level < currentRowLevel) {
-    const upperLevelBandChain = currentRowLevel > 0 && getLevelBandChains(currentRowLevel - 1);
-    const levelBandVisible = upperLevelBandChain && upperLevelBandChain.length > 0;
+    // const upperLevelBandChain = currentRowLevel > 0 && getLevelBandChains(currentRowLevel - 1);
+    // const levelBandVisible = upperLevelBandChain && upperLevelBandChain.length > 0;
 
-    if (currentRowLevel > 0 && !levelBandVisible && columnVisibleBoundary && currentColumnIndex === columnVisibleBoundary![0]) {
-      console.log(viewport.columns, columnBands, tableHeaderColumnChains)
-      console.log('FILL LEVEL! ', currentRowLevel, 'band visible', upperLevelBandChain, maxLevel)
+    if (currentRowLevel > 0 && columnVisibleBoundary && currentColumnIndex === columnVisibleBoundary![0]) {
+    // if (currentRowLevel > 0 && !levelBandVisible && columnVisibleBoundary && currentColumnIndex === columnVisibleBoundary![0]) {
+      // console.log(viewport.columns, columnBands, tableHeaderColumnChains)
+      // console.log('FILL LEVEL! ', currentRowLevel, 'band visible', upperLevelBandChain, maxLevel)
       return { type: 'fill_level_cell', payload: { fill_level_cell: 'fill_level_cell' } };
     }
     return { type: BAND_EMPTY_CELL, payload: null };
@@ -114,7 +115,7 @@ export const getBandComponent: GetBandComponentFn = (
     const inVisibleRange = (index: number) => (columnVisibleBoundary[0] <= index && index <= columnVisibleBoundary[1]);
 
     const rowsWithVisible = rowsWithBands.reduce((acc, row, index) => {
-      console.log(row, index)
+      // console.log(row, index)
       const rowBands = row.filter(ch => !!(ch as any).bandTitle
         && (inVisibleRange(ch.start) || inVisibleRange(ch.start + ch.columns.length - 1))
         && getBandLevel(columnBands, (ch as any).bandTitle) === index)
@@ -131,18 +132,21 @@ export const getBandComponent: GetBandComponentFn = (
     //   ).length);
     // console.log('rowsWithBands', rowsWithBands, 'visible', rowsWithVisibleBands, columnVisibleBoundary)
 
-    const spanCorrection = currentTableColumn.type === TABLE_STUB_TYPE ? rowsWithBands.length - rowsWithVisible.length + 1 : 0;
-    console.log('span correction', spanCorrection)
+    // const spanCorrection = currentTableColumn.type === TABLE_STUB_TYPE ? rowsWithBands.length - rowsWithVisible.length + 1 : 0;
+    // console.log('span correction', spanCorrection)
     // const spanCorrection = currentLevelBandChains.length === 0 && currentTableColumn.type === TABLE_STUB_TYPE ? 1 : 0;
     // const spanCorrection = !!columnVisibleBoundary && currentLevelBandChains.length === 0
     // && currentColumnIndex === columnVisibleBoundary![0] ? 1 : 0;
     // if (spanCorrection)
     // console.log(spanCorrection)
     // console.log(maxLevel - currentRowLevel - spanCorrection, spanCorrection)
-    let cellRowSpan = maxLevel - currentRowLevel - spanCorrection;
+    let cellRowSpan = currentTableColumn.type === TABLE_STUB_TYPE ? 1 : maxLevel - currentRowLevel;
+    // let cellRowSpan = maxLevel - currentRowLevel - spanCorrection;
     if (cellRowSpan === 0) cellRowSpan = 1;
 
-    if (spanCorrection > 0) {
+    if (currentTableColumn.type === TABLE_STUB_TYPE) {
+      console.log('row level', currentRowLevel, maxLevel)
+    // if (spanCorrection > 0) {
       // console.log('correct span', currentTableColumn, currentLevelBandChains, 'chains', tableHeaderColumnChains, 'boundary', columnVisibleBoundary, spanCorrection, 'level', currentRowLevel)
       return {
         type: 'band_spacer_cell',
