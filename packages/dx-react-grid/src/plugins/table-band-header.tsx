@@ -10,6 +10,7 @@ import {
   BAND_GROUP_CELL, BAND_HEADER_CELL,
   BAND_EMPTY_CELL, BAND_DUPLICATE_RENDER,
   TABLE_BAND_TYPE,
+  BAND_FILL_LEVEL_CELL,
 } from '@devexpress/dx-grid-core';
 import { TableBandHeaderProps, TableCellProps, TableRowProps } from '../types';
 
@@ -77,8 +78,10 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                 switch (bandComponent.type) {
                   case BAND_DUPLICATE_RENDER:
                     return <TemplatePlaceholder params={{ ...params, BAND_DUPLICATE_RENDER }} />;
+
                   case BAND_EMPTY_CELL:
                     return <InvisibleCell />;
+
                   case BAND_GROUP_CELL: {
                     const { value, ...payload } = bandComponent.payload!;
                     return (
@@ -87,6 +90,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                       </Cell>
                     );
                   }
+
                   case BAND_HEADER_CELL:
                     return (
                       <TemplatePlaceholder
@@ -94,9 +98,17 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                         params={{ ...params, ...bandComponent.payload, BAND_HEADER_CELL }}
                       />
                     );
-                  case 'fill_level_cell':
-                  case 'band_spacer_cell':
-                    return <Cell {...params} {...bandComponent.payload} style={{ whiteSpace: 'pre' }}>{' '}</Cell>;
+
+                  case BAND_FILL_LEVEL_CELL:
+                    return (
+                      <Cell
+                        {...params}
+                        {...bandComponent.payload}
+                        style={{ whiteSpace: 'pre' }}
+                      >
+                        {' '}
+                      </Cell>
+                    );
                   default:
                     return null;
                 }
