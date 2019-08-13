@@ -11,6 +11,7 @@ import {
   BAND_EMPTY_CELL, BAND_DUPLICATE_RENDER,
   TABLE_BAND_TYPE,
   BAND_FILL_LEVEL_CELL,
+  bandLevelsVisibility,
 } from '@devexpress/dx-grid-core';
 import { TableBandHeaderProps, TableCellProps, TableRowProps } from '../types';
 
@@ -45,6 +46,12 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
       tableHeaderRows, tableColumns, columnBands,
     );
 
+    const bandLevelsVisibilityComputed = (
+      { viewport, tableHeaderColumnChains }: Getters,
+    ) => {
+      bandLevelsVisibility(viewport, tableHeaderColumnChains, columnBands)
+    };
+
     return (
       <Plugin
         name="TableBandHeader"
@@ -57,6 +64,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
       >
         <Getter name="tableHeaderRows" computed={tableHeaderRowsComputed} />
         <Getter name="tableHeaderColumnChains" computed={tableHeaderColumnChainsComputed} />
+        <Getter name="bandLevelsVisibility" computed={bandLevelsVisibilityComputed} />
 
         <Template
           name="tableCell"

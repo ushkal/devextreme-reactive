@@ -5,7 +5,7 @@ import { getColumnMeta } from './helpers';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
 import {
   ColumnBands, GetHeaderColumnChainsFn, ShouldSplitChainFn,
-  GetMaxNestedLevelFn, TableRow, TableColumn,
+  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows,
 } from '../../types';
 
 export const tableRowsWithBands: PureComputed<
@@ -72,4 +72,11 @@ export const tableHeaderColumnChainsWithBands: GetHeaderColumnChainsFn<
   );
 
   return [...bandChains, ...chains.slice(maxBandRowIndex)];
+};
+
+export const bandLevelsVisibility: PureComputed<
+  [GridViewport, HeaderColumnChainRows, ColumnBands[]],
+  any
+> = ({ columns }, tableHeaderColumnChains, columnBands) => {
+
 };

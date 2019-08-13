@@ -1,6 +1,7 @@
 // tslint:disable: max-line-length
 import {
-  TABLE_BAND_TYPE, BAND_GROUP_CELL, BAND_HEADER_CELL, BAND_EMPTY_CELL, BAND_DUPLICATE_RENDER, BAND_FILL_LEVEL_CELL,
+  TABLE_BAND_TYPE, BAND_GROUP_CELL, BAND_HEADER_CELL, BAND_EMPTY_CELL,
+  BAND_DUPLICATE_RENDER, BAND_FILL_LEVEL_CELL,
 } from './constants';
 import { TABLE_HEADING_TYPE } from '../table-header-row/constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
@@ -74,7 +75,9 @@ export const getBandComponent: GetBandComponentFn = (
   const getVisibleBandsByLevel = (lvl: number) => (
     rowsWithBands[lvl]
     ? rowsWithBands[lvl].filter((ch: any) => !!(ch as any).bandTitle
-      && (inVisibleRange(ch.start) || inVisibleRange(ch.start + ch.columns.length - 1))
+      && (inVisibleRange(ch.start) || inVisibleRange(ch.start + ch.columns.length - 1)
+        || (ch.start <= columnVisibleBoundary[0] && columnVisibleBoundary[1] <= ch.start + ch.columns.length - 1)
+      )
       && getBandLevel(columnBands, (ch as any).bandTitle) === lvl)
     : []
   );
@@ -103,8 +106,11 @@ export const getBandComponent: GetBandComponentFn = (
     let cellRowSpan = maxLevel - currentRowLevel;
 
     if (currentTableColumn.type === TABLE_STUB_TYPE) {
-      cellRowSpan = maxLevel - (rowsWithBands.length - rowsWithVisible.length)
       if (cellRowSpan === 0) cellRowSpan = 1;
+
+      cellRowSpan = rowsWithBands.length > rowsWithVisible.length
+        ? rowsWithVisible.length || 1
+        : maxLevel;
 
       return {
         type: BAND_FILL_LEVEL_CELL,
