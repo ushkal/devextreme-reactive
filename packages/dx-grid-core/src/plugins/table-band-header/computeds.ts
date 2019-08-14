@@ -5,8 +5,10 @@ import { getColumnMeta } from './helpers';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
 import {
   ColumnBands, GetHeaderColumnChainsFn, ShouldSplitChainFn,
-  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows,
+  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows, BandLevels,
 } from '../../types';
+import { intervalUtil } from '../virtual-table-state/utils';
+import { pureComputed } from '../_blueprint/computeds';
 
 export const tableRowsWithBands: PureComputed<
   [TableRow[], ColumnBands[], TableColumn[]]
@@ -74,9 +76,64 @@ export const tableHeaderColumnChainsWithBands: GetHeaderColumnChainsFn<
   return [...bandChains, ...chains.slice(maxBandRowIndex)];
 };
 
-export const bandLevelsVisibility: PureComputed<
-  [GridViewport, HeaderColumnChainRows, ColumnBands[]],
-  any
-> = ({ columns }, tableHeaderColumnChains, columnBands) => {
+const getBandLevel: PureComputed<[any[], string, number?], number> = (
+  bands, bandTitle, level = 0,
+) => {
+  for (const band of bands) {
+    if (band.title === bandTitle) {
+      return level;
+    }
+    if (band.children !== undefined) {
+      const result = getBandLevel(band.children, bandTitle, level + 1);
+      if (result >= 0) return result;
+    }
+  }
+  return -1;
+};
 
+const getBandLevels = (columnsBands: readonly ColumnBands[], levels = {}, level = 0) => {
+  columnsBands.forEach((band) => {
+    if (band.title) {
+      levels[band.title] = level;
+    }
+    if (band.children) {
+      getBandLevels(band.children, levels, level + 1);
+    }
+  });
+  return levels;
+};
+
+export const columnBandLevels: PureComputed<[ColumnBands[]], BandLevels> = columnsBands => (
+  getBandLevels(columnsBands)
+);
+
+export const bandLevelsVisibility: PureComputed<
+  [GridViewport, HeaderColumnChainRows, BandLevels],
+  any
+> = ({ columns }, tableHeaderColumnChains, bandLevels) => {
+  const columnVisibleBoundary = columns[0];
+
+  const rowsWithBands = tableHeaderColumnChains
+    .filter(r => r.filter(ch => !!(ch as any).bandTitle).length);
+
+  const visibleInterval = {
+    start: columnVisibleBoundary[0],
+    end: columnVisibleBoundary[1],
+  };
+
+  const getVisibleBandsByLevel = (level: number) => (
+    rowsWithBands[level]
+    ? rowsWithBands[level].filter((chain: any) => (
+        bandLevels[(chain as any).bandTitle] === level && intervalUtil.intersect(
+          visibleInterval,
+          { start: chain.start, end: chain.start + chain.columns.length - 1 },
+        ) !== intervalUtil.empty),
+      )
+    : []
+  );
+
+  return rowsWithBands.reduce((acc, row, index) => {
+    const rowBands = getVisibleBandsByLevel(index);
+    return { ...acc, [index]: !!rowBands.length };
+  }, {});
 };

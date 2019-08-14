@@ -12,10 +12,17 @@ import {
   TABLE_BAND_TYPE,
   BAND_FILL_LEVEL_CELL,
   bandLevelsVisibility,
+  columnBandLevels,
 } from '@devexpress/dx-grid-core';
 import { TableBandHeaderProps, TableCellProps, TableRowProps } from '../types';
 
 const CellPlaceholder = (props: TableCellProps) => <TemplatePlaceholder params={props} />;
+
+const bandLevelsVisibilityComputed = (
+  { viewport, tableHeaderColumnChains, bandLevels }: Getters,
+) => bandLevelsVisibility(
+  viewport, tableHeaderColumnChains, bandLevels,
+);
 
 class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
   static ROW_TYPE = TABLE_BAND_TYPE;
@@ -45,12 +52,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
     ) => tableHeaderColumnChainsWithBands(
       tableHeaderRows, tableColumns, columnBands,
     );
-
-    const bandLevelsVisibilityComputed = (
-      { viewport, tableHeaderColumnChains }: Getters,
-    ) => {
-      bandLevelsVisibility(viewport, tableHeaderColumnChains, columnBands)
-    };
+    const bandLevels = columnBandLevels(columnBands);
 
     return (
       <Plugin
@@ -64,6 +66,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
       >
         <Getter name="tableHeaderRows" computed={tableHeaderRowsComputed} />
         <Getter name="tableHeaderColumnChains" computed={tableHeaderColumnChainsComputed} />
+        <Getter name="bandLevels" value={bandLevels} />
         <Getter name="bandLevelsVisibility" computed={bandLevelsVisibilityComputed} />
 
         <Template
@@ -76,12 +79,13 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
                 tableColumns,
                 tableHeaderRows,
                 tableHeaderColumnChains,
-                viewport,
+                viewport, bandLevelsVisibility: levelsVisibility,
               }) => {
                 const bandComponent = getBandComponent(
                   params,
                   tableHeaderRows, tableColumns,
                   columnBands, tableHeaderColumnChains, viewport,
+                  levelsVisibility,
                 );
                 switch (bandComponent.type) {
                   case BAND_DUPLICATE_RENDER:

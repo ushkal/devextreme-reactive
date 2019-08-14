@@ -17,6 +17,8 @@ type NestedLevel = { level: number };
 /** @internal */
 export type BandHeaderRow = TableRow & NestedLevel;
 /** @internal */
+export type BandLevels = { [bandTitle: string]: number };
+/** @internal */
 export type GetMaxNestedLevelFn = (
   bands: ColumnBands[],
   level?: number,
@@ -53,4 +55,5 @@ export type GetBandComponentFn = (
   columnsBands: ColumnBands[],
   tableHeaderColumnChains: HeaderColumnChainRows,
   viewport: GridViewport,
+  bandLevelsVisibility: any,
 ) => { type: string | null; payload: BandComponentPayload | null };

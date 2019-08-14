@@ -1,4 +1,3 @@
-// tslint:disable: max-line-length
 import {
   TABLE_BAND_TYPE, BAND_GROUP_CELL, BAND_HEADER_CELL, BAND_EMPTY_CELL,
   BAND_DUPLICATE_RENDER, BAND_FILL_LEVEL_CELL,
@@ -52,7 +51,7 @@ const getBandLevel: PureComputed<[any[], string, number?], number> = (bands, ban
 
 export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
-  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains, viewport,
+  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains, viewport, bandLevelsVisibility,
 ) => {
   if (rowSpan) return { type: BAND_DUPLICATE_RENDER, payload: null };
 
@@ -112,12 +111,12 @@ export const getBandComponent: GetBandComponentFn = (
         ? rowsWithVisible.length || 1
         : maxLevel;
 
+
       return {
         type: BAND_FILL_LEVEL_CELL,
         payload: {
           tableRow: tableHeaderRows.find(row => row.type === TABLE_HEADING_TYPE),
           rowSpan: cellRowSpan,
-          band_spacer_cell: 'band_spacer_cell',
         },
       };
     }
