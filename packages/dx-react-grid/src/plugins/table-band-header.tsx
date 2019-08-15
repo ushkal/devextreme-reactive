@@ -65,6 +65,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
         ]}
       >
         <Getter name="tableHeaderRows" computed={tableHeaderRowsComputed} />
+        {/* internal */}
         <Getter name="tableHeaderColumnChains" computed={tableHeaderColumnChainsComputed} />
         <Getter name="bandLevels" value={bandLevels} />
         <Getter name="bandLevelsVisibility" computed={bandLevelsVisibilityComputed} />

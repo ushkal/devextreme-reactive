@@ -55,5 +55,5 @@ export type GetBandComponentFn = (
   columnsBands: ColumnBands[],
   tableHeaderColumnChains: HeaderColumnChainRows,
   viewport: GridViewport,
-  bandLevelsVisibility: any,
+  bandLevelsVisibility: boolean[],
 ) => { type: string | null; payload: BandComponentPayload | null };

@@ -9,7 +9,6 @@ import {
   IsSpecificRowFn, GetColumnBandMetaFn, GetBandComponentFn, BandHeaderRow,
 } from '../../types';
 import { TABLE_STUB_TYPE } from '../../utils/virtual-table';
-import { PureComputed } from '@devexpress/dx-core';
 
 export const isBandedTableRow: IsSpecificRowFn = tableRow => (tableRow.type === TABLE_BAND_TYPE);
 export const isBandedOrHeaderRow: IsSpecificRowFn = tableRow => isBandedTableRow(tableRow)
@@ -36,22 +35,10 @@ export const getColumnMeta: GetColumnBandMetaFn = (
   return acc;
 }, result || { level, title });
 
-const getBandLevel: PureComputed<[any[], string, number?], number> = (bands, bandTitle, level = 0) => {
-  for (const band of bands) {
-    if (band.title === bandTitle) {
-      return level;
-    }
-    if (band.children !== undefined) {
-      const result = getBandLevel(band.children, bandTitle, level + 1);
-      if (result >= 0) return result;
-    }
-  }
-  return -1;
-};
-
 export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
-  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains, viewport, bandLevelsVisibility,
+  tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains,
+  viewport, bandLevelsVisibility,
 ) => {
   if (rowSpan) return { type: BAND_DUPLICATE_RENDER, payload: null };
 
@@ -67,29 +54,14 @@ export const getBandComponent: GetBandComponentFn = (
     .findIndex(column => column.key === currentTableColumn.key);
   const columnVisibleBoundary = viewport.columns[0];
 
-  const rowsWithBands = tableHeaderColumnChains.filter(r => r.filter(ch => !!(ch as any).bandTitle).length);
-
-  const inVisibleRange = (index: number) => (columnVisibleBoundary[0] <= index && index <= columnVisibleBoundary[1]);
-
-  const getVisibleBandsByLevel = (lvl: number) => (
-    rowsWithBands[lvl]
-    ? rowsWithBands[lvl].filter((ch: any) => !!(ch as any).bandTitle
-      && (inVisibleRange(ch.start) || inVisibleRange(ch.start + ch.columns.length - 1)
-        || (ch.start <= columnVisibleBoundary[0] && columnVisibleBoundary[1] <= ch.start + ch.columns.length - 1)
-      )
-      && getBandLevel(columnBands, (ch as any).bandTitle) === lvl)
-    : []
-  );
-
-  const rowsWithVisible = rowsWithBands.reduce((acc, row, index) => {
-    const rowBands = getVisibleBandsByLevel(index);
-    return rowBands.length ? [...acc, [rowBands]] : acc;
-  }, [] as any);
+  const levelsCount = bandLevelsVisibility.length;
+  const visibleLevelsCount = bandLevelsVisibility.filter(v => v).length;
 
   if (currentColumnMeta.level < currentRowLevel) {
-    const currentLevelHidden = rowsWithBands.length > rowsWithVisible.length && getVisibleBandsByLevel(currentRowLevel).length === 0;
-    if (currentRowLevel > 0 && currentLevelHidden && currentTableColumn.type === TABLE_STUB_TYPE) {
+    const shouldFillLevel = currentRowLevel > 0 && visibleLevelsCount < levelsCount
+      && !bandLevelsVisibility[currentRowLevel] && currentTableColumn.type === TABLE_STUB_TYPE;
 
+    if (shouldFillLevel) {
       return { type: BAND_FILL_LEVEL_CELL, payload: null };
     }
     return { type: BAND_EMPTY_CELL, payload: null };
@@ -101,16 +73,12 @@ export const getBandComponent: GetBandComponentFn = (
     && isNoDataColumn(previousTableColumn.type)) {
     beforeBorder = true;
   }
+
   if (currentColumnMeta.level === currentRowLevel) {
-    let cellRowSpan = maxLevel - currentRowLevel;
-
     if (currentTableColumn.type === TABLE_STUB_TYPE) {
-      if (cellRowSpan === 0) cellRowSpan = 1;
-
-      cellRowSpan = rowsWithBands.length > rowsWithVisible.length
-        ? rowsWithVisible.length || 1
+      const cellRowSpan = levelsCount > visibleLevelsCount
+        ? visibleLevelsCount || 1
         : maxLevel;
-
 
       return {
         type: BAND_FILL_LEVEL_CELL,
@@ -125,7 +93,7 @@ export const getBandComponent: GetBandComponentFn = (
       type: BAND_HEADER_CELL,
       payload: {
         tableRow: tableHeaderRows.find(row => row.type === TABLE_HEADING_TYPE),
-        rowSpan: cellRowSpan,
+        rowSpan: maxLevel - currentRowLevel,
         ...beforeBorder && { beforeBorder },
       },
     };

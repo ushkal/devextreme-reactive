@@ -8,7 +8,6 @@ import {
   GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows, BandLevels,
 } from '../../types';
 import { intervalUtil } from '../virtual-table-state/utils';
-import { pureComputed } from '../_blueprint/computeds';
 
 export const tableRowsWithBands: PureComputed<
   [TableRow[], ColumnBands[], TableColumn[]]
@@ -109,7 +108,7 @@ export const columnBandLevels: PureComputed<[ColumnBands[]], BandLevels> = colum
 
 export const bandLevelsVisibility: PureComputed<
   [GridViewport, HeaderColumnChainRows, BandLevels],
-  any
+  boolean[]
 > = ({ columns }, tableHeaderColumnChains, bandLevels) => {
   const columnVisibleBoundary = columns[0];
 
@@ -132,8 +131,8 @@ export const bandLevelsVisibility: PureComputed<
     : []
   );
 
-  return rowsWithBands.reduce((acc, row, index) => {
+  return rowsWithBands.reduce((acc, _, index) => {
     const rowBands = getVisibleBandsByLevel(index);
-    return { ...acc, [index]: !!rowBands.length };
-  }, {});
+    return [...acc, !!rowBands.length];
+  }, [] as boolean[]);
 };
