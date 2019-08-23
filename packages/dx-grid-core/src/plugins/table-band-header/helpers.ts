@@ -55,7 +55,7 @@ export const getBandComponent: GetBandComponentFn = (
   const columnVisibleBoundary = viewport.columns[0];
 
   const levelsCount = bandLevelsVisibility.length;
-  const visibleLevelsCount = bandLevelsVisibility.filter(v => v).length;
+  const visibleLevelsCount = bandLevelsVisibility.filter(v => !!v).length;
 
   if (currentColumnMeta.level < currentRowLevel) {
     const shouldFillLevel = currentRowLevel > 0 && visibleLevelsCount < levelsCount

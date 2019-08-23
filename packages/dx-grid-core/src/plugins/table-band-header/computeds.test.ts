@@ -1,6 +1,8 @@
 import { TABLE_BAND_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
-import { tableRowsWithBands, tableHeaderColumnChainsWithBands } from './computeds';
+import {
+  tableRowsWithBands, tableHeaderColumnChainsWithBands, columnBandLevels,
+} from './computeds';
 import { expandChainsCore } from '../table-fixed-columns/computeds.test';
 
 describe('TableBandHeader Plugin computeds', () => {
@@ -138,6 +140,53 @@ describe('TableBandHeader Plugin computeds', () => {
           [['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']],
         ],
       );
+    });
+  });
+
+  describe('#columnBandLevels', () => {
+    it('should in simple case', () => {
+      const bands = [{
+        title: 'Band0',
+        children: [{ columnName: 'a' }],
+      }, {
+        title: 'Band1',
+        children: [{ columnName: 'b' }],
+      }];
+
+      expect(columnBandLevels(bands))
+        .toEqual({
+          Band0: 0,
+          Band1: 0,
+        });
+    });
+
+    it('should work with nested bands', () => {
+      const bands = [{
+        title: 'Band0',
+        children: [{
+          title: 'Band1',
+          children: [{
+            title: 'Band2',
+            children: [{ columnName: 'a' }],
+          }],
+        }],
+      }];
+
+      expect(columnBandLevels(bands))
+        .toEqual({
+          Band0: 0,
+          Band1: 1,
+          Band2: 2,
+        });
+    });
+  });
+
+  describe('#bandLevelsVisibility', () => {
+    it('should work when all columns are visible', () => {
+      const viewport = {
+        columns: [[0, 3]],
+      };
+      const headerColumnChains =
     });
   });
 });
