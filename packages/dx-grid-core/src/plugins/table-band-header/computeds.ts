@@ -112,6 +112,8 @@ export const bandLevelsVisibility: PureComputed<
 > = ({ columns }, tableHeaderColumnChains, bandLevels) => {
   const columnVisibleBoundary = columns[0];
 
+  console.log(tableHeaderColumnChains, bandLevels)
+
   const rowsWithBands = tableHeaderColumnChains
     .filter(r => r.filter(ch => !!(ch as any).bandTitle).length);
 
@@ -120,6 +122,7 @@ export const bandLevelsVisibility: PureComputed<
     end: columnVisibleBoundary[1],
   };
 
+  // Note: a visible band level always matches with it's row
   const getVisibleBandsByLevel = (level: number) => (
     rowsWithBands[level]
     ? rowsWithBands[level].filter((chain: any) => (

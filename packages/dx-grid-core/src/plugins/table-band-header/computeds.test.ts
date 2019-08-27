@@ -1,7 +1,7 @@
 import { TABLE_BAND_TYPE } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import {
-  tableRowsWithBands, tableHeaderColumnChainsWithBands, columnBandLevels,
+  tableRowsWithBands, tableHeaderColumnChainsWithBands, columnBandLevels, bandLevelsVisibility,
 } from './computeds';
 import { expandChainsCore } from '../table-fixed-columns/computeds.test';
 
@@ -181,12 +181,36 @@ describe('TableBandHeader Plugin computeds', () => {
     });
   });
 
-  describe('#bandLevelsVisibility', () => {
-    it('should work when all columns are visible', () => {
+  fdescribe('#bandLevelsVisibility', () => {
+    fit('should work when all columns are visible', () => {
       const viewport = {
-        columns: [[0, 3]],
+        columns: [[0, 4]],
       };
-      const headerColumnChains =
+      const columns = [{}, {}, {}, {}, {}];
+      const headerColumnChains = [
+        [
+          { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
+          { bandTitle: 'Band1', start: 1, columns: columns.slice(1, 3) },
+          { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
+        ],
+        [
+          { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
+          { bandTitle: 'Band1', start: 1, columns: columns.slice(1, 1) },
+          { bandTitle: 'Nested band', start: 2, columns: columns.slice(2, 3) },
+          { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
+        ],
+        [
+          { bandTitle: null, start: 0, columns },
+        ],
+      ];
+      const bandLevels = {
+        Band0: 0,
+        'Nested band': 1,
+      };
+
+      expect(bandLevelsVisibility(viewport, headerColumnChains, bandLevels))
+        .toEqual({});
+
     });
   });
 });
