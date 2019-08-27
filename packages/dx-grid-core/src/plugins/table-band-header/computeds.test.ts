@@ -181,8 +181,8 @@ describe('TableBandHeader Plugin computeds', () => {
     });
   });
 
-  fdescribe('#bandLevelsVisibility', () => {
-    fit('should work when all columns are visible', () => {
+  describe('#bandLevelsVisibility', () => {
+    it('should work when all columns are visible', () => {
       const viewport = {
         columns: [[0, 4]],
       };
@@ -190,13 +190,13 @@ describe('TableBandHeader Plugin computeds', () => {
       const headerColumnChains = [
         [
           { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
-          { bandTitle: 'Band1', start: 1, columns: columns.slice(1, 3) },
+          { bandTitle: 'Band0', start: 1, columns: columns.slice(1, 3) },
           { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
         ],
         [
           { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
-          { bandTitle: 'Band1', start: 1, columns: columns.slice(1, 1) },
-          { bandTitle: 'Nested band', start: 2, columns: columns.slice(2, 3) },
+          { bandTitle: 'Band0', start: 1, columns: columns.slice(1, 1) },
+          { bandTitle: 'Band1', start: 2, columns: columns.slice(2, 3) },
           { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
         ],
         [
@@ -205,12 +205,54 @@ describe('TableBandHeader Plugin computeds', () => {
       ];
       const bandLevels = {
         Band0: 0,
-        'Nested band': 1,
+        Band1: 1,
       };
 
       expect(bandLevelsVisibility(viewport, headerColumnChains, bandLevels))
-        .toEqual({});
+        .toEqual([true, true]);
+    });
 
+    describe('hidden columns', () => {
+      const columns = Array.from({ length: 10 }).map((_, index) => ({ index }));
+      const generateChains = compressed => compressed.map((ch) => {
+        const startTitleMap = {};
+        const breakpoints = new Set([0, columns.length - 1]);
+        Object.keys(ch).forEach(b => {
+          const [start, end] = ch[b];
+          breakpoints.add(start);
+          breakpoints.add(end);
+          startTitleMap[start] = b;
+        });
+        const indexes = Array.from(breakpoints)
+          .sort((a, b) => a - b)
+          .filter(p => p < columns.length);
+
+        const chain = [];
+        for (let i = 0; i < indexes.length - 1; i += 1) {
+          const start = indexes[i];
+          const end = indexes[i + 1];
+          chain.push({
+            bandTitle: startTitleMap[start] || null,
+            columns: columns.slice(start, end),
+            start,
+          });
+        }
+
+        return chain;
+      });
+
+      fit('should work with partially hidden bands', () => {
+        const headerColumnsChains = generateChains([
+          { Band0: [2, 4] },
+          { Band0: [2, 3], Band1: [5, 7] },
+          {},
+        ]);
+
+        // 0 2 3 5 7 9
+        // [0 1][2 3][4 4][5 7][8 9]
+
+        console.log(headerColumnsChains)
+      });
     });
   });
 });
