@@ -182,27 +182,52 @@ describe('TableBandHeader Plugin computeds', () => {
   });
 
   describe('#bandLevelsVisibility', () => {
+    const generateColumns = length => Array.from({ length }).map((_, index) => ({ index }));
+    const generateChains = (columnCount, compressed) => compressed.map((chainBands) => {
+      const columns = generateColumns(columnCount);
+      const startTitleMap = {};
+      const startPoints = new Set([0]);
+      const endPoints = new Set([columns.length - 1]);
+
+      Object.keys(chainBands).forEach((title) => {
+        const [start, end] = chainBands[title];
+        startPoints.add(start);
+        endPoints.add(end);
+        if (0 < start) {
+          endPoints.add(start - 1);
+        }
+        if (end < columns.length - 1) {
+          startPoints.add(end + 1);
+        }
+        startTitleMap[start] = title;
+      });
+      const indexes = Array.from(startPoints).concat(Array.from(endPoints))
+        .sort((a, b) => a - b)
+        .filter(p => p < columns.length);
+
+      const chain = [];
+      for (let i = 0; i < indexes.length - 1; i += 2) {
+        const start = indexes[i];
+        const end = indexes[i + 1];
+        chain.push({
+          bandTitle: startTitleMap[start] || null,
+          columns: columns.slice(start, end + 1),
+          start,
+        });
+      }
+
+      return chain;
+    });
+
     it('should work when all columns are visible', () => {
       const viewport = {
         columns: [[0, 4]],
       };
-      const columns = [{}, {}, {}, {}, {}];
-      const headerColumnChains = [
-        [
-          { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
-          { bandTitle: 'Band0', start: 1, columns: columns.slice(1, 3) },
-          { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
-        ],
-        [
-          { bandTitle: null, start: 0, columns: columns.slice(0, 0) },
-          { bandTitle: 'Band0', start: 1, columns: columns.slice(1, 1) },
-          { bandTitle: 'Band1', start: 2, columns: columns.slice(2, 3) },
-          { bandTitle: null, start: 4, columns: columns.slice(4, 4) },
-        ],
-        [
-          { bandTitle: null, start: 0, columns },
-        ],
-      ];
+      const headerColumnChains = generateChains(5, [
+        { Band0: [1, 3] },
+        { Band0: [1, 1], Band1: [2, 3] },
+        {},
+      ]);
       const bandLevels = {
         Band0: 0,
         Band1: 1,
@@ -213,45 +238,51 @@ describe('TableBandHeader Plugin computeds', () => {
     });
 
     describe('hidden columns', () => {
-      const columns = Array.from({ length: 10 }).map((_, index) => ({ index }));
-      const generateChains = compressed => compressed.map((ch) => {
-        const startTitleMap = {};
-        const breakpoints = new Set([0, columns.length - 1]);
-        Object.keys(ch).forEach(b => {
-          const [start, end] = ch[b];
-          breakpoints.add(start);
-          breakpoints.add(end);
-          startTitleMap[start] = b;
-        });
-        const indexes = Array.from(breakpoints)
-          .sort((a, b) => a - b)
-          .filter(p => p < columns.length);
+      const headerColumnsChains = generateChains(10, [
+        { Band0: [1, 3], Band01: [7, 9] },
+        { Band0: [1, 3], Band01: [7, 8], Band1: [9, 9] },
+        {},
+      ]);
+      const bandLevels = {
+        Band0: 0,
+        Band01: 0,
+        Band1: 1,
+      };
 
-        const chain = [];
-        for (let i = 0; i < indexes.length - 1; i += 1) {
-          const start = indexes[i];
-          const end = indexes[i + 1];
-          chain.push({
-            bandTitle: startTitleMap[start] || null,
-            columns: columns.slice(start, end),
-            start,
-          });
-        }
+      it('should work with partially hidden bands', () => {
+        const viewport = {
+          columns: [[2, 6]],
+        };
 
-        return chain;
+        expect(bandLevelsVisibility(viewport, headerColumnsChains, bandLevels))
+          .toEqual([
+            true, // 0 - Band0
+            false,
+          ]);
       });
 
-      fit('should work with partially hidden bands', () => {
-        const headerColumnsChains = generateChains([
-          { Band0: [2, 4] },
-          { Band0: [2, 3], Band1: [5, 7] },
-          {},
-        ]);
+      it('should work with hidden bands', () => {
+        const viewport = {
+          columns: [[4, 6]],
+        };
 
-        // 0 2 3 5 7 9
-        // [0 1][2 3][4 4][5 7][8 9]
+        expect(bandLevelsVisibility(viewport, headerColumnsChains, bandLevels))
+          .toEqual([
+            false,
+            false,
+          ]);
+      });
 
-        console.log(headerColumnsChains)
+      it('should work with gapped column boundaries', () => {
+        const viewport = {
+          columns: [[0, 0], [2, 2], [5, 6]],
+        };
+
+        expect(bandLevelsVisibility(viewport, headerColumnsChains, bandLevels))
+          .toEqual([
+            true,
+            false,
+          ]);
       });
     });
   });

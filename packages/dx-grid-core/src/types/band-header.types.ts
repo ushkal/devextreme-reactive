@@ -1,5 +1,5 @@
 import { TableColumn, TableRow } from './table.types';
-import { HeaderColumnChainRows } from './header-row.types';
+import { HeaderColumnChainRows, HeaderColumnChain } from './header-row.types';
 import { GridViewport } from './virtual-table.types';
 
 /** Describes properties of column bands that the TableBandHeader plugin renders. */
@@ -29,6 +29,9 @@ export type GetMaxNestedLevelFn = (
 type ColumnBandMeta = { level: number; title: string | null };
 
 /** @internal */
+export type BandColumnChainExtension = { bandTitle: string };
+
+/** @internal */
 export type GetColumnBandMetaFn = (
   columnName: string,
   bands: ReadonlyArray<ColumnBands>,
@@ -49,7 +52,7 @@ type BandComponentPayload = {
 };
 /** @internal */
 export type GetBandComponentFn = (
-  params: { tableColumn: TableColumn; tableRow: TableRow; rowSpan?: number },
+  params: { tableColumn: TableColumn; tableRow: BandHeaderRow; rowSpan?: number },
   tableHeaderRows: TableRow[],
   tableColumns: TableColumn[],
   columnsBands: ColumnBands[],

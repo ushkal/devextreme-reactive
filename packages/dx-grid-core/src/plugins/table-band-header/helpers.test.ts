@@ -114,6 +114,8 @@ describe('TableBandHeader Plugin helpers', () => {
       { type: TABLE_BAND_TYPE, level: 1 },
       { type: TABLE_HEADING_TYPE },
     ];
+    const viewport = { columns: [[0, 4]] };
+    const levelsVisibility = [true, true];
 
     it('should return a duplicate render type if column has a rowSpan', () => {
       const params = {
@@ -122,7 +124,7 @@ describe('TableBandHeader Plugin helpers', () => {
         tableRow: {},
       };
 
-      expect(getBandComponent(params, {}, {}, {}, []))
+      expect(getBandComponent(params, {}, {}, {}, [], viewport, levelsVisibility))
         .toEqual({ type: BAND_DUPLICATE_RENDER, payload: null });
     });
 
@@ -139,7 +141,10 @@ describe('TableBandHeader Plugin helpers', () => {
       };
       const chains = computeColumnChains(tableColumns, tableHeaderRows, columnBands);
 
-      expect(getBandComponent(params, tableHeaderRows, tableColumns, columnBands, chains))
+      expect(
+        getBandComponent(
+          params, tableHeaderRows, tableColumns, columnBands, chains, viewport, levelsVisibility,
+      ))
         .toEqual({ type: BAND_EMPTY_CELL, payload: null });
     });
 
@@ -156,7 +161,10 @@ describe('TableBandHeader Plugin helpers', () => {
       };
       const chains = computeColumnChains(tableColumns, tableHeaderRows, columnBands);
 
-      expect(getBandComponent(params, tableHeaderRows, tableColumns, columnBands, chains))
+      expect(
+        getBandComponent(
+          params, tableHeaderRows, tableColumns, columnBands, chains, viewport, levelsVisibility,
+      ))
         .toEqual({
           type: BAND_HEADER_CELL,
           payload: {
@@ -179,7 +187,10 @@ describe('TableBandHeader Plugin helpers', () => {
       };
       const chains = computeColumnChains(tableColumns, tableHeaderRows, columnBands);
 
-      expect(getBandComponent(params, tableHeaderRows, tableColumns, columnBands, chains))
+      expect(
+        getBandComponent(
+          params, tableHeaderRows, tableColumns, columnBands, chains, viewport, levelsVisibility,
+      ))
         .toEqual({
           type: BAND_GROUP_CELL,
           payload: {
@@ -203,7 +214,11 @@ describe('TableBandHeader Plugin helpers', () => {
       };
       const chains = computeColumnChains(tableColumns, tableHeaderRows, columnBands);
 
-      expect(getBandComponent(params, tableHeaderRows, tableColumns, columnBands, chains))
+      expect(
+        getBandComponent(
+          params, tableHeaderRows, tableColumns, columnBands,
+          chains, viewport, levelsVisibility,
+      ))
         .toEqual({
           type: null,
           payload: null,
@@ -225,7 +240,9 @@ describe('TableBandHeader Plugin helpers', () => {
           getBandComponent({
             tableColumn: columns[0],
             tableRow: { level: 0 },
-          }, tableHeaderRows, tableColumns, columnBands, columnChains),
+          },
+          tableHeaderRows, tableColumns, columnBands, columnChains,
+          viewport, levelsVisibility),
         )
           .toEqual({
             type: BAND_GROUP_CELL,
@@ -240,7 +257,8 @@ describe('TableBandHeader Plugin helpers', () => {
           getBandComponent({
             tableColumn: tableColumns[0],
             tableRow: { level: 1 },
-          }, tableHeaderRows, tableColumns, columnBands, columnChains),
+          }, tableHeaderRows, tableColumns, columnBands, columnChains,
+          viewport, levelsVisibility),
         )
           .toEqual({
             type: BAND_GROUP_CELL,
@@ -255,7 +273,8 @@ describe('TableBandHeader Plugin helpers', () => {
           getBandComponent({
             tableColumn: tableColumns[0],
             tableRow: { level: 2 },
-          }, tableHeaderRows, tableColumns, columnBands, columnChains),
+          }, tableHeaderRows, tableColumns, columnBands, columnChains,
+          viewport, levelsVisibility),
         )
           .toEqual({
             type: BAND_HEADER_CELL,
@@ -281,10 +300,9 @@ describe('TableBandHeader Plugin helpers', () => {
               tableColumn: columns[1],
               tableRow: { level: 0 },
             },
-            tableHeaderRows,
-            columns,
-            columnBands,
-            columnChains,
+            tableHeaderRows, columns,
+            columnBands, columnChains,
+            viewport, levelsVisibility,
           ),
         )
           .toEqual({
@@ -310,10 +328,9 @@ describe('TableBandHeader Plugin helpers', () => {
               tableColumn: columns[0],
               tableRow: { level: 0 },
             },
-            tableHeaderRows,
-            columns,
-            columnBands,
-            columnChains,
+            tableHeaderRows, columns,
+            columnBands, columnChains,
+            viewport, levelsVisibility,
           ),
         )
           .toEqual({
@@ -356,10 +373,9 @@ describe('TableBandHeader Plugin helpers', () => {
               tableColumn: tableColumns[0],
               tableRow: { level: 0 },
             },
-            testTableHeaderRows,
-            testColumns,
-            testColumnBands,
-            columnChains,
+            testTableHeaderRows, testColumns,
+            testColumnBands, columnChains,
+            viewport, levelsVisibility,
           ),
         )
           .toEqual({
@@ -380,10 +396,9 @@ describe('TableBandHeader Plugin helpers', () => {
               tableColumn: tableColumns[0],
               tableRow: { level: 1 },
             },
-            testTableHeaderRows,
-            testColumns,
-            testColumnBands,
-            columnChains,
+            testTableHeaderRows, testColumns,
+            testColumnBands, columnChains,
+            viewport, levelsVisibility,
           ),
         )
           .toEqual({
@@ -396,5 +411,7 @@ describe('TableBandHeader Plugin helpers', () => {
           });
       });
     });
+
+
   });
 });

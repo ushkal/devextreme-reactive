@@ -6,7 +6,7 @@ import { TABLE_HEADING_TYPE } from '../table-header-row/constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { findChainByColumnIndex } from '../table-header-row/helpers';
 import {
-  IsSpecificRowFn, GetColumnBandMetaFn, GetBandComponentFn, BandHeaderRow,
+  IsSpecificRowFn, GetColumnBandMetaFn, GetBandComponentFn,
 } from '../../types';
 import { TABLE_STUB_TYPE } from '../../utils/virtual-table';
 
@@ -43,7 +43,7 @@ export const getBandComponent: GetBandComponentFn = (
   if (rowSpan) return { type: BAND_DUPLICATE_RENDER, payload: null };
 
   const maxLevel = tableHeaderRows.filter(column => column.type === TABLE_BAND_TYPE).length + 1;
-  const level = (tableRow as BandHeaderRow).level;
+  const { level } = tableRow;
   const currentRowLevel = level === undefined
     ? maxLevel - 1 : level;
   const currentColumnMeta = currentTableColumn.type === TABLE_DATA_TYPE
@@ -52,7 +52,6 @@ export const getBandComponent: GetBandComponentFn = (
 
   const currentColumnIndex = tableColumns
     .findIndex(column => column.key === currentTableColumn.key);
-  const columnVisibleBoundary = viewport.columns[0];
 
   const levelsCount = bandLevelsVisibility.length;
   const visibleLevelsCount = bandLevelsVisibility.filter(v => !!v).length;
@@ -104,6 +103,9 @@ export const getBandComponent: GetBandComponentFn = (
     currentColumnIndex,
   );
 
+  const columnVisibleBoundary = viewport.columns.find(([start, end]) => (
+    start <= currentColumnIndex && currentColumnIndex <= end
+  ));
   const bandStart = Math.max(columnVisibleBoundary![0], currentColumnChain.start);
   if (bandStart < currentColumnIndex) {
     return { type: null, payload: null };

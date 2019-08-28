@@ -5,7 +5,7 @@ import { getColumnMeta } from './helpers';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
 import {
   ColumnBands, GetHeaderColumnChainsFn, ShouldSplitChainFn,
-  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows, BandLevels,
+  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows, BandLevels, BandColumnChainExtension, HeaderColumnChain,
 } from '../../types';
 import { intervalUtil } from '../virtual-table-state/utils';
 
@@ -107,30 +107,29 @@ export const columnBandLevels: PureComputed<[ColumnBands[]], BandLevels> = colum
 );
 
 export const bandLevelsVisibility: PureComputed<
-  [GridViewport, HeaderColumnChainRows, BandLevels],
+  [GridViewport, HeaderColumnChainRows<BandColumnChainExtension>, BandLevels],
   boolean[]
 > = ({ columns }, tableHeaderColumnChains, bandLevels) => {
-  const columnVisibleBoundary = columns[0];
-
-  console.log(tableHeaderColumnChains, bandLevels)
-
   const rowsWithBands = tableHeaderColumnChains
-    .filter(r => r.filter(ch => !!(ch as any).bandTitle).length);
+    .filter(r => r.filter(ch => !!ch.bandTitle).length);
 
-  const visibleInterval = {
-    start: columnVisibleBoundary[0],
-    end: columnVisibleBoundary[1],
-  };
+  const visibleIntervals = columns.map(([start, end]) => ({ start, end }));
 
-  // Note: a visible band level always matches with it's row
+  const isBandChainVisible = (chain: HeaderColumnChain) => (
+    visibleIntervals.some(interval => (
+      intervalUtil.intersect(
+        interval,
+        { start: chain.start, end: chain.start + chain.columns.length - 1 },
+      ) !== intervalUtil.empty
+    ),
+  ));
+
   const getVisibleBandsByLevel = (level: number) => (
+    // Note: a visible band level always matches with it's row
     rowsWithBands[level]
-    ? rowsWithBands[level].filter((chain: any) => (
-        bandLevels[(chain as any).bandTitle] === level && intervalUtil.intersect(
-          visibleInterval,
-          { start: chain.start, end: chain.start + chain.columns.length - 1 },
-        ) !== intervalUtil.empty),
-      )
+    ? rowsWithBands[level].filter(chain => (
+        bandLevels[chain.bandTitle] === level && isBandChainVisible(chain)
+      ))
     : []
   );
 
