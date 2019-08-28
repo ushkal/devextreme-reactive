@@ -105,14 +105,14 @@ export const getBandComponent: GetBandComponentFn = (
 
   const columnVisibleBoundary = viewport.columns.find(([start, end]) => (
     start <= currentColumnIndex && currentColumnIndex <= end
-  ));
-  const bandStart = Math.max(columnVisibleBoundary![0], currentColumnChain.start);
+  ))!;
+  const bandStart = Math.max(columnVisibleBoundary[0], currentColumnChain.start);
   if (bandStart < currentColumnIndex) {
     return { type: null, payload: null };
   }
 
   const bandEnd = Math.min(
-    columnVisibleBoundary![1] + 1,
+    columnVisibleBoundary[1] + 1,
     currentColumnChain.start + currentColumnChain.columns.length,
   );
 

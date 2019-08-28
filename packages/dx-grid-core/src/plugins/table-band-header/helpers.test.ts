@@ -412,6 +412,25 @@ describe('TableBandHeader Plugin helpers', () => {
       });
     });
 
+    describe('with virtual table', () => {
+      const tableHeaderRows = [
+        { type: TABLE_BAND_TYPE, level: 0 },
+        { type: TABLE_BAND_TYPE, level: 1 },
+        { type: TABLE_HEADING_TYPE },
+      ];
+      const columnBands = [
+        {
+          title: 'Band0',
+          children: [
 
+          ],
+        },
+      ];
+      const
+
+      it('should assign correct colSpan to a group cell', () => {
+
+      });
+    });
   });
 });

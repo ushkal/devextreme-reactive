@@ -5,7 +5,8 @@ import { getColumnMeta } from './helpers';
 import { splitHeaderColumnChains, generateSimpleChains } from '../table-header-row/helpers';
 import {
   ColumnBands, GetHeaderColumnChainsFn, ShouldSplitChainFn,
-  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows, BandLevels, BandColumnChainExtension, HeaderColumnChain,
+  GetMaxNestedLevelFn, TableRow, TableColumn, GridViewport, HeaderColumnChainRows,
+  BandLevels, BandColumnChainExtension, HeaderColumnChain,
 } from '../../types';
 import { intervalUtil } from '../virtual-table-state/utils';
 
