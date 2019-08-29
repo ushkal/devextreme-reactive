@@ -35,6 +35,7 @@ export const getColumnMeta: GetColumnBandMetaFn = (
   return acc;
 }, result || { level, title });
 
+// TODO: refactor
 export const getBandComponent: GetBandComponentFn = (
   { tableColumn: currentTableColumn, tableRow, rowSpan },
   tableHeaderRows, tableColumns, columnBands, tableHeaderColumnChains,
@@ -54,7 +55,7 @@ export const getBandComponent: GetBandComponentFn = (
     .findIndex(column => column.key === currentTableColumn.key);
 
   const levelsCount = bandLevelsVisibility.length;
-  const visibleLevelsCount = bandLevelsVisibility.filter(v => !!v).length;
+  const visibleLevelsCount = bandLevelsVisibility.filter(Boolean).length;
 
   if (currentColumnMeta.level < currentRowLevel) {
     const shouldFillLevel = currentRowLevel > 0 && visibleLevelsCount < levelsCount
@@ -75,14 +76,14 @@ export const getBandComponent: GetBandComponentFn = (
 
   if (currentColumnMeta.level === currentRowLevel) {
     if (currentTableColumn.type === TABLE_STUB_TYPE) {
-      const cellRowSpan = levelsCount > visibleLevelsCount
+      const cellRowSpan = visibleLevelsCount < levelsCount
         ? visibleLevelsCount || 1
         : maxLevel;
 
       return {
         type: BAND_FILL_LEVEL_CELL,
         payload: {
-          tableRow: tableHeaderRows.find(row => row.type === TABLE_HEADING_TYPE),
+          // tableRow: tableHeaderRows.find(row => row.type === TABLE_HEADING_TYPE),
           rowSpan: cellRowSpan,
         },
       };

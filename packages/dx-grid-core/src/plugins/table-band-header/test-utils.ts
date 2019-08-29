@@ -1,4 +1,13 @@
-const generateColumns = (length: number) => Array.from({ length }).map((_, index) => ({ index }));
+import { TABLE_DATA_TYPE } from '../table/constants';
+
+/** @internal */
+export const generateColumns = (length: number) => (
+  Array.from({ length }).map((_, index) => ({
+    key: `${index}`,
+    column: { name: `${index}` },
+    type: TABLE_DATA_TYPE,
+  }))
+);
 
 /** @internal */
 export const generateChains = (

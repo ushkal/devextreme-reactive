@@ -14,9 +14,9 @@ import {
   bandLevelsVisibility,
   columnBandLevels,
 } from '@devexpress/dx-grid-core';
-import { TableBandHeaderProps, TableCellProps, TableRowProps } from '../types';
+import { TableBandHeaderProps, TableBandHeader as BandHeaderNS, TableRowProps } from '../types';
 
-const CellPlaceholder = (props: TableCellProps) => <TemplatePlaceholder params={props} />;
+const CellPlaceholder = (props: BandHeaderNS.CellProps) => <TemplatePlaceholder params={props} />;
 
 const bandLevelsVisibilityComputed = (
   { viewport, tableHeaderColumnChains, bandLevels }: Getters,
@@ -74,7 +74,7 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
           name="tableCell"
           predicate={({ tableRow }: any) => !!isBandedOrHeaderRow(tableRow)}
         >
-          {(params: TableCellProps) => (
+          {(params: BandHeaderNS.CellProps) => (
             <TemplateConnector>
               {({
                 tableColumns,
@@ -133,7 +133,9 @@ class TableBandHeaderBase extends React.PureComponent<TableBandHeaderProps> {
           name="tableCell"
           predicate={({ tableRow, tableColumn }: any) => isHeadingTableCell(tableRow, tableColumn)}
         >
-          {(params: TableCellProps) => <HeaderCell component={CellPlaceholder} {...params} />}
+          {(params: BandHeaderNS.CellProps) => (
+            <HeaderCell component={CellPlaceholder} {...params} />
+          )}
         </Template>
         <Template
           name="tableRow"

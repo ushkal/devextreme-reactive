@@ -1,9 +1,11 @@
 import * as Immutable from 'seamless-immutable';
 import {
   TABLE_BAND_TYPE, BAND_GROUP_CELL, BAND_HEADER_CELL, BAND_EMPTY_CELL, BAND_DUPLICATE_RENDER,
+  BAND_FILL_LEVEL_CELL,
 } from './constants';
 import { TABLE_DATA_TYPE } from '../table/constants';
 import { TABLE_HEADING_TYPE } from '../table-header-row/constants';
+import { TABLE_STUB_TYPE } from '../../utils/virtual-table';
 import {
   isNoDataColumn,
   isBandedTableRow,
@@ -13,6 +15,7 @@ import {
 } from './helpers';
 import { tableHeaderColumnChainsWithBands } from './computeds';
 import { tableHeaderColumnChainsWithFixed } from '../table-fixed-columns/computeds';
+import { generateColumns } from './test-utils';
 
 describe('TableBandHeader Plugin helpers', () => {
   const columnBands = [
@@ -413,23 +416,149 @@ describe('TableBandHeader Plugin helpers', () => {
     });
 
     describe('with virtual table', () => {
-      const tableHeaderRows = [
-        { type: TABLE_BAND_TYPE, level: 0 },
-        { type: TABLE_BAND_TYPE, level: 1 },
-        { type: TABLE_HEADING_TYPE },
-      ];
-      const columnBands = [
-        {
-          title: 'Band0',
-          children: [
+      const testColumns = generateColumns(10);
 
-          ],
-        },
-      ];
-      const
+      describe('group cell colSpan', () => {
+        const testBands = [
+          {
+            title: 'Band0',
+            children: [
+              { columnName: '4' },
+              { columnName: '5' },
+              { columnName: '6' },
+              { columnName: '7' },
+              {
+                title: 'Band1',
+                children: [
+                  { columnName: '6' },
+                  { columnName: '7' },
+                ],
+              },
+            ],
+          },
+        ];
+        const columnChains = computeColumnChains(testColumns, tableHeaderRows, testBands);
+        const getParams = tableColumn => ({
+          tableColumn,
+          tableRow: { level: 0 },
+        });
+        const getBandComponentByViewport = (viewport, column) => getBandComponent(
+          getParams(column), tableHeaderRows, testColumns, testBands, columnChains,
+          viewport, levelsVisibility,
+        );
+        const groupCellWithColSpan = colSpan => ({
+          type: BAND_GROUP_CELL,
+          payload: {
+            colSpan,
+            value: 'Band0',
+            column: { title: 'Band0', level: 1 },
+          },
+        });
 
-      it('should assign correct colSpan to a group cell', () => {
+        it('should be correct when a right part of band is hidden', () => {
+          expect(getBandComponentByViewport({ columns: [[0, 5]] }, testColumns[4]))
+          .toEqual(
+            groupCellWithColSpan(2),
+          );
+        });
 
+        it('should be correct when whole band is visible', () => {
+          expect(getBandComponentByViewport({ columns: [[3, 8]] }, testColumns[4]))
+          .toEqual(
+            groupCellWithColSpan(4),
+          );
+        });
+
+        it('should be correct when a left part of band is hidden', () => {
+          expect(getBandComponentByViewport({ columns: [[5, 9]] }, testColumns[5]))
+          .toEqual(
+            groupCellWithColSpan(3),
+          );
+        });
+      });
+
+      describe('fill level cell', () => {
+        const testBands = [
+          {
+            title: 'Band0',
+            children: [
+              { columnName: '4' },
+              { columnName: '5' },
+              { columnName: '6' },
+              { columnName: '7' },
+              {
+                title: 'Band1',
+                children: [
+                  { columnName: '6' },
+                  { columnName: '7' },
+                  {
+                    title: 'Band2',
+                    children: [
+                      { columnName: '7' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+        const testTableHeaderRows = [
+          { type: TABLE_BAND_TYPE, level: 0 },
+          { type: TABLE_BAND_TYPE, level: 1 },
+          { type: TABLE_BAND_TYPE, level: 2 },
+          { type: TABLE_HEADING_TYPE },
+        ];
+        const columnChains = computeColumnChains(testColumns, tableHeaderRows, testBands);
+        const getParams = (tableColumn, level) => ({
+          tableColumn,
+          tableRow: { level },
+        });
+        const getBandComponentGetter = (testViewport, testLevelsVisibility) => (
+          (tableColumn, level) => (getBandComponent(
+            getParams(tableColumn, level), testTableHeaderRows, testColumns, testBands,
+            columnChains, testViewport, testLevelsVisibility,
+          ))
+        );
+
+        it('should fill invisible level in place of invisible cell', () => {
+          const testViewport = { columns: [[4, 6]] };
+          const stubColumn = {
+            type: TABLE_STUB_TYPE,
+            key: 'stub_0-3',
+          };
+          const testLevelsVisibility = [true, false, false];
+          const getBandComponentByLevel = getBandComponentGetter(
+            testViewport, testLevelsVisibility,
+          );
+
+          expect(getBandComponentByLevel(stubColumn, 0))
+            .toEqual({
+              payload: { rowSpan: 1 },
+              type: BAND_FILL_LEVEL_CELL,
+            });
+
+          expect(getBandComponentByLevel(stubColumn, 1))
+            .toEqual({
+              payload: null,
+              type: BAND_FILL_LEVEL_CELL,
+            });
+
+          expect(getBandComponentByLevel(stubColumn, 2))
+            .toEqual({
+              payload: null,
+              type: BAND_FILL_LEVEL_CELL,
+            });
+
+          expect(getBandComponentByLevel(stubColumn, undefined)) // heading row
+            .toEqual({
+              payload: null,
+              type: BAND_FILL_LEVEL_CELL,
+            });
+        });
+
+        it('should fill space vertically', () => {
+
+        });
       });
     });
   });
